@@ -12,6 +12,10 @@ export interface ShoppingItem {
   store: string;
   approx_price: number;
   category: string;
+  calories?: number;
+  protein?: number;
+  fat?: number;
+  carbs?: number;
 }
 
 export interface AIResponse {
@@ -19,6 +23,12 @@ export interface AIResponse {
   total_cost: number;
   notes: string;
   generated_at: string;
+  total_nutrition?: {
+    calories: number;
+    protein: number;
+    fat: number;
+    carbs: number;
+  };
 }
 
 export type ProductCategory = 
