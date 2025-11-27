@@ -37,6 +37,7 @@ export const translations = {
     copyToClipboard: 'Copy to Clipboard',
     print: 'Print',
     newList: 'New List',
+    completed: 'Completed',
     
     // Categories
     vegetables: 'Vegetables',
@@ -71,6 +72,26 @@ export const translations = {
     analyzingPrices: 'Analyzing prices and optimizing for your budget',
     didYouKnow: 'Did you know?',
     funFact: 'ShopSmart AI considers current German supermarket prices and distributes items based on typical pricing at each store.',
+    
+    // History
+    history: 'History',
+    savedLists: 'Saved Lists',
+    saveList: 'Save List',
+    noSavedLists: 'No saved lists yet',
+    loadList: 'Load',
+    deleteList: 'Delete',
+    listSaved: 'List saved!',
+    clearHistory: 'Clear All',
+    
+    // Nutrition
+    calories: 'Calories',
+    protein: 'Protein',
+    fat: 'Fat',
+    carbs: 'Carbs',
+    nutritionPerDay: 'Daily Nutrition',
+    perPerson: 'per person',
+    dailyNorm: 'of daily norm',
+    nutritionNote: 'Values are estimates based on typical product nutrition. Actual values may vary.',
   },
   
   uk: {
@@ -109,6 +130,7 @@ export const translations = {
     copyToClipboard: 'Копіювати',
     print: 'Друк',
     newList: 'Новий список',
+    completed: 'Виконано',
     
     // Categories
     vegetables: 'Овочі',
@@ -143,6 +165,26 @@ export const translations = {
     analyzingPrices: 'Аналізуємо ціни та оптимізуємо під ваш бюджет',
     didYouKnow: 'Чи знали ви?',
     funFact: 'ShopSmart AI враховує актуальні ціни німецьких супермаркетів та розподіляє товари на основі типових цін у кожному магазині.',
+    
+    // History
+    history: 'Історія',
+    savedLists: 'Збережені списки',
+    saveList: 'Зберегти список',
+    noSavedLists: 'Немає збережених списків',
+    loadList: 'Завантажити',
+    deleteList: 'Видалити',
+    listSaved: 'Список збережено!',
+    clearHistory: 'Очистити все',
+    
+    // Nutrition
+    calories: 'Калорії',
+    protein: 'Білки',
+    fat: 'Жири',
+    carbs: 'Вуглеводи',
+    nutritionPerDay: 'Денна норма',
+    perPerson: 'на людину',
+    dailyNorm: 'денної норми',
+    nutritionNote: 'Значення є приблизними на основі типової поживності продуктів. Фактичні значення можуть відрізнятися.',
   },
   
   de: {
@@ -181,6 +223,7 @@ export const translations = {
     copyToClipboard: 'Kopieren',
     print: 'Drucken',
     newList: 'Neue Liste',
+    completed: 'Erledigt',
     
     // Categories
     vegetables: 'Gemüse',
@@ -215,6 +258,26 @@ export const translations = {
     analyzingPrices: 'Preise werden analysiert und für Ihr Budget optimiert',
     didYouKnow: 'Wussten Sie?',
     funFact: 'ShopSmart AI berücksichtigt aktuelle deutsche Supermarktpreise und verteilt Artikel basierend auf typischen Preisen in jedem Geschäft.',
+    
+    // History
+    history: 'Verlauf',
+    savedLists: 'Gespeicherte Listen',
+    saveList: 'Liste speichern',
+    noSavedLists: 'Keine gespeicherten Listen',
+    loadList: 'Laden',
+    deleteList: 'Löschen',
+    listSaved: 'Liste gespeichert!',
+    clearHistory: 'Alles löschen',
+    
+    // Nutrition
+    calories: 'Kalorien',
+    protein: 'Eiweiß',
+    fat: 'Fett',
+    carbs: 'Kohlenhydrate',
+    nutritionPerDay: 'Tägliche Ernährung',
+    perPerson: 'pro Person',
+    dailyNorm: 'der Tagesnorm',
+    nutritionNote: 'Die Werte sind Schätzungen basierend auf typischen Produktnährwerten. Die tatsächlichen Werte können abweichen.',
   }
 };
 

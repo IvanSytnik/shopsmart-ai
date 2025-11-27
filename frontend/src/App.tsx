@@ -10,17 +10,16 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [lastBudget, setLastBudget] = useState(50);
+  const [currentBudget, setCurrentBudget] = useState(50);
   const { t } = useLanguage();
 
   const handleGenerate = async (input: UserInput) => {
     setLoading(true);
     setError(null);
-    setLastBudget(input.budget);
+    setCurrentBudget(input.budget);
     try {
       const result = await apiService.generateShoppingList(input);
       setResponse(result);
-      // Автоматично зберігаємо в історію
       saveListToHistory(result, input.budget);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
