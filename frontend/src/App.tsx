@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector } from './components';
+import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle } from './components';
 import { LanguageProvider, useLanguage } from './LanguageContext';
+import { ThemeProvider } from './ThemeContext';
 import { apiService } from './api';
 import { AIResponse, UserInput } from './types';
 
@@ -29,9 +30,10 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Language Selector */}
-      <div className="fixed top-4 right-4 z-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+      {/* Controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <ThemeToggle />
         <LanguageSelector />
       </div>
 
@@ -44,7 +46,7 @@ const AppContent: React.FC = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent mb-2">
             {t('appName')}
           </h1>
-          <p className="text-gray-600">{t('appDescription')}</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('appDescription')}</p>
         </header>
 
         {/* Error Banner */}
@@ -66,7 +68,7 @@ const AppContent: React.FC = () => {
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-sm text-gray-500">
+        <footer className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
           <p>
             {t('builtWith')} ❤️ {t('using')}
           </p>
@@ -82,9 +84,11 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <LanguageProvider>
-      <AppContent />
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AppContent />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 };
 
