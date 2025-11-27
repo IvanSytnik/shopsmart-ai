@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle, History, saveListToHistory } from './components';
+import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle, History, saveListToHistory, MealPlan } from './components';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { ThemeProvider } from './ThemeContext';
 import { apiService } from './api';
@@ -10,11 +10,13 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [isMenuMode, setIsMenuMode] = useState(false);
   const { t } = useLanguage();
 
   const handleGenerate = async (input: UserInput) => {
     setLoading(true);
     setError(null);
+    setIsMenuMode(input.mode === 'menu');
     try {
       const result = await apiService.generateShoppingList(input);
       setResponse(result);
@@ -33,32 +35,22 @@ const AppContent: React.FC = () => {
 
   const handleLoadFromHistory = (savedResponse: AIResponse) => {
     setResponse(savedResponse);
+    setIsMenuMode(!!savedResponse.menu);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-      {/* Controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
-        <button
-          onClick={() => setHistoryOpen(true)}
-          className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
-          title={t('history')}
-        >
+        <button onClick={() => setHistoryOpen(true)} className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all" title={t('history')}>
           <span className="text-xl">📜</span>
         </button>
         <ThemeToggle />
         <LanguageSelector />
       </div>
 
-      {/* History Modal */}
-      <History
-        isOpen={historyOpen}
-        onClose={() => setHistoryOpen(false)}
-        onLoad={handleLoadFromHistory}
-      />
+      <History isOpen={historyOpen} onClose={() => setHistoryOpen(false)} onLoad={handleLoadFromHistory} />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
         <header className="text-center mb-8">
           <div className="inline-block p-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl shadow-lg mb-4">
             <span className="text-4xl">🛒</span>
@@ -69,32 +61,23 @@ const AppContent: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400">{t('appDescription')}</p>
         </header>
 
-        {/* Error Banner */}
-        {error && (
-          <ErrorBanner
-            message={error}
-            onDismiss={() => setError(null)}
-            onRetry={handleReset}
-          />
-        )}
+        {error && <ErrorBanner message={error} onDismiss={() => setError(null)} onRetry={handleReset} />}
 
-        {/* Main Content */}
         {loading ? (
-          <LoadingSpinner />
+          <LoadingSpinner isMenu={isMenuMode} />
         ) : response ? (
-          <ShoppingList response={response} onReset={handleReset} />
+          isMenuMode && response.menu ? (
+            <MealPlan response={response} onReset={handleReset} />
+          ) : (
+            <ShoppingList response={response} onReset={handleReset} />
+          )
         ) : (
           <ShopForm onSubmit={handleGenerate} />
         )}
 
-        {/* Footer */}
         <footer className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>
-            {t('builtWith')} ❤️ {t('using')}
-          </p>
-          <p className="mt-1">
-            {t('appName')} © 2025 | {t('diplomaProject')}
-          </p>
+          <p>{t('builtWith')} ❤️ {t('using')}</p>
+          <p className="mt-1">{t('appName')} © 2025 | {t('diplomaProject')}</p>
           <p>{t('supervisor')} | {t('university')}</p>
         </footer>
       </div>

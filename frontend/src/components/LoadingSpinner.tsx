@@ -1,27 +1,28 @@
 import React from 'react';
 import { useLanguage } from '../LanguageContext';
 
-export const LoadingSpinner: React.FC = () => {
+interface LoadingSpinnerProps {
+  isMenu?: boolean;
+}
+
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ isMenu = false }) => {
   const { t } = useLanguage();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center animate-fade-in transition-colors">
       <div className="inline-block p-4 bg-gradient-to-br from-primary-100 to-purple-100 dark:from-primary-900/50 dark:to-purple-900/50 rounded-full mb-4">
-        <span className="text-4xl animate-bounce inline-block">🛒</span>
+        <span className="text-4xl animate-bounce inline-block">{isMenu ? '📅' : '🛒'}</span>
       </div>
       <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        {t('aiCreating')}
+        {isMenu ? t('aiCreatingMenu') : t('aiCreating')}
       </h2>
-      <p className="text-gray-500 dark:text-gray-400 mb-6">{t('analyzingPrices')}</p>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
+        {isMenu ? t('planningMeals') : t('analyzingPrices')}
+      </p>
       <div className="flex justify-center gap-2">
         <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
         <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
         <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-      </div>
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
-          💡 <strong>{t('didYouKnow')}</strong> {t('funFact')}
-        </p>
       </div>
     </div>
   );

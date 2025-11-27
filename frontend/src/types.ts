@@ -4,6 +4,8 @@ export interface UserInput {
   preferences: string;
   family_size: number;
   language: string;
+  mode: 'shopping' | 'menu';
+  days?: number;
 }
 
 export interface ShoppingItem {
@@ -18,6 +20,20 @@ export interface ShoppingItem {
   carbs?: number;
 }
 
+export interface Meal {
+  name: string;
+  description: string;
+  calories?: number;
+}
+
+export interface DayMenu {
+  day: string;
+  breakfast: Meal;
+  lunch: Meal;
+  dinner: Meal;
+  snack?: Meal;
+}
+
 export interface AIResponse {
   items: ShoppingItem[];
   total_cost: number;
@@ -29,6 +45,7 @@ export interface AIResponse {
     fat: number;
     carbs: number;
   };
+  menu?: DayMenu[];
 }
 
 export type ProductCategory = 
