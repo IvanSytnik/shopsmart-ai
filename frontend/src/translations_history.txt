@@ -1,0 +1,33 @@
+
+// Додати в секцію 'en':
+    // History
+    history: 'History',
+    savedLists: 'Saved Lists',
+    saveList: 'Save List',
+    noSavedLists: 'No saved lists yet',
+    loadList: 'Load',
+    deleteList: 'Delete',
+    listSaved: 'List saved!',
+    clearHistory: 'Clear All',
+    
+// Додати в секцію 'uk':
+    // History
+    history: 'Історія',
+    savedLists: 'Збережені списки',
+    saveList: 'Зберегти список',
+    noSavedLists: 'Немає збережених списків',
+    loadList: 'Завантажити',
+    deleteList: 'Видалити',
+    listSaved: 'Список збережено!',
+    clearHistory: 'Очистити все',
+    
+// Додати в секцію 'de':
+    // History
+    history: 'Verlauf',
+    savedLists: 'Gespeicherte Listen',
+    saveList: 'Liste speichern',
+    noSavedLists: 'Keine gespeicherten Listen',
+    loadList: 'Laden',
+    deleteList: 'Löschen',
+    listSaved: 'Liste gespeichert!',
+    clearHistory: 'Alles löschen',

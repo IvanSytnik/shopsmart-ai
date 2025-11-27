@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle } from './components';
+import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle, History, saveListToHistory } from './components';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { ThemeProvider } from './ThemeContext';
 import { apiService } from './api';
@@ -9,14 +9,19 @@ const AppContent: React.FC = () => {
   const [response, setResponse] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [lastBudget, setLastBudget] = useState(50);
   const { t } = useLanguage();
 
   const handleGenerate = async (input: UserInput) => {
     setLoading(true);
     setError(null);
+    setLastBudget(input.budget);
     try {
       const result = await apiService.generateShoppingList(input);
       setResponse(result);
+      // Автоматично зберігаємо в історію
+      saveListToHistory(result, input.budget);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -29,13 +34,31 @@ const AppContent: React.FC = () => {
     setError(null);
   };
 
+  const handleLoadFromHistory = (savedResponse: AIResponse) => {
+    setResponse(savedResponse);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
       {/* Controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button
+          onClick={() => setHistoryOpen(true)}
+          className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
+          title={t('history')}
+        >
+          <span className="text-xl">📜</span>
+        </button>
         <ThemeToggle />
         <LanguageSelector />
       </div>
+
+      {/* History Modal */}
+      <History
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onLoad={handleLoadFromHistory}
+      />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
