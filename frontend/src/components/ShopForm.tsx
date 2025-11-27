@@ -25,40 +25,95 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const [familySize, setFamilySize] = useState<number>(2);
   const [preferences, setPreferences] = useState<string>('');
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
+  const [mode, setMode] = useState<'shopping' | 'menu'>('shopping');
+  const [days, setDays] = useState<number>(7);
 
   const toggleSupermarket = (name: string) => {
     setSelectedSupermarkets(prev =>
-      prev.includes(name)
-        ? prev.filter(s => s !== name)
-        : [...prev, name]
+      prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
     );
   };
 
   const togglePreference = (pref: string) => {
     setSelectedPreferences(prev =>
-      prev.includes(pref)
-        ? prev.filter(p => p !== pref)
-        : [...prev, pref]
+      prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]
     );
   };
 
   const handleSubmit = () => {
-    const allPreferences = [
-      ...selectedPreferences,
-      preferences
-    ].filter(Boolean).join(', ');
-
+    const allPreferences = [...selectedPreferences, preferences].filter(Boolean).join(', ');
     onSubmit({
       supermarkets: selectedSupermarkets,
       budget,
       preferences: allPreferences,
       family_size: familySize,
-      language: language,
+      language,
+      mode,
+      days: mode === 'menu' ? days : undefined,
     });
   };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 space-y-6 animate-fade-in transition-colors">
+      {/* Mode Selector */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          🎯 {t('mode')}
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setMode('shopping')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              mode === 'shopping'
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                : 'border-gray-200 dark:border-gray-600'
+            }`}
+          >
+            <span className="text-2xl block mb-1">🛒</span>
+            <span className={`font-medium ${mode === 'shopping' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300'}`}>
+              {t('shoppingList')}
+            </span>
+          </button>
+          <button
+            onClick={() => setMode('menu')}
+            className={`p-4 rounded-xl border-2 transition-all ${
+              mode === 'menu'
+                ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
+                : 'border-gray-200 dark:border-gray-600'
+            }`}
+          >
+            <span className="text-2xl block mb-1">📅</span>
+            <span className={`font-medium ${mode === 'menu' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300'}`}>
+              {t('mealPlanning')}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Days Selector (only for menu mode) */}
+      {mode === 'menu' && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            📆 {t('days')}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {[1, 2, 3, 4, 5, 6, 7].map(d => (
+              <button
+                key={d}
+                onClick={() => setDays(d)}
+                className={`w-12 h-12 rounded-xl border-2 font-bold transition-all ${
+                  days === d
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                    : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Supermarkets */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
@@ -72,7 +127,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
               className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${
                 selectedSupermarkets.includes(store.name)
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:text-gray-300'
+                  : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
             >
               <span className={`w-3 h-3 rounded-full ${store.color}`}></span>
@@ -95,7 +150,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
               className={`px-4 py-2 rounded-lg border transition-all ${
                 budget === preset
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:text-gray-300'
+                  : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
             >
               €{preset}
@@ -106,7 +161,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           type="number"
           value={budget}
           onChange={(e) => setBudget(Number(e.target.value))}
-          className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           min="10"
           max="1000"
         />
@@ -125,7 +180,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
               className={`px-4 py-2 rounded-lg border transition-all ${
                 familySize === size
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:text-gray-300'
+                  : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
             >
               {size} {size === 1 ? t('person') : t('people')}
@@ -147,7 +202,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
               className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition-all ${
                 selectedPreferences.includes(t(key))
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 dark:text-gray-300'
+                  : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
             >
               <span>{emoji}</span>
@@ -166,7 +221,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           value={preferences}
           onChange={(e) => setPreferences(e.target.value)}
           placeholder={t('preferencesPlaceholder')}
-          className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none"
           rows={3}
         />
       </div>
@@ -177,7 +232,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
         disabled={selectedSupermarkets.length === 0}
         className="w-full py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
       >
-        {t('generateList')} ✨
+        {mode === 'menu' ? t('generateMenu') : t('generateList')} ✨
       </button>
     </div>
   );
