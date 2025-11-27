@@ -273,8 +273,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 **Ivan Sytnik**
-- Email: sytnyk@khpi.edu.ua
-- GitHub: [@isytnyk](https://github.com/isytnyk)
+- Email: i.sytnik02@gmail.com
+- GitHub: [@isytnik](https://github.com/ivansytnik)
 
 ---
 
