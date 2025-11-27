@@ -12,7 +12,7 @@ export const LanguageSelector: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-full px-2 py-1 shadow-md">
+    <div className="flex items-center gap-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-2 py-1 shadow-md">
       {languages.map((lang) => (
         <button
           key={lang.code}
@@ -20,7 +20,7 @@ export const LanguageSelector: React.FC = () => {
           className={`flex items-center gap-1 px-2 py-1 rounded-full text-sm transition-all ${
             language === lang.code
               ? 'bg-primary-500 text-white'
-              : 'hover:bg-gray-100 text-gray-600'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
           }`}
           title={lang.name}
         >
