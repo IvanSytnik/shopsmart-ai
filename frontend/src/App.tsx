@@ -10,13 +10,11 @@ const AppContent: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [currentBudget, setCurrentBudget] = useState(50);
   const { t } = useLanguage();
 
   const handleGenerate = async (input: UserInput) => {
     setLoading(true);
     setError(null);
-    setCurrentBudget(input.budget);
     try {
       const result = await apiService.generateShoppingList(input);
       setResponse(result);
