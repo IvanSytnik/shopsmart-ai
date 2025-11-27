@@ -1,85 +1,91 @@
-/**
- * ShopSmart AI - Main Application Component
- * 
- * Intelligent shopping list generator powered by GPT-4
- * 
- * Author: Ivan Sytnyk (КН-М524)
- * Supervisor: Kharchenko A.O.
- * NTU "KhPI" - 2025
- */
-
-import { useState, useCallback } from 'react';
-import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner } from './components';
+import React, { useState } from 'react';
+import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector } from './components';
+import { LanguageProvider, useLanguage } from './LanguageContext';
 import { apiService } from './api';
-import type { UserInput, AIResponse } from './types';
+import { AIResponse, UserInput } from './types';
 
-function App() {
+const AppContent: React.FC = () => {
+  const [response, setResponse] = useState<AIResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<AIResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [inputData, setInputData] = useState<UserInput | null>(null);
+  const { t } = useLanguage();
 
-  const handleGenerate = useCallback(async (data: UserInput) => {
+  const handleGenerate = async (input: UserInput) => {
     setLoading(true);
     setError(null);
-    setInputData(data);
-
     try {
-      const response = await apiService.generateShoppingList(data);
-      setResult(response);
+      const result = await apiService.generateShoppingList(input);
+      setResponse(result);
     } catch (err) {
-      console.error('Generation error:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to generate shopping list. Please try again.'
-      );
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  const handleReset = useCallback(() => {
-    setResult(null);
+  const handleReset = () => {
+    setResponse(null);
     setError(null);
-    setInputData(null);
-  }, []);
-
-  const handleDismissError = useCallback(() => {
-    setError(null);
-  }, []);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* Language Selector */}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSelector />
+      </div>
+
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Header */}
+        <header className="text-center mb-8">
+          <div className="inline-block p-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl shadow-lg mb-4">
+            <span className="text-4xl">🛒</span>
+          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            {t('appName')}
+          </h1>
+          <p className="text-gray-600">{t('appDescription')}</p>
+        </header>
+
         {/* Error Banner */}
-        {error && <ErrorBanner message={error} onDismiss={handleDismissError} />}
-
-        {/* Loading State */}
-        {loading && <LoadingSpinner />}
-
-        {/* Main Content */}
-        {!loading && !result && (
-          <ShopForm onSubmit={handleGenerate} loading={loading} />
+        {error && (
+          <ErrorBanner
+            message={error}
+            onDismiss={() => setError(null)}
+            onRetry={handleReset}
+          />
         )}
 
-        {!loading && result && inputData && (
-          <ShoppingList data={result} inputData={inputData} onReset={handleReset} />
+        {/* Main Content */}
+        {loading ? (
+          <LoadingSpinner />
+        ) : response ? (
+          <ShoppingList response={response} onReset={handleReset} />
+        ) : (
+          <ShopForm onSubmit={handleGenerate} />
         )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>Built with ❤️ using React, TypeScript, FastAPI & GPT-4</p>
+        <footer className="mt-12 text-center text-sm text-gray-500">
+          <p>
+            {t('builtWith')} ❤️ {t('using')}
+          </p>
           <p className="mt-1">
-            ShopSmart AI © 2025 | Diploma Project by Ivan Sytnyk (КН-М524)
+            {t('appName')} © 2025 | {t('diplomaProject')}
           </p>
-          <p className="mt-1 text-xs">
-            Supervisor: Kharchenko A.O. | NTU "KhPI"
-          </p>
+          <p>{t('supervisor')} | {t('university')}</p>
         </footer>
       </div>
     </div>
   );
-}
+};
+
+const App: React.FC = () => {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+};
 
 export default App;

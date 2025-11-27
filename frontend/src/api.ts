@@ -1,6 +1,8 @@
 import { UserInput, AIResponse } from './types';
 
-const API_BASE_URL = 'https://shopsmart-ai-production.up.railway.app';
+const API_BASE_URL = import.meta.env.PROD 
+  ? 'https://shopsmart-ai-production.up.railway.app'
+  : 'http://localhost:8000';
 
 class ApiService {
   private baseUrl: string;
