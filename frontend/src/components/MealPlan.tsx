@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AIResponse, DayMenu } from '../types';
+import { AIResponse } from '../types';
 import { CATEGORIES } from '../constants';
 import { useLanguage } from '../LanguageContext';
 
@@ -44,7 +44,6 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, onReset }) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Tabs */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-2 transition-colors">
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -150,7 +149,6 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, onReset }) => {
         </div>
       )}
 
-      {/* Actions */}
       <div className="flex flex-wrap gap-3">
         <button onClick={() => window.print()} className="flex-1 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
           🖨️ {t('print')}
