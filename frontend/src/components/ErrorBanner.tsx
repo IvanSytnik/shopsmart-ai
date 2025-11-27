@@ -1,52 +1,41 @@
-/**
- * ShopSmart AI - Error Banner Component
- * Author: Ivan Sytnyk (КН-М524)
- */
-
 import React from 'react';
-import type { ErrorBannerProps } from '../types';
+import { useLanguage } from '../LanguageContext';
 
-const ErrorBanner: React.FC<ErrorBannerProps> = ({ message, onDismiss }) => {
+interface ErrorBannerProps {
+  message: string;
+  onDismiss: () => void;
+  onRetry: () => void;
+}
+
+export const ErrorBanner: React.FC<ErrorBannerProps> = ({ message, onDismiss, onRetry }) => {
+  const { t } = useLanguage();
+
   return (
-    <div className="max-w-2xl mx-auto mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl shadow-sm animate-slide-in">
-      <div className="flex items-start">
-        <div className="flex-shrink-0">
-          <span className="text-2xl">⚠️</span>
-        </div>
-        <div className="ml-3 flex-1">
-          <h3 className="font-bold text-red-800">Error</h3>
-          <p className="text-red-700 mt-1">{message}</p>
-          <div className="mt-3 flex gap-3">
+    <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 animate-fade-in">
+      <div className="flex items-start gap-3">
+        <span className="text-2xl">⚠️</span>
+        <div className="flex-1">
+          <h3 className="font-semibold text-red-800">{t('error')}</h3>
+          <p className="text-red-600 text-sm">{message}</p>
+          <div className="mt-2 flex gap-2">
             <button
               onClick={onDismiss}
-              className="text-sm text-red-600 hover:text-red-800 underline font-medium"
+              className="text-sm text-red-600 hover:text-red-800 underline"
             >
-              Dismiss
+              {t('dismiss')}
             </button>
             <button
-              onClick={() => window.location.reload()}
-              className="text-sm text-red-600 hover:text-red-800 underline font-medium"
+              onClick={onRetry}
+              className="text-sm text-red-600 hover:text-red-800 underline"
             >
-              Refresh Page
+              {t('refreshPage')}
             </button>
           </div>
         </div>
-        <button
-          onClick={onDismiss}
-          className="flex-shrink-0 ml-4 text-red-400 hover:text-red-600 transition-colors"
-          aria-label="Close"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+        <button onClick={onDismiss} className="text-red-400 hover:text-red-600">
+          ✕
         </button>
       </div>
     </div>
   );
 };
-
-export default ErrorBanner;

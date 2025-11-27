@@ -11,7 +11,7 @@
 
 ShopSmart AI is a web application that generates optimized weekly shopping lists using artificial intelligence. The application analyzes your budget, dietary preferences, and selected supermarkets to create personalized shopping lists with price estimates.
 
-**Author:** Ivan Sytnyk (КН-М524)  
+**Author:** Ivan Sytnik (КН-М524)  
 **Supervisor:** Kharchenko A.O.  
 **Institution:** NTU "KhPI" - 2025
 
@@ -272,7 +272,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-**Ivan Sytnyk**
+**Ivan Sytnik**
 - Email: sytnyk@khpi.edu.ua
 - GitHub: [@isytnyk](https://github.com/isytnyk)
 

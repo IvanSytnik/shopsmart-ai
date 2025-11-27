@@ -1,310 +1,184 @@
-/**
- * ShopSmart AI - Shopping Form Component
- * Author: Ivan Sytnyk (КН-М524)
- */
+import React, { useState } from 'react';
+import { UserInput } from '../types';
+import { SUPERMARKETS, BUDGET_PRESETS, FAMILY_SIZE_OPTIONS } from '../constants';
+import { useLanguage } from '../LanguageContext';
 
-import React, { useState, useCallback } from 'react';
-import type { ShopFormProps, UserInput } from '../types';
-import {
-  SUPERMARKETS,
-  PREFERENCE_PRESETS,
-  BUDGET_PRESETS,
-  FAMILY_SIZE_OPTIONS,
-} from '../constants';
+interface ShopFormProps {
+  onSubmit: (input: UserInput) => void;
+}
 
-const ShopForm: React.FC<ShopFormProps> = ({ onSubmit, loading }) => {
-  const [selectedMarkets, setSelectedMarkets] = useState<string[]>([]);
-  const [budget, setBudget] = useState<string>('');
-  const [preferences, setPreferences] = useState<string>('');
+const preferenceKeys = [
+  { key: 'vegetarian', emoji: '🥗' },
+  { key: 'vegan', emoji: '🌱' },
+  { key: 'glutenFree', emoji: '🚫' },
+  { key: 'highProtein', emoji: '💪' },
+  { key: 'lowCarb', emoji: '🏃' },
+  { key: 'familyFriendly', emoji: '👶' },
+  { key: 'organic', emoji: '🌿' },
+  { key: 'budgetSaver', emoji: '💰' },
+] as const;
+
+export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
+  const { t, language } = useLanguage();
+  const [selectedSupermarkets, setSelectedSupermarkets] = useState<string[]>(['Lidl', 'Aldi']);
+  const [budget, setBudget] = useState<number>(50);
   const [familySize, setFamilySize] = useState<number>(2);
-  const [activePresets, setActivePresets] = useState<Set<string>>(new Set());
+  const [preferences, setPreferences] = useState<string>('');
+  const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
 
-  const handleMarketToggle = useCallback((marketName: string) => {
-    setSelectedMarkets((prev) =>
-      prev.includes(marketName)
-        ? prev.filter((m) => m !== marketName)
-        : [...prev, marketName]
+  const toggleSupermarket = (name: string) => {
+    setSelectedSupermarkets(prev =>
+      prev.includes(name)
+        ? prev.filter(s => s !== name)
+        : [...prev, name]
     );
-  }, []);
+  };
 
-  const handlePresetToggle = useCallback((preset: typeof PREFERENCE_PRESETS[0]) => {
-    setActivePresets((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(preset.id)) {
-        newSet.delete(preset.id);
-        setPreferences((p) =>
-          p
-            .replace(preset.value + ', ', '')
-            .replace(', ' + preset.value, '')
-            .replace(preset.value, '')
-            .trim()
-        );
-      } else {
-        newSet.add(preset.id);
-        setPreferences((p) => (p ? p + ', ' + preset.value : preset.value));
-      }
-      return newSet;
+  const togglePreference = (pref: string) => {
+    setSelectedPreferences(prev =>
+      prev.includes(pref)
+        ? prev.filter(p => p !== pref)
+        : [...prev, pref]
+    );
+  };
+
+  const handleSubmit = () => {
+    const allPreferences = [
+      ...selectedPreferences,
+      preferences
+    ].filter(Boolean).join(', ');
+
+    onSubmit({
+      supermarkets: selectedSupermarkets,
+      budget,
+      preferences: allPreferences,
+      family_size: familySize,
+      language: language,
     });
-  }, []);
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      if (selectedMarkets.length === 0) {
-        alert('Please select at least one supermarket');
-        return;
-      }
-
-      const budgetNum = parseFloat(budget);
-      if (!budget || isNaN(budgetNum) || budgetNum <= 0) {
-        alert('Please enter a valid budget');
-        return;
-      }
-
-      const data: UserInput = {
-        supermarkets: selectedMarkets,
-        budget: budgetNum,
-        preferences: preferences.trim(),
-        family_size: familySize,
-      };
-
-      onSubmit(data);
-    },
-    [selectedMarkets, budget, preferences, familySize, onSubmit]
-  );
+  };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg mb-4">
-          <span className="text-4xl">🛒</span>
-        </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-          ShopSmart AI
-        </h1>
-        <p className="text-gray-600 mt-2">
-          Your intelligent shopping assistant powered by GPT-4
-        </p>
-      </div>
-
-      {/* Main Form Card */}
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100"
-      >
-        <div className="space-y-6">
-          {/* Supermarkets Selection */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              🏪 Select Supermarkets
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {SUPERMARKETS.map((market) => (
-                <button
-                  key={market.id}
-                  type="button"
-                  onClick={() => handleMarketToggle(market.name)}
-                  className={`flex items-center justify-center p-4 border-2 rounded-xl transition-all duration-200 ${
-                    selectedMarkets.includes(market.name)
-                      ? 'border-indigo-500 bg-indigo-50 shadow-md scale-105'
-                      : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow'
-                  }`}
-                >
-                  <span className="mr-2 text-xl">{market.icon}</span>
-                  <span
-                    className={`font-semibold ${
-                      selectedMarkets.includes(market.name)
-                        ? 'text-indigo-700'
-                        : 'text-gray-700'
-                    }`}
-                  >
-                    {market.name}
-                  </span>
-                  {selectedMarkets.includes(market.name) && (
-                    <span className="ml-2 text-indigo-500">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-            {selectedMarkets.length > 0 && (
-              <p className="mt-2 text-sm text-indigo-600">
-                {selectedMarkets.length} supermarket(s) selected
-              </p>
-            )}
-          </div>
-
-          {/* Budget and Family Size Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Budget Input */}
-            <div>
-              <label
-                htmlFor="budget"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                💰 Weekly Budget (€)
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">
-                  €
-                </span>
-                <input
-                  id="budget"
-                  type="number"
-                  min="10"
-                  max="1000"
-                  step="5"
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  placeholder="50"
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-lg"
-                  required
-                />
-              </div>
-              <div className="flex gap-2 mt-2 flex-wrap">
-                {BUDGET_PRESETS.map((amount) => (
-                  <button
-                    key={amount}
-                    type="button"
-                    onClick={() => setBudget(amount.toString())}
-                    className={`px-3 py-1 text-sm rounded-lg transition-all ${
-                      budget === amount.toString()
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    €{amount}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Family Size */}
-            <div>
-              <label
-                htmlFor="familySize"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                👨‍👩‍👧‍👦 Family Size
-              </label>
-              <select
-                id="familySize"
-                value={familySize}
-                onChange={(e) => setFamilySize(parseInt(e.target.value))}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-lg"
-              >
-                {FAMILY_SIZE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Quick Preference Buttons */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              ⚡ Quick Preferences
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {PREFERENCE_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => handlePresetToggle(preset)}
-                  className={`px-3 py-2 text-sm rounded-lg border-2 transition-all ${
-                    activePresets.has(preset.id)
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-200 bg-white text-gray-600 hover:border-indigo-300'
-                  }`}
-                >
-                  <span className="mr-1">{preset.icon}</span>
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Preferences Input */}
-          <div>
-            <label
-              htmlFor="preferences"
-              className="block text-sm font-semibold text-gray-700 mb-2"
+    <div className="bg-white rounded-2xl shadow-xl p-6 space-y-6 animate-fade-in">
+      {/* Supermarkets */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          🏪 {t('selectSupermarkets')}
+        </label>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {SUPERMARKETS.map(store => (
+            <button
+              key={store.name}
+              onClick={() => toggleSupermarket(store.name)}
+              className={`flex items-center gap-2 p-3 rounded-xl border-2 transition-all ${
+                selectedSupermarkets.includes(store.name)
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
             >
-              📝 Additional Preferences (Optional)
-            </label>
-            <textarea
-              id="preferences"
-              value={preferences}
-              onChange={(e) => setPreferences(e.target.value)}
-              placeholder="e.g., prefer organic vegetables, need ingredients for pasta dishes, allergic to nuts..."
-              rows={3}
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all resize-none"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-200 ${
-              loading
-                ? 'bg-gray-300 cursor-not-allowed text-gray-500'
-                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-            }`}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center">
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Generating...
-              </span>
-            ) : (
-              <span className="flex items-center justify-center">
-                <span className="mr-2">✨</span>
-                Generate Smart Shopping List
-              </span>
-            )}
-          </button>
-        </div>
-      </form>
-
-      {/* Features */}
-      <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-        <div className="p-4 bg-white rounded-xl shadow-sm">
-          <span className="text-2xl">🎯</span>
-          <p className="text-sm font-medium text-gray-700 mt-2">Budget Optimized</p>
-        </div>
-        <div className="p-4 bg-white rounded-xl shadow-sm">
-          <span className="text-2xl">🤖</span>
-          <p className="text-sm font-medium text-gray-700 mt-2">AI Powered</p>
-        </div>
-        <div className="p-4 bg-white rounded-xl shadow-sm">
-          <span className="text-2xl">🏪</span>
-          <p className="text-sm font-medium text-gray-700 mt-2">Multi-Store</p>
+              <span className={`w-3 h-3 rounded-full ${store.color}`}></span>
+              <span className="font-medium">{store.name}</span>
+            </button>
+          ))}
         </div>
       </div>
+
+      {/* Budget */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          💰 {t('weeklyBudget')}
+        </label>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {BUDGET_PRESETS.map(preset => (
+            <button
+              key={preset}
+              onClick={() => setBudget(preset)}
+              className={`px-4 py-2 rounded-lg border transition-all ${
+                budget === preset
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              €{preset}
+            </button>
+          ))}
+        </div>
+        <input
+          type="number"
+          value={budget}
+          onChange={(e) => setBudget(Number(e.target.value))}
+          className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          min="10"
+          max="1000"
+        />
+      </div>
+
+      {/* Family Size */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          👨‍👩‍👧‍👦 {t('familySize')}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {FAMILY_SIZE_OPTIONS.map(size => (
+            <button
+              key={size}
+              onClick={() => setFamilySize(size)}
+              className={`px-4 py-2 rounded-lg border transition-all ${
+                familySize === size
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {size} {size === 1 ? t('person') : t('people')}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Dietary Preferences */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          🥗 {t('dietaryPreferences')}
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {preferenceKeys.map(({ key, emoji }) => (
+            <button
+              key={key}
+              onClick={() => togglePreference(t(key))}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition-all ${
+                selectedPreferences.includes(t(key))
+                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <span>{emoji}</span>
+              <span>{t(key)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Additional Preferences */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          📝 {t('additionalPreferences')}
+        </label>
+        <textarea
+          value={preferences}
+          onChange={(e) => setPreferences(e.target.value)}
+          placeholder={t('preferencesPlaceholder')}
+          className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+          rows={3}
+        />
+      </div>
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmit}
+        disabled={selectedSupermarkets.length === 0}
+        className="w-full py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+      >
+        {t('generateList')} ✨
+      </button>
     </div>
   );
 };
-
-export default ShopForm;
