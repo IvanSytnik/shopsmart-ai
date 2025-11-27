@@ -1,26 +1,6 @@
+import { UserInput, AIResponse } from './types';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-export interface UserInput {
-  supermarkets: string[];
-  budget: number;
-  preferences: string;
-  family_size: number;
-}
-
-export interface ShoppingItem {
-  product: string;
-  quantity: string;
-  store: string;
-  approx_price: number;
-  category: string;
-}
-
-export interface AIResponse {
-  items: ShoppingItem[];
-  total_cost: number;
-  notes: string;
-  generated_at: string;
-}
 
 class ApiService {
   private baseUrl: string;
