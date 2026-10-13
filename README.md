@@ -1,6 +1,6 @@
 # 🛒 ShopSmart AI
 
-> Intelligent shopping list generator powered by GPT-4
+> Intelligent shopping list generator powered by OpenAI GPT-4o-mini
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -57,7 +57,7 @@ ShopSmart AI is a web application that generates optimized weekly shopping lists
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/shopsmart-ai.git
+git clone https://github.com/IvanSytnik/shopsmart-ai.git
 cd shopsmart-ai
 ```
 
@@ -249,7 +249,6 @@ npm run test
 
 - CORS configured for specific origins
 - Input validation with Pydantic
-- Rate limiting ready (implement as needed)
 - No sensitive data stored
 
 ## 🤝 Contributing
