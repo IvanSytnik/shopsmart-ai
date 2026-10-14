@@ -1,4 +1,5 @@
 import { UserInput, AIResponse } from './types';
+import { translations } from './translations';
 
 // Set VITE_API_URL at build time; the localhost fallback applies to `npm run dev` only.
 const API_BASE_URL: string =
@@ -28,6 +29,10 @@ class ApiService {
 
       clearTimeout(timeoutId);
 
+      if (response.status === 504) {
+        throw new Error(translations[input.language].errorTimeout);
+      }
+
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
         // 422 validation errors carry a list in `detail`; only show plain-string details.
@@ -39,7 +44,7 @@ class ApiService {
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('Request timed out. Please try again.');
+        throw new Error(translations[input.language].errorTimeout);
       }
       throw error;
     }

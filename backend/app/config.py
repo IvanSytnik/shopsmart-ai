@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     openai_temperature: float = 0.7
     openai_max_tokens: int = 4000
+    openai_timeout_s: float = 45
+    openai_max_retries: int = 1  # SDK-level retries for transport/5xx errors
     # Comma-separated in the environment: CORS_ORIGINS=http://localhost:3000,https://example.com
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
     environment: Literal["development", "production"] = "development"

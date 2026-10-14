@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from tests.conftest import FakeLLMClient
+from tests.conftest import FakeOpenAI, make_plan
 
 VALID: dict[str, Any] = {"supermarkets": ["Lidl"], "budget": 50}
 
@@ -37,12 +37,12 @@ def payload(**overrides: Any) -> dict[str, Any]:
     ],
 )
 def test_invalid_input_is_rejected(
-    client: TestClient, fake_llm: FakeLLMClient, case: str, body: dict[str, Any]
+    client: TestClient, fake_llm: FakeOpenAI, case: str, body: dict[str, Any]
 ) -> None:
     response = client.post("/generate", json=body)
 
     assert response.status_code == 422, case
-    assert fake_llm.completions.calls == []
+    assert fake_llm.calls == 0
 
 
 @pytest.mark.parametrize(
@@ -59,9 +59,10 @@ def test_invalid_input_is_rejected(
     ],
 )
 def test_boundary_values_are_accepted(
-    client: TestClient, fake_llm: FakeLLMClient, overrides: dict[str, Any]
+    client: TestClient, fake_llm: FakeOpenAI, overrides: dict[str, Any]
 ) -> None:
-    fake_llm.reply_with({"items": [], "total_cost": 0, "menu": []})
+    menu_days = overrides["days"] if overrides.get("mode") == "menu" else None
+    fake_llm.queue_plan(make_plan(days=menu_days))
 
     response = client.post("/generate", json=payload(**overrides))
 

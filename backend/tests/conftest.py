@@ -1,11 +1,12 @@
 import json
 import os
 import socket
-from types import SimpleNamespace
 from typing import Any
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
+from openai import AsyncOpenAI
 
 # Importing app.main builds the module-level app, which needs a key. Set a fake one so the
 # developer's real key from backend/.env is never picked up (env vars win over .env).
@@ -16,43 +17,103 @@ from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 ALLOWED_ORIGIN = "http://localhost:3000"
+FAKE_BASE_URL = "https://openai.test/v1"
+
+MEAL = {"name": "Oatmeal", "description": "With apples", "calories": 350}
+ITEM = {
+    "product": "Milk",
+    "quantity": "1L",
+    "store": "Lidl",
+    "approx_price": 1.29,
+    "category": "dairy",
+    "calories": 640,
+    "protein": 34.0,
+    "fat": 35.0,
+    "carbs": 48.0,
+}
 
 
-class FakeCompletions:
-    """Stands in for `OpenAI().chat.completions`; records calls, replies with canned content."""
+def day(name: str) -> dict[str, Any]:
+    return {"day": name, "breakfast": MEAL, "lunch": MEAL, "dinner": MEAL, "snack": MEAL}
+
+
+def make_plan(days: int | None = None, **overrides: Any) -> dict[str, Any]:
+    """A schema-valid LLMPlan payload; `days` adds a menu with that many days."""
+    plan: dict[str, Any] = {
+        "items": [ITEM],
+        "total_cost": 1.29,
+        "notes": "Buy seasonal.",
+        "menu": [day(f"Day {i + 1}") for i in range(days)] if days else None,
+    }
+    return {**plan, **overrides}
+
+
+def completion(
+    content: str | None, *, refusal: str | None = None, finish_reason: str = "stop"
+) -> dict[str, Any]:
+    return {
+        "id": "chatcmpl-test",
+        "object": "chat.completion",
+        "created": 0,
+        "model": "test-model",
+        "choices": [
+            {
+                "index": 0,
+                "finish_reason": finish_reason,
+                "message": {"role": "assistant", "content": content, "refusal": refusal},
+            }
+        ],
+        "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+    }
+
+
+class FakeOpenAI:
+    """A real `AsyncOpenAI` whose HTTP transport is scripted: no network, real SDK parsing.
+
+    Queue one reply per expected API call; an unexpected extra call fails the test.
+    """
 
     def __init__(self) -> None:
-        self.calls: list[dict[str, Any]] = []
-        self.content: str | None = None
-        self.error: Exception | None = None
+        self._replies: list[httpx.Response | Exception] = []
+        self.requests: list[dict[str, Any]] = []
+        self.client = AsyncOpenAI(
+            api_key="sk-test-not-a-real-key",
+            base_url=FAKE_BASE_URL,
+            max_retries=0,
+            http_client=httpx.AsyncClient(transport=httpx.MockTransport(self._handle)),
+        )
 
-    def create(self, **kwargs: Any) -> SimpleNamespace:
-        self.calls.append(kwargs)
-        if self.error is not None:
-            raise self.error
-        message = SimpleNamespace(content=self.content)
-        return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+    def _handle(self, request: httpx.Request) -> httpx.Response:
+        self.requests.append(json.loads(request.content))
+        if not self._replies:
+            raise AssertionError("unexpected extra OpenAI call")
+        reply = self._replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
 
+    def queue_plan(self, plan: dict[str, Any], times: int = 1) -> None:
+        for _ in range(times):
+            self.queue_completion(completion(json.dumps(plan)))
 
-class FakeLLMClient:
-    def __init__(self) -> None:
-        self.completions = FakeCompletions()
-        self.chat = SimpleNamespace(completions=self.completions)
+    def queue_completion(self, body: dict[str, Any]) -> None:
+        self._replies.append(httpx.Response(200, json=body))
 
-    def reply_with(self, payload: dict[str, Any], fenced: bool = True) -> None:
-        body = json.dumps(payload)
-        self.completions.content = f"```json\n{body}\n```" if fenced else body
+    def queue_raw(self, content: str | None, **kwargs: Any) -> None:
+        self.queue_completion(completion(content, **kwargs))
 
-    def reply_raw(self, content: str | None) -> None:
-        self.completions.content = content
+    def queue_status(self, status: int, message: str = "error") -> None:
+        self._replies.append(httpx.Response(status, json={"error": {"message": message}}))
 
-    def fail_with(self, error: Exception) -> None:
-        self.completions.error = error
+    def queue_exception(self, error: Exception) -> None:
+        self._replies.append(error)
 
     @property
-    def last_messages(self) -> tuple[str, str]:
-        messages = self.completions.calls[-1]["messages"]
-        return messages[0]["content"], messages[1]["content"]
+    def calls(self) -> int:
+        return len(self.requests)
+
+    def messages(self, call: int = -1) -> list[dict[str, Any]]:
+        return self.requests[call]["messages"]
 
 
 @pytest.fixture(autouse=True)
@@ -76,12 +137,12 @@ def settings() -> Settings:
 
 
 @pytest.fixture
-def fake_llm() -> FakeLLMClient:
-    return FakeLLMClient()
+def fake_llm() -> FakeOpenAI:
+    return FakeOpenAI()
 
 
 @pytest.fixture
-def client(settings: Settings, fake_llm: FakeLLMClient) -> TestClient:
+def client(settings: Settings, fake_llm: FakeOpenAI) -> TestClient:
     app = create_app(settings)
-    app.dependency_overrides[get_llm_client] = lambda: fake_llm
+    app.dependency_overrides[get_llm_client] = lambda: fake_llm.client
     return TestClient(app)

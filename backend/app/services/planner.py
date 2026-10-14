@@ -1,10 +1,22 @@
-"""Prompt building and mapping of LLM output to the API response (moved as-is from v1)."""
+"""Prompt building, the repair loop, and mapping of LLM output to the API response."""
 
+import logging
 from datetime import datetime
 
+from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionMessageParam
+
+from app.config import Settings
 from app.schemas.llm import LLMPlan
 from app.schemas.requests import GenerateRequest
 from app.schemas.responses import GenerateResponse
+from app.services.llm import LLMOutputError, request_plan
+
+logger = logging.getLogger(__name__)
+
+# First call + one repair retry. API errors are not retried here (the SDK has its own retries).
+MAX_ATTEMPTS = 2
+NUTRITION_FIELDS = ("calories", "protein", "fat", "carbs")
 
 LANG = {
     "en": ("Respond in English.", "Shopping list optimized for your budget."),
@@ -85,11 +97,71 @@ def build_messages(request: GenerateRequest) -> tuple[str, str]:
     return system_prompt, user_message
 
 
+def find_plan_problem(plan: LLMPlan, request: GenerateRequest) -> str | None:
+    """Business checks on a schema-valid plan; returns a repair instruction or None."""
+    if not plan.items:
+        return (
+            "Your previous reply had an empty `items` list. "
+            "Include every product the household needs to buy."
+        )
+    if request.mode == "menu":
+        names = ", ".join(DAY_NAMES.get(request.language, DAY_NAMES["en"])[: request.days])
+        if plan.menu is None:
+            return (
+                f"Your previous reply had no `menu`. "
+                f"Return a menu with exactly {request.days} days: {names}."
+            )
+        if len(plan.menu) != request.days:
+            return (
+                f"Your previous reply had {len(plan.menu)} days in `menu`, "
+                f"but exactly {request.days} are required: {names}."
+            )
+    return None
+
+
+async def create_plan(client: AsyncOpenAI, settings: Settings, request: GenerateRequest) -> LLMPlan:
+    """Ask for a plan; on an unusable reply, retry once with a message saying what was wrong.
+
+    Raises `LLMOutputError` if the repair attempt fails too.
+    """
+    system_prompt, user_message = build_messages(request)
+    messages: list[ChatCompletionMessageParam] = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_message},
+    ]
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        try:
+            plan, raw_reply = await request_plan(client, settings, messages)
+            problem = find_plan_problem(plan, request)
+            if problem is not None:
+                raise LLMOutputError(problem, assistant_reply=raw_reply)
+        except LLMOutputError as e:
+            logger.warning("LLM attempt %d/%d unusable: %s", attempt, MAX_ATTEMPTS, e.problem)
+            if attempt == MAX_ATTEMPTS:
+                raise
+            messages = [
+                *messages,
+                {"role": "assistant", "content": e.assistant_reply or "(reply omitted)"},
+                {"role": "user", "content": e.problem},
+            ]
+        else:
+            logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
+            return plan
+    raise AssertionError("unreachable")
+
+
 def to_response(plan: LLMPlan, language: str) -> GenerateResponse:
     notes = plan.notes or LANG.get(language, LANG["en"])[1]
+    items = []
+    for item in plan.items:
+        data = item.model_dump()
+        # The API keeps v1's contract: missing nutrition is 0, not null.
+        for field in NUTRITION_FIELDS:
+            data[field] = data[field] or 0
+        items.append(data)
     return GenerateResponse.model_validate(
         {
-            "items": [item.model_dump() for item in plan.items],
+            "items": items,
             "total_cost": plan.total_cost,
             "notes": notes,
             "generated_at": datetime.now().isoformat(),

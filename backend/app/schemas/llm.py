@@ -1,16 +1,17 @@
-"""Shape of the JSON the LLM is asked to return.
+"""Shape of the plan the LLM must return (Structured Outputs, strict mode).
 
-Kept separate from the API response models: the LLM output is untrusted input that gets
-validated and mapped, not passed through.
+Strict mode needs every field to be required: no defaults; optional values are
+`X | None` and the model sends `null`. Kept separate from the API response models:
+the LLM output is untrusted input that gets validated and mapped, not passed through.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class LLMMeal(BaseModel):
     name: str
     description: str
-    calories: int | None = None
+    calories: int | None
 
 
 class LLMDayMenu(BaseModel):
@@ -18,7 +19,7 @@ class LLMDayMenu(BaseModel):
     breakfast: LLMMeal
     lunch: LLMMeal
     dinner: LLMMeal
-    snack: LLMMeal | None = None
+    snack: LLMMeal | None
 
 
 class LLMShoppingItem(BaseModel):
@@ -27,14 +28,14 @@ class LLMShoppingItem(BaseModel):
     store: str
     approx_price: float
     category: str
-    calories: int | None = 0
-    protein: float | None = 0
-    fat: float | None = 0
-    carbs: float | None = 0
+    calories: int | None
+    protein: float | None
+    fat: float | None
+    carbs: float | None
 
 
 class LLMPlan(BaseModel):
-    items: list[LLMShoppingItem] = Field(default_factory=list)
-    total_cost: float = 0
-    notes: str = ""
-    menu: list[LLMDayMenu] | None = None
+    items: list[LLMShoppingItem]
+    total_cost: float
+    notes: str
+    menu: list[LLMDayMenu] | None

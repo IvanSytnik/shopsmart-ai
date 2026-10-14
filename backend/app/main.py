@@ -1,4 +1,6 @@
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,10 +10,16 @@ from app.config import Settings
 from app.services.llm import create_llm_client
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    yield
+    await app.state.llm_client.close()
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
-    app = FastAPI(title="ShopSmart AI API", version="1.0.0")
+    app = FastAPI(title="ShopSmart AI API", version="1.0.0", lifespan=lifespan)
     app.state.settings = settings
     app.state.llm_client = create_llm_client(settings)
 

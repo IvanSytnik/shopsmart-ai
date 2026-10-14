@@ -1,43 +1,16 @@
 import httpx
-import openai
 import pytest
 from fastapi.testclient import TestClient
 
-from tests.conftest import FakeLLMClient
+from tests.conftest import FakeOpenAI, make_plan
 
 BODY = {"supermarkets": ["Lidl"], "budget": 50}
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
-
-
-@pytest.mark.parametrize(
-    "content",
-    [
-        "Sure! Here is your list: milk, bread",
-        "```json\n{not json}\n```",
-        '{"items": [{"product": "Milk"}]}',
-        None,
-    ],
-    ids=["prose", "broken-json", "wrong-shape", "empty"],
-)
-def test_unusable_llm_output_returns_502(
-    client: TestClient,
-    fake_llm: FakeLLMClient,
-    caplog: pytest.LogCaptureFixture,
-    content: str | None,
-) -> None:
-    fake_llm.reply_raw(content)
-
-    response = client.post("/generate", json=BODY)
-
-    assert response.status_code == 502
-    assert response.json() == {"detail": "Failed to generate plan"}
-    assert "LLM returned an unusable plan" in caplog.text
 
 
 def test_openai_connection_error_returns_503(
-    client: TestClient, fake_llm: FakeLLMClient, caplog: pytest.LogCaptureFixture
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
-    fake_llm.fail_with(openai.APIConnectionError(request=httpx.Request("POST", OPENAI_URL)))
+    fake_llm.queue_exception(httpx.ConnectError("connection refused"))
 
     response = client.post("/generate", json=BODY)
 
@@ -47,16 +20,9 @@ def test_openai_connection_error_returns_503(
 
 
 def test_openai_status_error_does_not_leak_message(
-    client: TestClient, fake_llm: FakeLLMClient, caplog: pytest.LogCaptureFixture
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
-    request = httpx.Request("POST", OPENAI_URL)
-    fake_llm.fail_with(
-        openai.AuthenticationError(
-            "Incorrect API key provided: sk-internal-detail",
-            response=httpx.Response(401, request=request),
-            body=None,
-        )
-    )
+    fake_llm.queue_status(401, "Incorrect API key provided: sk-internal-detail")
 
     response = client.post("/generate", json=BODY)
 
@@ -67,9 +33,16 @@ def test_openai_status_error_does_not_leak_message(
 
 
 def test_unexpected_error_returns_generic_500(
-    client: TestClient, fake_llm: FakeLLMClient, caplog: pytest.LogCaptureFixture
+    client: TestClient,
+    fake_llm: FakeOpenAI,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    fake_llm.fail_with(RuntimeError("internal stack detail"))
+    def boom(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("internal stack detail")
+
+    monkeypatch.setattr("app.api.generate.to_response", boom)
+    fake_llm.queue_plan(make_plan())
 
     response = client.post("/generate", json=BODY)
 
