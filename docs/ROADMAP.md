@@ -35,15 +35,15 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 ---
 
 ## Phase 0 — Hygiene (½ day)
-- ⬜ 0.0 Security: stop or de-key the legacy Railway backend; set an OpenAI monthly spend cap. Repo history checked — no secrets committed.
-- 🟨 0.1 Split `requirements.txt` / `requirements-dev.txt`, update pins, add `ruff` config.
+- ✅ 0.0 Security: OpenAI key found in early commits (history rewritten); key revoked and rotated, spend cap set, legacy Railway backend stopped.
+- ✅ 0.1 Split `requirements.txt` / `requirements-dev.txt`, update pins, add `ruff` config.
 - ✅ 0.2 Frontend: ESLint flat config so `npm run lint` passes; delete `translations_history.txt`; `api.ts` reads `VITE_API_URL`.
 - ✅ 0.3 Unify name spelling "Sytnik", fix README contact/GitHub, drop compose `version` and unused volume.
 - ⬜ 0.4 Add `CLAUDE.md` and this roadmap.
 
 ## Phase 1 — Backend restructure + safety (1–2 days)
 - ⬜ 1.1 Move to `app/` package layout (see CLAUDE.md); `Settings` via pydantic-settings.
-- ⬜ 1.2 `AsyncOpenAI` + Structured Outputs with Pydantic LLM schemas; one repair retry on validation failure.
+- ⬜ 1.2 `AsyncOpenAI` + Structured Outputs with Pydantic LLM schemas; one repair retry on validation failure. Call: `await client.chat.completions.parse(model=..., messages=..., response_format=Model)` → `choices[0].message.parsed` (verified on openai 3.31.0; `beta.chat.completions` is only an alias).
 - ⬜ 1.3 Input hardening: `Literal` modes/languages/stores, bounds, generic error responses.
 - ⬜ 1.4 Rate limiting (slowapi, per IP) + CORS from env + request timeout.
 - ⬜ 1.5 pytest suite with mocked OpenAI: happy path, invalid input, LLM invalid output → retry → 502.
@@ -77,3 +77,4 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - Streaming partial results.
 - Recipe steps per meal.
 - Short share links with server-side storage (Neon Postgres) — URL-encoded snapshots are enough for v2.
+- ESLint 9 upgrade (with typescript-eslint 8, react-hooks plugin 5+); Phase 0 kept ESLint 8.57 with flat config.
