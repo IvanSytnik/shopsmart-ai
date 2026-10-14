@@ -206,7 +206,8 @@ shopsmart-ai/
 │   │   └── services/        # OpenAI client, prompt building
 │   ├── requirements.txt     # Python runtime dependencies
 │   ├── requirements-dev.txt # Test + lint tooling
-│   ├── pyproject.toml       # ruff config
+│   ├── tests/               # pytest suite (mocked OpenAI)
+│   ├── pyproject.toml       # ruff + pytest config
 │   ├── Dockerfile          # Backend container
 │   └── .env.example        # Environment template
 ├── frontend/
@@ -251,6 +252,14 @@ VITE_API_URL=http://localhost:8000
 ```
 
 `VITE_API_URL` is read at build time. `npm run dev` falls back to `http://localhost:8000` when it is unset; production builds (including the Docker image, via the `VITE_API_URL` build arg, default `http://localhost:8000` in Compose) must set it.
+
+## 🧪 Testing
+
+```bash
+cd backend
+pytest -q                         # OpenAI is mocked; tests never touch the network
+ruff check . && ruff format --check .
+```
 
 ## 📊 Performance
 
