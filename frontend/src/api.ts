@@ -1,8 +1,8 @@
 import { UserInput, AIResponse } from './types';
 
-const API_BASE_URL = import.meta.env.PROD 
-  ? 'https://shopsmart-ai-production.up.railway.app'
-  : 'http://localhost:8000';
+// Set VITE_API_URL at build time; the localhost fallback applies to `npm run dev` only.
+const API_BASE_URL: string =
+  import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 class ApiService {
   private baseUrl: string;

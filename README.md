@@ -132,7 +132,7 @@ docker run -p 8000:8000 -e OPENAI_API_KEY=sk-xxx shopsmart-backend
 
 # Frontend
 cd frontend
-docker build -t shopsmart-frontend .
+docker build --build-arg VITE_API_URL=http://localhost:8000 -t shopsmart-frontend .
 docker run -p 80:80 shopsmart-frontend
 ```
 
@@ -228,6 +228,8 @@ ENVIRONMENT=development
 ```env
 VITE_API_URL=http://localhost:8000
 ```
+
+`VITE_API_URL` is read at build time. `npm run dev` falls back to `http://localhost:8000` when it is unset; production builds (including the Docker image, via the `VITE_API_URL` build arg, default `http://localhost:8000` in Compose) must set it.
 
 ## 🧪 Testing
 

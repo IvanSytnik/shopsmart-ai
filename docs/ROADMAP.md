@@ -37,7 +37,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 ## Phase 0 — Hygiene (½ day)
 - ⬜ 0.0 Security: stop or de-key the legacy Railway backend; set an OpenAI monthly spend cap. Repo history checked — no secrets committed.
 - 🟨 0.1 Split `requirements.txt` / `requirements-dev.txt`, update pins, add `ruff` config.
-- ⬜ 0.2 Frontend: ESLint flat config so `npm run lint` passes; delete `translations_history.txt`; `api.ts` reads `VITE_API_URL`.
+- ✅ 0.2 Frontend: ESLint flat config so `npm run lint` passes; delete `translations_history.txt`; `api.ts` reads `VITE_API_URL`.
 - ⬜ 0.3 Unify name spelling "Sytnik", fix README contact/GitHub, drop compose `version` and unused volume.
 - ⬜ 0.4 Add `CLAUDE.md` and this roadmap.
 
