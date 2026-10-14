@@ -17,7 +17,7 @@ def test_openai_connection_error_returns_503(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 503
-    assert response.json() == {"detail": "AI service unavailable"}
+    assert response.json() == {"detail": "AI service unavailable", "code": "ai_unavailable"}
     assert "OpenAI request failed" in caplog.text
 
 
@@ -29,7 +29,7 @@ def test_openai_status_error_does_not_leak_message(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 503
-    assert response.json() == {"detail": "AI service unavailable"}
+    assert response.json() == {"detail": "AI service unavailable", "code": "ai_unavailable"}
     assert "sk-internal-detail" not in response.text
     assert "sk-internal-detail" in caplog.text  # the real error is logged server-side
 
@@ -49,7 +49,7 @@ def test_unexpected_error_returns_generic_500(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 500
-    assert response.json() == {"detail": "Failed to generate plan"}
+    assert response.json() == {"detail": "Failed to generate plan", "code": "generation_failed"}
     assert "internal stack detail" not in response.text
     assert "internal stack detail" in caplog.text
 
@@ -62,7 +62,7 @@ def test_openai_timeout_returns_504(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 504
-    assert response.json() == {"detail": "AI service timed out"}
+    assert response.json() == {"detail": "AI service timed out", "code": "ai_timeout"}
     assert fake_llm.calls == 1
     assert "OpenAI request timed out" in caplog.text
 
@@ -74,7 +74,7 @@ def test_api_error_is_not_retried_by_the_app(client: TestClient, fake_llm: FakeO
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 503
-    assert response.json() == {"detail": "AI service unavailable"}
+    assert response.json() == {"detail": "AI service unavailable", "code": "ai_unavailable"}
     assert fake_llm.calls == 1
 
 
@@ -88,7 +88,7 @@ def test_request_deadline_exceeded_returns_504(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 504
-    assert response.json() == {"detail": "AI service timed out"}
+    assert response.json() == {"detail": "AI service timed out", "code": "ai_timeout"}
     assert fake_llm.calls == 1
     assert "Request deadline of 0.2s exceeded" in caplog.text
 
@@ -104,7 +104,7 @@ def test_repair_is_skipped_when_too_little_time_is_left(
     response = client.post("/generate", json=BODY)
 
     assert response.status_code == 504
-    assert response.json() == {"detail": "AI service timed out"}
+    assert response.json() == {"detail": "AI service timed out", "code": "ai_timeout"}
     assert fake_llm.calls == 1  # no repair attempt
     assert "Skipping LLM repair attempt" in caplog.text
 

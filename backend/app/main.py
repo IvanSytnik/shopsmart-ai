@@ -2,22 +2,14 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from slowapi.errors import RateLimitExceeded
 
 from app.api import generate, health
 from app.config import Settings
+from app.errors import register_error_handlers
 from app.services.limits import DailyCap, configure_rate_limit, limiter
 from app.services.llm import create_llm_client
-
-
-async def rate_limited(request: Request, exc: Exception) -> JSONResponse:
-    # slowapi already logs the exceeded limit with the client key.
-    return JSONResponse(
-        status_code=429, content={"detail": "Too many requests, please try again later"}
-    )
 
 
 @asynccontextmanager
@@ -35,7 +27,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.daily_cap = DailyCap(settings.daily_generate_cap)
     app.state.limiter = limiter
     configure_rate_limit(settings.rate_limit)
-    app.add_exception_handler(RateLimitExceeded, rate_limited)
+    register_error_handlers(app)
 
     app.add_middleware(
         CORSMiddleware,

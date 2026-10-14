@@ -19,7 +19,10 @@ def test_eleventh_request_in_a_minute_is_rate_limited(
 
     assert statuses == [200] * 10
     assert eleventh.status_code == 429
-    assert eleventh.json() == {"detail": "Too many requests, please try again later"}
+    assert eleventh.json() == {
+        "detail": "Too many requests, please try again later",
+        "code": "rate_limited",
+    }
     # The browser can read the 429 (CORS header present) and the LLM was not called.
     assert eleventh.headers["access-control-allow-origin"] == ALLOWED_ORIGIN
     assert fake_llm.calls == 10
@@ -51,7 +54,10 @@ def test_daily_cap_returns_503_once_reached(
     responses = [client.post("/generate", json=BODY) for _ in range(3)]
 
     assert [r.status_code for r in responses] == [200, 200, 503]
-    assert responses[2].json() == {"detail": "Daily limit reached, try tomorrow"}
+    assert responses[2].json() == {
+        "detail": "Daily limit reached, try tomorrow",
+        "code": "daily_limit",
+    }
     assert fake_llm.calls == 2
 
 

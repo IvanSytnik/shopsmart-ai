@@ -166,15 +166,17 @@ Content-Type: application/json
 
 The model answers through OpenAI Structured Outputs (strict JSON schema). If a reply is unusable (refusal, truncated, wrong shape, empty list, wrong number of menu days), the server retries once and tells the model what was wrong.
 
-| Status | `detail` | When |
-|---|---|---|
-| `422` | validation errors | invalid input |
-| `429` | `Too many requests, please try again later` | over `RATE_LIMIT` for this client IP |
-| `502` | `Failed to generate plan` | model output still unusable after the repair retry |
-| `503` | `AI service unavailable` | OpenAI API error |
-| `503` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
-| `504` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left) |
-| `500` | `Failed to generate plan` | anything else |
+Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `422` also has `errors: [{loc, msg}]`.
+
+| Status | `code` | `detail` | When |
+|---|---|---|---|
+| `422` | `validation_error` | `Invalid request` | invalid input |
+| `429` | `rate_limited` | `Too many requests, please try again later` | over `RATE_LIMIT` for this client IP |
+| `502` | `generation_failed` | `Failed to generate plan` | model output still unusable after the repair retry |
+| `503` | `ai_unavailable` | `AI service unavailable` | OpenAI API error |
+| `503` | `daily_limit` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
+| `504` | `ai_timeout` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left) |
+| `500` | `generation_failed` | `Failed to generate plan` | anything else |
 
 ### Response
 

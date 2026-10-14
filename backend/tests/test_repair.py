@@ -108,7 +108,7 @@ def test_two_unusable_replies_return_502_after_exactly_two_calls(
     response = client.post("/generate", json=SHOPPING)
 
     assert response.status_code == 502
-    assert response.json() == {"detail": "Failed to generate plan"}
+    assert response.json() == {"detail": "Failed to generate plan", "code": "generation_failed"}
     assert fake_llm.calls == 2
     assert "LLM attempt 2/2 unusable" in caplog.text
 

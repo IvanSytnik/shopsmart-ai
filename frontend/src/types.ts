@@ -13,6 +13,21 @@ export interface UserInput {
   days?: number; // 1-7, only used for mode 'menu'
 }
 
+// Mirrors backend app/errors.py: every error response is { detail, code }.
+export type ApiErrorCode =
+  | 'validation_error'
+  | 'rate_limited'
+  | 'daily_limit'
+  | 'ai_unavailable'
+  | 'ai_timeout'
+  | 'generation_failed';
+
+export interface ApiErrorBody {
+  detail: string;
+  code: ApiErrorCode;
+  errors?: { loc: (string | number)[]; msg: string }[]; // only for validation_error
+}
+
 export interface ShoppingItem {
   product: string;
   quantity: string;

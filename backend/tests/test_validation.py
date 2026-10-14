@@ -42,6 +42,9 @@ def test_invalid_input_is_rejected(
     response = client.post("/generate", json=body)
 
     assert response.status_code == 422, case
+    body = response.json()
+    assert (body["detail"], body["code"]) == ("Invalid request", "validation_error")
+    assert body["errors"] and all(set(e) == {"loc", "msg"} for e in body["errors"])
     assert fake_llm.calls == 0
 
 

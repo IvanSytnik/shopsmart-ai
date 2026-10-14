@@ -1,12 +1,26 @@
-import { UserInput, AIResponse } from './types';
+import { UserInput, AIResponse, ApiErrorBody, ApiErrorCode } from './types';
 import { translations } from './translations';
 
 // Set VITE_API_URL at build time; the localhost fallback applies to `npm run dev` only.
 const API_BASE_URL: string =
   import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
-// Must match the backend's `detail` for the daily /generate cap (app/api/generate.py).
-const DAILY_LIMIT_DETAIL = 'Daily limit reached, try tomorrow';
+// Every backend error code (app/errors.py) has a translated message.
+const ERROR_MESSAGE_KEYS: Record<ApiErrorCode, keyof (typeof translations)['en']> = {
+  validation_error: 'errorValidation',
+  rate_limited: 'errorRateLimited',
+  daily_limit: 'errorDailyLimit',
+  ai_unavailable: 'errorAiUnavailable',
+  ai_timeout: 'errorTimeout',
+  generation_failed: 'errorGenerationFailed',
+};
+
+const isApiErrorBody = (body: unknown): body is ApiErrorBody =>
+  typeof body === 'object' &&
+  body !== null &&
+  'code' in body &&
+  typeof body.code === 'string' &&
+  Object.keys(ERROR_MESSAGE_KEYS).includes(body.code);
 
 class ApiService {
   private baseUrl: string;
@@ -33,23 +47,11 @@ class ApiService {
 
       clearTimeout(timeoutId);
 
-      if (response.status === 429) {
-        throw new Error(translations[input.language].errorRateLimited);
-      }
-
-      if (response.status === 504) {
-        throw new Error(translations[input.language].errorTimeout);
-      }
-
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        // 422 validation errors carry a list in `detail`; only show plain-string details.
-        const detail = typeof error.detail === 'string' ? error.detail : null;
-        // 503 is also used for "AI service unavailable"; the daily cap is told apart by detail.
-        if (response.status === 503 && detail === DAILY_LIMIT_DETAIL) {
-          throw new Error(translations[input.language].errorDailyLimit);
-        }
-        throw new Error(detail || `HTTP error! status: ${response.status}`);
+        const body: unknown = await response.json().catch(() => null);
+        const code = isApiErrorBody(body) ? body.code : null;
+        const key = code ? ERROR_MESSAGE_KEYS[code] : 'errorGenerationFailed';
+        throw new Error(translations[input.language][key]);
       }
 
       return await response.json();
