@@ -164,7 +164,17 @@ Content-Type: application/json
 | `days` | 1–7 (default 7), used only for `menu` |
 | `preferences` | ≤ 300 chars after trimming |
 
-Invalid input returns `422`. Errors from the AI step return a generic `detail`: `502 Failed to generate plan` (unusable model output), `503 AI service unavailable` (OpenAI error), `500 Failed to generate plan` (anything else).
+The model answers through OpenAI Structured Outputs (strict JSON schema). If a reply is unusable (refusal, truncated, wrong shape, empty list, wrong number of menu days), the server retries once and tells the model what was wrong.
+
+| Status | `detail` | When |
+|---|---|---|
+| `422` | validation errors | invalid input |
+| `429` | `Too many requests, please try again later` | over `RATE_LIMIT` for this client IP |
+| `502` | `Failed to generate plan` | model output still unusable after the repair retry |
+| `503` | `AI service unavailable` | OpenAI API error |
+| `503` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
+| `504` | `AI service timed out` | OpenAI request timed out |
+| `500` | `Failed to generate plan` | anything else |
 
 ### Response
 
@@ -203,7 +213,7 @@ shopsmart-ai/
 │   │   ├── config.py        # Settings (env-driven, pydantic-settings)
 │   │   ├── api/             # Routers: health, generate; dependencies
 │   │   ├── schemas/         # Request, response and LLM output models
-│   │   └── services/        # OpenAI client, prompt building
+│   │   └── services/        # OpenAI client, prompts + repair loop, rate limit/daily cap
 │   ├── requirements.txt     # Python runtime dependencies
 │   ├── requirements-dev.txt # Test + lint tooling
 │   ├── tests/               # pytest suite (mocked OpenAI)
@@ -240,11 +250,18 @@ OPENAI_API_KEY=sk-your-api-key            # required
 OPENAI_MODEL=gpt-4o-mini                   # default
 OPENAI_TEMPERATURE=0.7                     # default
 OPENAI_MAX_TOKENS=4000                     # default
+OPENAI_TIMEOUT_S=45                        # default; per OpenAI request
+OPENAI_MAX_RETRIES=1                       # default; SDK retries on connection/5xx errors
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
+RATE_LIMIT=10/minute                       # default; per client IP on POST /generate
+DAILY_GENERATE_CAP=200                     # default; POST /generate calls per UTC day
 ENVIRONMENT=development                    # development | production
+FORWARDED_ALLOW_IPS=127.0.0.1              # read by uvicorn; proxies trusted for X-Forwarded-For
 ```
 
 Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default.
+
+`RATE_LIMIT` and `DAILY_GENERATE_CAP` are kept in memory and are **per process**: with several workers or instances the effective limits multiply, and counters reset on restart. That is fine for the single-instance deployment. Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address (or `*` if the container is reachable only through the proxy) so the rate limit uses the real client IP; otherwise all clients share the proxy's limit.
 
 #### Frontend (.env.local)
 ```env
@@ -270,7 +287,10 @@ ruff check . && ruff format --check .
 
 ## 🔒 Security
 
-- Input validation with Pydantic
+- Input validation with Pydantic (enums, bounds, length limits)
+- CORS restricted to `CORS_ORIGINS`
+- Per-IP rate limit and a daily call cap on `POST /generate`
+- Generic error messages to clients; details are logged server-side only
 - No sensitive data stored
 
 ## 🤝 Contributing

@@ -42,11 +42,11 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ⬜ 0.4 Add `CLAUDE.md` and this roadmap.
 
 ## Phase 1 — Backend restructure + safety (1–2 days)
-- ⬜ 1.1 Move to `app/` package layout (see CLAUDE.md); `Settings` via pydantic-settings.
-- ⬜ 1.2 `AsyncOpenAI` + Structured Outputs with Pydantic LLM schemas; one repair retry on validation failure. Call: `await client.chat.completions.parse(model=..., messages=..., response_format=Model)` → `choices[0].message.parsed` (verified on openai 3.31.0; `beta.chat.completions` is only an alias).
-- ⬜ 1.3 Input hardening: `Literal` modes/languages/stores, bounds, generic error responses.
-- ⬜ 1.4 Rate limiting (slowapi, per IP) + CORS from env + request timeout.
-- ⬜ 1.5 pytest suite with mocked OpenAI: happy path, invalid input, LLM invalid output → retry → 502.
+- ✅ 1.1 Move to `app/` package layout (see CLAUDE.md); `Settings` via pydantic-settings.
+- ✅ 1.2 `AsyncOpenAI` + Structured Outputs with Pydantic LLM schemas; one repair retry on validation failure. Call: `await client.chat.completions.parse(model=..., messages=..., response_format=Model)` → `choices[0].message.parsed` (verified on openai 3.31.0; `beta.chat.completions` is only an alias).
+- ✅ 1.3 Input hardening: `Literal` modes/languages/stores, bounds, generic error responses.
+- ✅ 1.4 Rate limiting (slowapi, per IP) + CORS from env + request timeout.
+- ✅ 1.5 pytest suite with mocked OpenAI: happy path, invalid input, LLM invalid output → retry → 502.
 
 ## Phase 2 — Grounded pricing (2–3 days) — the core of v2
 - ⬜ 2.1 `data/catalog.json`: ~150 common products × chains (AT: Hofer, Billa, Spar, Lidl AT; DE: Aldi, Lidl, Rewe, Edeka, Kaufland) with `id, name_{en,uk,de}, category, unit, price, store, kcal_per_unit, diet_tags, price_date`. Prices are manually collected reference prices, labeled with date.
