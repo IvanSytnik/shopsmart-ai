@@ -44,6 +44,9 @@ async def generate(
     except openai.APITimeoutError:
         logger.exception("OpenAI request timed out")
         raise HTTPException(status_code=504, detail="AI service timed out") from None
+    except TimeoutError:
+        logger.exception("Request deadline of %ss exceeded", settings.request_deadline_s)
+        raise HTTPException(status_code=504, detail="AI service timed out") from None
     except openai.APIError:
         logger.exception("OpenAI request failed")
         raise HTTPException(status_code=503, detail="AI service unavailable") from None

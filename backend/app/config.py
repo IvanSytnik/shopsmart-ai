@@ -14,8 +14,12 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     openai_temperature: float = 0.7
     openai_max_tokens: int = 4000
-    openai_timeout_s: float = 45
-    openai_max_retries: int = 1  # SDK-level retries for transport/5xx errors
+    openai_timeout_s: float = Field(default=25, gt=0)  # per OpenAI call
+    openai_max_retries: int = Field(default=0, ge=0)  # SDK retries; the deadline covers all calls
+    # Whole /generate budget (first call + repair); keep below the frontend's 70 s timeout.
+    request_deadline_s: float = Field(default=55, gt=0)
+    # Skip the repair call if less than this is left of the deadline.
+    repair_min_remaining_s: float = Field(default=20, ge=0)
     # Comma-separated in the environment: CORS_ORIGINS=http://localhost:3000,https://example.com
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
     environment: Literal["development", "production"] = "development"

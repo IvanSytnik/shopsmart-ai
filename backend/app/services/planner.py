@@ -1,5 +1,6 @@
 """Prompt building, the repair loop, and mapping of LLM output to the API response."""
 
+import asyncio
 import logging
 from datetime import datetime
 
@@ -14,7 +15,7 @@ from app.services.llm import LLMOutputError, request_plan
 
 logger = logging.getLogger(__name__)
 
-# First call + one repair retry. API errors are not retried here (the SDK has its own retries).
+# First call + one repair retry. API errors are not retried here.
 MAX_ATTEMPTS = 2
 NUTRITION_FIELDS = ("calories", "protein", "fat", "carbs")
 
@@ -122,31 +123,40 @@ def find_plan_problem(plan: LLMPlan, request: GenerateRequest) -> str | None:
 async def create_plan(client: AsyncOpenAI, settings: Settings, request: GenerateRequest) -> LLMPlan:
     """Ask for a plan; on an unusable reply, retry once with a message saying what was wrong.
 
-    Raises `LLMOutputError` if the repair attempt fails too.
+    All attempts share one deadline (`settings.request_deadline_s`). Raises `TimeoutError`
+    when it passes, or when too little of it is left for the repair attempt, and
+    `LLMOutputError` if the repair attempt fails too.
     """
     system_prompt, user_message = build_messages(request)
     messages: list[ChatCompletionMessageParam] = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_message},
     ]
-    for attempt in range(1, MAX_ATTEMPTS + 1):
-        try:
-            plan, raw_reply = await request_plan(client, settings, messages)
-            problem = find_plan_problem(plan, request)
-            if problem is not None:
-                raise LLMOutputError(problem, assistant_reply=raw_reply)
-        except LLMOutputError as e:
-            logger.warning("LLM attempt %d/%d unusable: %s", attempt, MAX_ATTEMPTS, e.problem)
-            if attempt == MAX_ATTEMPTS:
-                raise
-            messages = [
-                *messages,
-                {"role": "assistant", "content": e.assistant_reply or "(reply omitted)"},
-                {"role": "user", "content": e.problem},
-            ]
-        else:
-            logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
-            return plan
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + settings.request_deadline_s
+    async with asyncio.timeout_at(deadline):
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            try:
+                plan, raw_reply = await request_plan(client, settings, messages)
+                problem = find_plan_problem(plan, request)
+                if problem is not None:
+                    raise LLMOutputError(problem, assistant_reply=raw_reply)
+            except LLMOutputError as e:
+                logger.warning("LLM attempt %d/%d unusable: %s", attempt, MAX_ATTEMPTS, e.problem)
+                if attempt == MAX_ATTEMPTS:
+                    raise
+                remaining = deadline - loop.time()
+                if remaining < settings.repair_min_remaining_s:
+                    logger.warning("Skipping LLM repair attempt: only %.1fs left", remaining)
+                    raise TimeoutError("not enough time left for the repair attempt") from e
+                messages = [
+                    *messages,
+                    {"role": "assistant", "content": e.assistant_reply or "(reply omitted)"},
+                    {"role": "user", "content": e.problem},
+                ]
+            else:
+                logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
+                return plan
     raise AssertionError("unreachable")
 
 
