@@ -50,10 +50,10 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 
 ## Phase 2 — Grounded pricing (2–3 days) — the core of v2
 - ⬜ 2.1 `data/catalog.json`: ~150 common products × chains (AT: Hofer, Billa, Spar, Lidl AT; DE: Aldi, Lidl, Rewe, Edeka, Kaufland) with `id, name_{en,uk,de}, category, unit, price, store, kcal_per_unit, diet_tags, price_date`. Prices are manually collected reference prices, labeled with date.
-- ⬜ 2.2 `pricing.py`: filter catalog by chosen stores + diet → pass compact candidate list to the LLM; LLM returns `[{product_id, quantity}]` + menu.
-- ⬜ 2.3 Server computes line totals, list total, nutrition; if over budget → deterministic trimming (drop/reduce lowest-priority items) or one LLM repair call; final total ≤ budget guaranteed.
-- ⬜ 2.4 Reject unknown `product_id`s; tests for budget enforcement and diet filtering.
-- ⬜ 2.5 `GET /api/catalog/meta` (stores, countries, price_date) for the UI.
+- ✅ 2.2 `pricing.py`: filter catalog by chosen stores + diet → pass compact candidate list to the LLM; LLM returns `[{product_id, quantity}]` + menu.
+- ✅ 2.3 Server computes line totals, list total, nutrition; if over budget → deterministic trimming (drop/reduce lowest-priority items) or one LLM repair call; final total ≤ budget guaranteed.
+- ✅ 2.4 Reject unknown `product_id`s; tests for budget enforcement and diet filtering.
+- ✅ 2.5 `GET /api/catalog/meta` (stores, countries, price_date) for the UI.
 
 ## Phase 3 — Frontend v2 (2 days)
 - ⬜ 3.1 Country switch AT/DE → store list from `/api/catalog/meta`.

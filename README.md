@@ -138,65 +138,152 @@ docker run -p 80:80 shopsmart-frontend
 
 ## 📖 API Documentation
 
-### Generate Shopping List
+### Generate a plan
+
+The model only **chooses** products from the price catalog (by id) and how many packs of each; every price, total and nutrition value is **computed by the server** from the catalog, and the total never exceeds the budget.
 
 ```http
 POST /generate
 Content-Type: application/json
 
 {
-  "supermarkets": ["Lidl", "Aldi"],
-  "budget": 50.0,
-  "preferences": "no pork",
-  "diets": ["vegetarian"],
+  "country": "AT",
+  "supermarkets": ["Lidl", "Penny"],
+  "budget": 15,
   "family_size": 2,
+  "diets": [],
+  "preferences": "no pork",
   "language": "en",
-  "mode": "shopping"
+  "mode": "menu",
+  "days": 1
 }
 ```
 
 | Field | Rules |
 |---|---|
-| `supermarkets` | 1–5 unique values of `Lidl`, `Aldi`, `Edeka`, `Rewe`, `Kaufland` |
-| `budget` | 10–1000 |
+| `country` | `AT` or `DE` (default `AT`) |
+| `supermarkets` | 1–5 unique store names; each must exist in the catalog for `country` (else `422 unknown_store`; see `GET /api/catalog/meta`) |
+| `budget` | 10–1000 (EUR) |
 | `family_size` | 1–10 (default 2) |
-| `language` | `en`, `uk`, `de` (default `en`) |
+| `diets` | unique values of `vegetarian`, `vegan`, `gluten_free`, `lactose_free` (default `[]`); food must carry every chosen tag, non-food (cleaning, hygiene) is always allowed |
+| `preferences` | ≤ 300 chars after trimming; passed to the model as quoted data, never as instructions |
+| `language` | `en`, `uk`, `de` (default `en`): product names, meals and notes |
 | `mode` | `shopping` or `menu` (default `shopping`) |
-| `days` | 1–7 (default 7), used only for `menu` |
-| `preferences` | ≤ 300 chars after trimming |
-| `diets` | unique values of `vegetarian`, `vegan`, `gluten_free`, `lactose_free` (default `[]`); accepted but not used yet (Phase 2B) |
-| `country` | `AT` or `DE` (default `AT`); accepted but not used yet (Phase 2B) |
+| `days` | 1–7 (default 7), used only for `menu`; shopping lists cover 7 days |
 
-The model answers through OpenAI Structured Outputs (strict JSON schema). If a reply is unusable (refusal, truncated, wrong shape, empty list, wrong number of menu days), the server retries once and tells the model what was wrong.
+How a plan is made:
 
-Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `422` also has `errors: [{loc, msg}]`.
+1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
+2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server above 500 candidates). The model returns `lines: [{product_id, packs 1–20}]`, an optional menu whose meals list `ingredient_ids`, and notes. No prices.
+3. **Checks + one repair**: empty list, missing/wrong-length menu, meal ingredients missing from `lines`, or a total over budget (the repair message states the overshoot in €) → one retry telling the model what was wrong. Both attempts share the request deadline.
+4. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first), menu ingredients last. Trimmed lines are listed in `trimmed`.
+
+Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `validation_error` also has `errors: [{loc, msg}]`.
 
 | Status | `code` | `detail` | When |
 |---|---|---|---|
 | `422` | `validation_error` | `Invalid request` | invalid input |
+| `422` | `unknown_store` | `Unknown store for the selected country` | a store isn't in the catalog for `country` |
+| `422` | `not_enough_products` | `Not enough products for these stores and diets` | fewer than 12 food candidates |
 | `429` | `rate_limited` | `Too many requests, please try again later` | over `RATE_LIMIT` for this client IP |
 | `502` | `generation_failed` | `Failed to generate plan` | model output still unusable after the repair retry |
 | `503` | `ai_unavailable` | `AI service unavailable` | OpenAI API error |
 | `503` | `daily_limit` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
-| `504` | `ai_timeout` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left) |
+| `504` | `ai_timeout` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left; an over-budget plan is then trimmed instead) |
 | `500` | `generation_failed` | `Failed to generate plan` | anything else |
 
+The `422 unknown_store` / `not_enough_products` checks run before the daily cap, so they don't use it up.
+
 ### Response
+
+Response to the request above with the test catalog (2 of 4 items shown). The model picked chips, which were trimmed to fit the €15 budget; the menu ingredients were kept.
 
 ```json
 {
   "items": [
     {
-      "product": "Organic Milk",
-      "quantity": "1L",
+      "product_id": "at-lidl-milk-1l",
+      "name": "Whole milk 3.5%",
       "store": "Lidl",
-      "approx_price": "1.29",
-      "category": "dairy"
+      "category": "dairy",
+      "packs": 2,
+      "pack_size": 1.0,
+      "unit": "l",
+      "unit_price": 1.29,
+      "line_total": 2.58,
+      "nutrition": {"kcal": 1280.0, "protein_g": 68.0, "fat_g": 70.0, "carbs_g": 96.0}
+    },
+    {
+      "product_id": "at-lidl-apples-1kg",
+      "name": "Apples",
+      "store": "Lidl",
+      "category": "fruits",
+      "packs": 2,
+      "pack_size": 1.0,
+      "unit": "kg",
+      "unit_price": 1.99,
+      "line_total": 3.98,
+      "nutrition": {"kcal": 1040.0, "protein_g": 6.0, "fat_g": 4.0, "carbs_g": 280.0}
     }
   ],
-  "total_cost": 47.50,
-  "notes": "Consider seasonal vegetables for better prices.",
-  "generated_at": "2025-01-15T10:30:00"
+  "subtotals_by_store": {"Lidl": 12.55, "Penny": 2.29},
+  "total": 14.84,
+  "budget": 15.0,
+  "budget_remaining": 0.16,
+  "nutrition_totals": {"kcal": 6370.0, "protein_g": 259.0, "fat_g": 89.0, "carbs_g": 1156.0},
+  "kcal_per_person_day": 3185.0,
+  "trimmed": [{"product_id": "at-lidl-potato-chips-175g", "from_packs": 2, "to_packs": 0}],
+  "menu": [
+    {
+      "day": "Monday",
+      "breakfast": {
+        "name": "Milk porridge with apple",
+        "description": "Rice cooked in milk, topped with grated apple",
+        "ingredient_ids": ["at-lidl-milk-1l", "at-penny-rice-1kg", "at-lidl-apples-1kg"]
+      },
+      "lunch": {
+        "name": "Chicken rice bowl",
+        "description": "Pan-fried chicken over rice",
+        "ingredient_ids": ["at-lidl-chicken-breast-500g", "at-penny-rice-1kg"]
+      },
+      "dinner": {
+        "name": "Baked apples",
+        "description": "Apples baked with a splash of milk",
+        "ingredient_ids": ["at-lidl-apples-1kg", "at-lidl-milk-1l"]
+      },
+      "snack": null
+    }
+  ],
+  "notes": "Rice and apples are the cheapest calories here.",
+  "catalog_version": "test-small-2",
+  "price_date": "2026-10-01",
+  "generated_at": "2026-10-14T21:30:00Z"
+}
+```
+
+| Field | Meaning |
+|---|---|
+| `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
+| `items[].nutrition` | for all packs; `null` for non-food |
+| `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
+| `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode |
+| `trimmed` | lines the server cut to fit the budget; `to_packs: 0` = removed |
+| `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed) |
+| `catalog_version`, `price_date` | which reference prices were used |
+
+### Catalog metadata
+
+```http
+GET /api/catalog/meta
+```
+
+```json
+{
+  "catalog_version": "test-small-2",
+  "price_date": "2026-10-01",
+  "countries": {"AT": ["Lidl", "Penny"], "DE": ["Lidl", "Penny"]},
+  "diet_tags": ["vegetarian", "vegan", "gluten_free", "lactose_free"],
+  "categories": ["vegetables", "fruits", "meat", "fish", "dairy", "bread", "beverages", "snacks", "frozen", "pantry", "cleaning", "hygiene", "other"]
 }
 ```
 
@@ -206,7 +293,8 @@ Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; client
 |--------|----------|-------------|
 | GET | `/` | API information |
 | GET | `/health` | Health check |
-| POST | `/generate` | Generate shopping list |
+| GET | `/api/catalog/meta` | Stores per country, diet tags, categories, price date |
+| POST | `/generate` | Generate a shopping list or menu |
 
 ## 📁 Project Structure
 
@@ -268,6 +356,8 @@ FORWARDED_ALLOW_IPS=127.0.0.1              # read by uvicorn; proxies trusted fo
 ```
 
 Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default.
+
+`app/data/catalog.json` is an empty placeholder until the real price catalog lands (Phase 2C): the app starts, but every `/generate` returns `unknown_store`. For local development use the test catalog: `CATALOG_PATH=tests/fixtures/catalog_small.json` (made-up prices, Lidl and Penny in AT and DE).
 
 `RATE_LIMIT` and `DAILY_GENERATE_CAP` are kept in memory and are **per process**: with several workers or instances the effective limits multiply, and counters reset on restart. That is fine for the single-instance deployment. Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address (or `*` if the container is reachable only through the proxy) so the rate limit uses the real client IP; otherwise all clients share the proxy's limit.
 
