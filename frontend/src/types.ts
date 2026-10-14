@@ -2,11 +2,17 @@ import type { Language } from './translations';
 
 export type StoreName = 'Lidl' | 'Aldi' | 'Edeka' | 'Rewe' | 'Kaufland';
 
+// Mirrors backend app/schemas/catalog.py (DietTag, Country).
+export type DietTag = 'vegetarian' | 'vegan' | 'gluten_free' | 'lactose_free';
+export type Country = 'AT' | 'DE';
+
 // Mirrors backend app/schemas/requests.py (GenerateRequest).
 export interface UserInput {
   supermarkets: StoreName[]; // 1-5, unique
   budget: number; // 10-1000
   preferences: string; // max 300 chars after trimming
+  diets: DietTag[]; // unique
+  country?: Country; // backend default 'AT'; not in the UI yet
   family_size: number; // 1-10
   language: Language;
   mode: 'shopping' | 'menu';

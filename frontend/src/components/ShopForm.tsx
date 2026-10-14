@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StoreName, UserInput } from '../types';
+import { DietTag, StoreName, UserInput } from '../types';
 import {
   SUPERMARKETS,
   BUDGET_PRESETS,
@@ -14,10 +14,16 @@ interface ShopFormProps {
   onSubmit: (input: UserInput) => void;
 }
 
+// Diet chips set `diets`; the backend filters products by them.
+const dietOptions = [
+  { tag: 'vegetarian', key: 'vegetarian', emoji: '🥗' },
+  { tag: 'vegan', key: 'vegan', emoji: '🌱' },
+  { tag: 'gluten_free', key: 'glutenFree', emoji: '🚫' },
+  { tag: 'lactose_free', key: 'lactoseFree', emoji: '🥛' },
+] as const satisfies readonly { tag: DietTag; key: string; emoji: string }[];
+
+// Other chips are wishes, not diets: sent as text in `preferences`.
 const preferenceKeys = [
-  { key: 'vegetarian', emoji: '🥗' },
-  { key: 'vegan', emoji: '🌱' },
-  { key: 'glutenFree', emoji: '🚫' },
   { key: 'highProtein', emoji: '💪' },
   { key: 'lowCarb', emoji: '🏃' },
   { key: 'familyFriendly', emoji: '👶' },
@@ -25,13 +31,16 @@ const preferenceKeys = [
   { key: 'budgetSaver', emoji: '💰' },
 ] as const;
 
+type PreferenceKey = (typeof preferenceKeys)[number]['key'];
+
 export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const { t, language } = useLanguage();
   const [selectedSupermarkets, setSelectedSupermarkets] = useState<StoreName[]>(['Lidl', 'Aldi']);
   const [budget, setBudget] = useState<number>(50);
   const [familySize, setFamilySize] = useState<number>(2);
   const [preferences, setPreferences] = useState<string>('');
-  const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
+  const [selectedDiets, setSelectedDiets] = useState<DietTag[]>([]);
+  const [selectedPreferences, setSelectedPreferences] = useState<PreferenceKey[]>([]);
   const [mode, setMode] = useState<'shopping' | 'menu'>('shopping');
   const [days, setDays] = useState<number>(7);
 
@@ -41,7 +50,11 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
     );
   };
 
-  const togglePreference = (pref: string) => {
+  const toggleDiet = (tag: DietTag) => {
+    setSelectedDiets(prev => (prev.includes(tag) ? prev.filter(d => d !== tag) : [...prev, tag]));
+  };
+
+  const togglePreference = (pref: PreferenceKey) => {
     setSelectedPreferences(prev =>
       prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]
     );
@@ -50,11 +63,14 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const budgetValid = Number.isFinite(budget) && budget >= BUDGET_MIN && budget <= BUDGET_MAX;
 
   const handleSubmit = () => {
-    const allPreferences = [...selectedPreferences, preferences].filter(Boolean).join(', ');
+    const allPreferences = [...selectedPreferences.map(key => t(key)), preferences]
+      .filter(Boolean)
+      .join(', ');
     onSubmit({
       supermarkets: selectedSupermarkets,
       budget,
       preferences: allPreferences,
+      diets: selectedDiets,
       family_size: familySize,
       language,
       mode,
@@ -204,12 +220,28 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           🥗 {t('dietaryPreferences')}
         </label>
         <div className="flex flex-wrap gap-2">
+          {dietOptions.map(({ tag, key, emoji }) => (
+            <button
+              key={tag}
+              onClick={() => toggleDiet(tag)}
+              aria-pressed={selectedDiets.includes(tag)}
+              className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition-all ${
+                selectedDiets.includes(tag)
+                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
+              }`}
+            >
+              <span>{emoji}</span>
+              <span>{t(key)}</span>
+            </button>
+          ))}
           {preferenceKeys.map(({ key, emoji }) => (
             <button
               key={key}
-              onClick={() => togglePreference(t(key))}
+              onClick={() => togglePreference(key)}
+              aria-pressed={selectedPreferences.includes(key)}
               className={`flex items-center gap-1 px-3 py-2 rounded-lg border transition-all ${
-                selectedPreferences.includes(t(key))
+                selectedPreferences.includes(key)
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                   : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
