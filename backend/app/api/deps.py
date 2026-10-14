@@ -2,6 +2,7 @@ from fastapi import Request
 from openai import AsyncOpenAI
 
 from app.config import Settings
+from app.services.catalog import ProductCatalog
 from app.services.limits import DailyCap
 
 
@@ -16,3 +17,7 @@ def get_llm_client(request: Request) -> AsyncOpenAI:
 
 def get_daily_cap(request: Request) -> DailyCap:
     return request.app.state.daily_cap
+
+
+def get_catalog(request: Request) -> ProductCatalog:
+    return request.app.state.catalog

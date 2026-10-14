@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import generate, health
 from app.config import Settings
 from app.errors import register_error_handlers
+from app.services.catalog import load_catalog
 from app.services.limits import DailyCap, configure_rate_limit, limiter
 from app.services.llm import create_llm_client
 
@@ -23,6 +24,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title="ShopSmart AI API", version="1.0.0", lifespan=lifespan)
     app.state.settings = settings
+    app.state.catalog = load_catalog(settings.catalog_path)  # fails fast on a bad file
     app.state.llm_client = create_llm_client(settings)
     app.state.daily_cap = DailyCap(settings.daily_generate_cap)
     app.state.limiter = limiter

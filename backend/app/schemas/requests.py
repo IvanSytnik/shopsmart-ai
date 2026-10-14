@@ -1,16 +1,21 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeVar
 
 from pydantic import AfterValidator, BaseModel, Field, StringConstraints
+
+from app.schemas.catalog import Country, DietTag
 
 Store = Literal["Lidl", "Aldi", "Edeka", "Rewe", "Kaufland"]
 Mode = Literal["shopping", "menu"]
 Language = Literal["en", "uk", "de"]
 
 
-def _unique(stores: list[Store]) -> list[Store]:
-    if len(set(stores)) != len(stores):
-        raise ValueError("supermarkets must not contain duplicates")
-    return stores
+T = TypeVar("T")
+
+
+def _unique(values: list[T]) -> list[T]:
+    if len(set(values)) != len(values):
+        raise ValueError("must not contain duplicates")
+    return values
 
 
 class GenerateRequest(BaseModel):
@@ -25,3 +30,11 @@ class GenerateRequest(BaseModel):
     language: Language = "en"
     mode: Mode = "shopping"
     days: int = Field(default=7, ge=1, le=7, description="Only used when mode is 'menu'.")
+    # TODO(2B): not used by /generate yet; they will select catalog candidates
+    # (ProductCatalog.candidates) once the LLM picks products by id.
+    diets: Annotated[
+        list[DietTag],
+        Field(max_length=4, json_schema_extra={"uniqueItems": True}),
+        AfterValidator(_unique),
+    ] = []
+    country: Country = "AT"

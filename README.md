@@ -147,7 +147,8 @@ Content-Type: application/json
 {
   "supermarkets": ["Lidl", "Aldi"],
   "budget": 50.0,
-  "preferences": "vegetarian diet",
+  "preferences": "no pork",
+  "diets": ["vegetarian"],
   "family_size": 2,
   "language": "en",
   "mode": "shopping"
@@ -163,6 +164,8 @@ Content-Type: application/json
 | `mode` | `shopping` or `menu` (default `shopping`) |
 | `days` | 1–7 (default 7), used only for `menu` |
 | `preferences` | ≤ 300 chars after trimming |
+| `diets` | unique values of `vegetarian`, `vegan`, `gluten_free`, `lactose_free` (default `[]`); accepted but not used yet (Phase 2B) |
+| `country` | `AT` or `DE` (default `AT`); accepted but not used yet (Phase 2B) |
 
 The model answers through OpenAI Structured Outputs (strict JSON schema). If a reply is unusable (refusal, truncated, wrong shape, empty list, wrong number of menu days), the server retries once and tells the model what was wrong.
 
@@ -256,6 +259,7 @@ OPENAI_TIMEOUT_S=25                        # default; per OpenAI request
 OPENAI_MAX_RETRIES=0                       # default; SDK retries on connection/5xx errors
 REQUEST_DEADLINE_S=55                      # default; total time for one POST /generate
 REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if less is left
+CATALOG_PATH=app/data/catalog.json         # default; price catalog, validated at startup
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate
 DAILY_GENERATE_CAP=200                     # default; POST /generate calls per UTC day
