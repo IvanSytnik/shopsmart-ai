@@ -1,0 +1,646 @@
+{
+  "version": "test-small-1",
+  "price_date": "2026-10-01",
+  "products": [
+    {
+      "id": "at-lidl-milk-1l",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Whole milk 3.5%",
+        "uk": "Молоко 3,5%",
+        "de": "Vollmilch 3,5%"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1,
+      "price_eur": 1.29,
+      "kcal": 640,
+      "protein_g": 34,
+      "fat_g": 35,
+      "carbs_g": 48,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://example.com/lidl-at/milk-1l",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-oat-drink-1l",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Oat drink",
+        "uk": "Вівсяний напій",
+        "de": "Haferdrink"
+      },
+      "category": "beverages",
+      "unit": "l",
+      "pack_size": 1,
+      "price_eur": 1.49,
+      "kcal": 460,
+      "protein_g": 10,
+      "fat_g": 15,
+      "carbs_g": 66,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/oat-drink-1l",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-chicken-breast-500g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Chicken breast",
+        "uk": "Куряче філе",
+        "de": "Hähnchenbrust"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 5.99,
+      "kcal": 550,
+      "protein_g": 115,
+      "fat_g": 8,
+      "carbs_g": 0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/chicken-breast-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-rye-bread-750g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Rye bread",
+        "uk": "Житній хліб",
+        "de": "Roggenbrot"
+      },
+      "category": "bread",
+      "unit": "pack",
+      "pack_size": 0.75,
+      "price_eur": 2.19,
+      "kcal": 1650,
+      "protein_g": 52,
+      "fat_g": 9,
+      "carbs_g": 330,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/rye-bread-750g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-apples-1kg",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Apples",
+        "uk": "Яблука",
+        "de": "Äpfel"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.99,
+      "kcal": 520,
+      "protein_g": 3,
+      "fat_g": 2,
+      "carbs_g": 140,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/apples-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-carrots-1kg",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Carrots",
+        "uk": "Морква",
+        "de": "Karotten"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.19,
+      "kcal": 410,
+      "protein_g": 9,
+      "fat_g": 2,
+      "carbs_g": 96,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/carrots-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-potato-chips-175g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Potato chips",
+        "uk": "Картопляні чипси",
+        "de": "Kartoffelchips"
+      },
+      "category": "snacks",
+      "unit": "pack",
+      "pack_size": 0.175,
+      "price_eur": 1.79,
+      "kcal": 940,
+      "protein_g": 11,
+      "fat_g": 60,
+      "carbs_g": 90,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/potato-chips-175g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-dish-soap-500ml",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Dish soap",
+        "uk": "Засіб для миття посуду",
+        "de": "Spülmittel"
+      },
+      "category": "cleaning",
+      "unit": "l",
+      "pack_size": 0.5,
+      "price_eur": 0.99,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://example.com/lidl-at/dish-soap-500ml",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-cheese-gouda-400g",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Gouda cheese",
+        "uk": "Сир гауда",
+        "de": "Gouda"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "price_eur": 4.49,
+      "kcal": 1420,
+      "protein_g": 100,
+      "fat_g": 112,
+      "carbs_g": 0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://example.com/penny-at/cheese-gouda-400g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-rice-1kg",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Long-grain rice",
+        "uk": "Довгозерний рис",
+        "de": "Langkornreis"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 2.29,
+      "kcal": 3500,
+      "protein_g": 70,
+      "fat_g": 7,
+      "carbs_g": 780,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/rice-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-pasta-500g",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Spaghetti",
+        "uk": "Спагеті",
+        "de": "Spaghetti"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 0.99,
+      "kcal": 1780,
+      "protein_g": 60,
+      "fat_g": 8,
+      "carbs_g": 360,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/pasta-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-cola-1-5l",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Cola",
+        "uk": "Кола",
+        "de": "Cola"
+      },
+      "category": "beverages",
+      "unit": "l",
+      "pack_size": 1.5,
+      "price_eur": 1.69,
+      "kcal": 630,
+      "protein_g": 0,
+      "fat_g": 0,
+      "carbs_g": 159,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/cola-1-5l",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-frozen-pizza-350g",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Frozen pizza margherita",
+        "uk": "Заморожена піца маргарита",
+        "de": "TK-Pizza Margherita"
+      },
+      "category": "frozen",
+      "unit": "pack",
+      "pack_size": 0.35,
+      "price_eur": 2.79,
+      "kcal": 840,
+      "protein_g": 34,
+      "fat_g": 30,
+      "carbs_g": 108,
+      "diet_tags": [
+        "vegetarian"
+      ],
+      "source_url": "https://example.com/penny-at/frozen-pizza-350g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-toothpaste-75ml",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Toothpaste",
+        "uk": "Зубна паста",
+        "de": "Zahnpasta"
+      },
+      "category": "hygiene",
+      "unit": "pcs",
+      "pack_size": 1,
+      "price_eur": 1.49,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://example.com/penny-at/toothpaste-75ml",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-milk-1l",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Whole milk 3.5%",
+        "uk": "Молоко 3,5%",
+        "de": "Vollmilch 3,5%"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1,
+      "price_eur": 1.09,
+      "kcal": 640,
+      "protein_g": 34,
+      "fat_g": 35,
+      "carbs_g": 48,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://example.com/lidl-de/milk-1l",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-salmon-250g",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Salmon fillet",
+        "uk": "Філе лосося",
+        "de": "Lachsfilet"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "price_eur": 4.99,
+      "kcal": 500,
+      "protein_g": 50,
+      "fat_g": 33,
+      "carbs_g": 0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/salmon-250g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-eggs-10",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Free-range eggs",
+        "uk": "Яйця вільного вигулу",
+        "de": "Freilandeier"
+      },
+      "category": "dairy",
+      "unit": "pcs",
+      "pack_size": 10,
+      "price_eur": 2.99,
+      "kcal": 780,
+      "protein_g": 65,
+      "fat_g": 55,
+      "carbs_g": 6,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/eggs-10",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-tofu-400g",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Tofu",
+        "uk": "Тофу",
+        "de": "Tofu"
+      },
+      "category": "other",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "price_eur": 1.99,
+      "kcal": 560,
+      "protein_g": 60,
+      "fat_g": 34,
+      "carbs_g": 8,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/tofu-400g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-bananas-1kg",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Bananas",
+        "uk": "Банани",
+        "de": "Bananen"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.39,
+      "kcal": 890,
+      "protein_g": 11,
+      "fat_g": 3,
+      "carbs_g": 228,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/bananas-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-dark-chocolate-100g",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Dark chocolate 70%",
+        "uk": "Чорний шоколад 70%",
+        "de": "Zartbitterschokolade 70%"
+      },
+      "category": "snacks",
+      "unit": "pack",
+      "pack_size": 0.1,
+      "price_eur": 1.19,
+      "kcal": 580,
+      "protein_g": 8,
+      "fat_g": 43,
+      "carbs_g": 33,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/dark-chocolate-100g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-shower-gel-250ml",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Shower gel",
+        "uk": "Гель для душу",
+        "de": "Duschgel"
+      },
+      "category": "hygiene",
+      "unit": "l",
+      "pack_size": 0.25,
+      "price_eur": 0.95,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://example.com/lidl-de/shower-gel-250ml",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-minced-beef-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Minced beef",
+        "uk": "Яловичий фарш",
+        "de": "Rinderhackfleisch"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 4.49,
+      "kcal": 1250,
+      "protein_g": 95,
+      "fat_g": 95,
+      "carbs_g": 0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/minced-beef-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-tomatoes-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Tomatoes",
+        "uk": "Помідори",
+        "de": "Tomaten"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 1.49,
+      "kcal": 90,
+      "protein_g": 4,
+      "fat_g": 1,
+      "carbs_g": 20,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/tomatoes-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-orange-juice-1l",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Orange juice",
+        "uk": "Апельсиновий сік",
+        "de": "Orangensaft"
+      },
+      "category": "beverages",
+      "unit": "l",
+      "pack_size": 1,
+      "price_eur": 1.79,
+      "kcal": 450,
+      "protein_g": 7,
+      "fat_g": 1,
+      "carbs_g": 104,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/orange-juice-1l",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-yogurt-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Natural yogurt",
+        "uk": "Натуральний йогурт",
+        "de": "Naturjoghurt"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 0.89,
+      "kcal": 325,
+      "protein_g": 17,
+      "fat_g": 18,
+      "carbs_g": 24,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://example.com/penny-de/yogurt-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-frozen-spinach-450g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Frozen spinach",
+        "uk": "Заморожений шпинат",
+        "de": "TK-Spinat"
+      },
+      "category": "frozen",
+      "unit": "pack",
+      "pack_size": 0.45,
+      "price_eur": 1.29,
+      "kcal": 100,
+      "protein_g": 13,
+      "fat_g": 2,
+      "carbs_g": 5,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/frozen-spinach-450g",
+      "price_date": "2026-10-01"
+    }
+  ]
+}

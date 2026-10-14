@@ -3,6 +3,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from app.schemas.requests import GenerateRequest
 from tests.conftest import FakeOpenAI, make_plan
 
 VALID: dict[str, Any] = {"supermarkets": ["Lidl"], "budget": 50}
@@ -34,6 +35,10 @@ def payload(**overrides: Any) -> dict[str, Any]:
         ("days above 7", payload(mode="menu", days=8)),
         ("days null", payload(mode="menu", days=None)),
         ("preferences over 300 chars", payload(preferences="a" * 301)),
+        ("diets unknown tag", payload(diets=["keto"])),
+        ("diets duplicates", payload(diets=["vegan", "vegan"])),
+        ("diets not a list", payload(diets="vegan")),
+        ("country not in enum", payload(country="CH")),
     ],
 )
 def test_invalid_input_is_rejected(
@@ -59,6 +64,10 @@ def test_invalid_input_is_rejected(
         {"mode": "menu", "days": 7},
         {"supermarkets": ["Lidl", "Aldi", "Edeka", "Rewe", "Kaufland"]},
         {"preferences": "  " + "a" * 300 + "  "},
+        {"diets": []},
+        {"diets": ["vegetarian", "vegan", "gluten_free", "lactose_free"]},
+        {"country": "AT"},
+        {"country": "DE"},
     ],
 )
 def test_boundary_values_are_accepted(
@@ -70,3 +79,9 @@ def test_boundary_values_are_accepted(
     response = client.post("/generate", json=payload(**overrides))
 
     assert response.status_code == 200, overrides
+
+
+def test_diets_and_country_defaults() -> None:
+    request = GenerateRequest.model_validate(VALID)
+
+    assert (request.diets, request.country) == ([], "AT")
