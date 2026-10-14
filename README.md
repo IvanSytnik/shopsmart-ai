@@ -173,7 +173,7 @@ The model answers through OpenAI Structured Outputs (strict JSON schema). If a r
 | `502` | `Failed to generate plan` | model output still unusable after the repair retry |
 | `503` | `AI service unavailable` | OpenAI API error |
 | `503` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
-| `504` | `AI service timed out` | OpenAI request timed out |
+| `504` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left) |
 | `500` | `Failed to generate plan` | anything else |
 
 ### Response
@@ -250,8 +250,10 @@ OPENAI_API_KEY=sk-your-api-key            # required
 OPENAI_MODEL=gpt-4o-mini                   # default
 OPENAI_TEMPERATURE=0.7                     # default
 OPENAI_MAX_TOKENS=4000                     # default
-OPENAI_TIMEOUT_S=45                        # default; per OpenAI request
-OPENAI_MAX_RETRIES=1                       # default; SDK retries on connection/5xx errors
+OPENAI_TIMEOUT_S=25                        # default; per OpenAI request
+OPENAI_MAX_RETRIES=0                       # default; SDK retries on connection/5xx errors
+REQUEST_DEADLINE_S=55                      # default; total time for one POST /generate
+REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if less is left
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate
 DAILY_GENERATE_CAP=200                     # default; POST /generate calls per UTC day
