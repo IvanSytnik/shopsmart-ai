@@ -1,6 +1,7 @@
 import json
 import os
 import socket
+from collections.abc import Callable
 from typing import Any
 
 import httpx
@@ -131,16 +132,21 @@ def _reset_rate_limiter() -> None:
     limiter.reset()
 
 
+def make_settings(**overrides: Any) -> Settings:
+    values: dict[str, Any] = {
+        "openai_api_key": "sk-test-not-a-real-key",
+        "openai_model": "test-model",
+        "openai_temperature": 0.1,
+        "openai_max_tokens": 123,
+        "cors_origins": [ALLOWED_ORIGIN],
+        **overrides,
+    }
+    return Settings(_env_file=None, **values)
+
+
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(
-        _env_file=None,
-        openai_api_key="sk-test-not-a-real-key",
-        openai_model="test-model",
-        openai_temperature=0.1,
-        openai_max_tokens=123,
-        cors_origins=[ALLOWED_ORIGIN],
-    )
+    return make_settings()
 
 
 @pytest.fixture
@@ -149,7 +155,17 @@ def fake_llm() -> FakeOpenAI:
 
 
 @pytest.fixture
-def client(settings: Settings, fake_llm: FakeOpenAI) -> TestClient:
-    app = create_app(settings)
-    app.dependency_overrides[get_llm_client] = lambda: fake_llm.client
-    return TestClient(app)
+def make_client(fake_llm: FakeOpenAI) -> Callable[..., TestClient]:
+    """Build a TestClient for an app with the given Settings overrides."""
+
+    def build(**overrides: Any) -> TestClient:
+        app = create_app(make_settings(**overrides))
+        app.dependency_overrides[get_llm_client] = lambda: fake_llm.client
+        return TestClient(app)
+
+    return build
+
+
+@pytest.fixture
+def client(make_client: Callable[..., TestClient]) -> TestClient:
+    return make_client()

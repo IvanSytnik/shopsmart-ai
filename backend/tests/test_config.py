@@ -2,6 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from app.config import Settings
+from app.services.llm import create_llm_client
 
 
 def test_cors_origins_parsed_from_comma_separated_env(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -30,3 +31,31 @@ def test_api_key_is_not_exposed_in_repr() -> None:
     settings = Settings(_env_file=None, openai_api_key="sk-test-secret")
 
     assert "sk-test-secret" not in repr(settings)
+
+
+def test_invalid_rate_limit_is_rejected() -> None:
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, openai_api_key="sk-test", rate_limit="lots")
+
+
+def test_daily_cap_must_be_positive() -> None:
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, openai_api_key="sk-test", daily_generate_cap=0)
+
+
+def test_llm_client_uses_timeout_and_retries_from_settings() -> None:
+    settings = Settings(
+        _env_file=None, openai_api_key="sk-test", openai_timeout_s=12.5, openai_max_retries=3
+    )
+
+    client = create_llm_client(settings)
+
+    assert client.timeout == 12.5
+    assert client.max_retries == 3
+
+
+def test_timeout_and_retry_defaults() -> None:
+    settings = Settings(_env_file=None, openai_api_key="sk-test")
+
+    assert (settings.openai_timeout_s, settings.openai_max_retries) == (45, 1)
+    assert (settings.rate_limit, settings.daily_generate_cap) == ("10/minute", 200)
