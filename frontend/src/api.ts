@@ -5,9 +5,13 @@ import { translations } from './translations';
 const API_BASE_URL: string =
   import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
+// Must match the backend's `detail` for the daily /generate cap (app/api/generate.py).
+const DAILY_LIMIT_DETAIL = 'Daily limit reached, try tomorrow';
+
 class ApiService {
   private baseUrl: string;
-  private timeout: number = 60000;
+  // Above the backend's 55 s request deadline, so its 504 arrives before we abort.
+  private timeout: number = 70000;
 
   constructor() {
     this.baseUrl = API_BASE_URL;
@@ -41,6 +45,10 @@ class ApiService {
         const error = await response.json().catch(() => ({}));
         // 422 validation errors carry a list in `detail`; only show plain-string details.
         const detail = typeof error.detail === 'string' ? error.detail : null;
+        // 503 is also used for "AI service unavailable"; the daily cap is told apart by detail.
+        if (response.status === 503 && detail === DAILY_LIMIT_DETAIL) {
+          throw new Error(translations[input.language].errorDailyLimit);
+        }
         throw new Error(detail || `HTTP error! status: ${response.status}`);
       }
 
