@@ -4,7 +4,8 @@ from pydantic import AfterValidator, BaseModel, Field, StringConstraints
 
 from app.schemas.catalog import Country, DietTag
 
-Store = Literal["Lidl", "Aldi", "Edeka", "Rewe", "Kaufland"]
+# Checked against the catalog's stores for `country` in the /generate route.
+StoreName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
 Mode = Literal["shopping", "menu"]
 Language = Literal["en", "uk", "de"]
 
@@ -20,7 +21,7 @@ def _unique(values: list[T]) -> list[T]:
 
 class GenerateRequest(BaseModel):
     supermarkets: Annotated[
-        list[Store],
+        list[StoreName],
         Field(min_length=1, max_length=5, json_schema_extra={"uniqueItems": True}),
         AfterValidator(_unique),
     ]

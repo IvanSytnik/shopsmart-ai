@@ -5,11 +5,12 @@ import openai
 from fastapi import APIRouter, Depends, Request
 from openai import AsyncOpenAI
 
-from app.api.deps import get_daily_cap, get_llm_client, get_settings
+from app.api.deps import get_catalog, get_daily_cap, get_llm_client, get_settings
 from app.config import Settings
 from app.errors import AppError
 from app.schemas.requests import GenerateRequest
 from app.schemas.responses import GenerateResponse
+from app.services.catalog import ProductCatalog
 from app.services.limits import DailyCap, current_rate_limit, limiter
 from app.services.llm import LLMOutputError
 from app.services.planner import create_plan, to_response
@@ -27,7 +28,14 @@ async def generate(
     client: Annotated[AsyncOpenAI, Depends(get_llm_client)],
     settings: Annotated[Settings, Depends(get_settings)],
     daily_cap: Annotated[DailyCap, Depends(get_daily_cap)],
+    catalog: Annotated[ProductCatalog, Depends(get_catalog)],
 ) -> GenerateResponse:
+    # Request checks that need the catalog; before the daily cap so they don't use it up.
+    known_stores = catalog.stores_by_country()[user_input.country]
+    if unknown := [s for s in user_input.supermarkets if s not in known_stores]:
+        logger.info("Unknown stores for %s: %s", user_input.country, unknown)
+        raise AppError(422, "unknown_store", "Unknown store for the selected country")
+
     # Checked after the per-IP limit, so throttled requests don't use up the daily budget.
     if not daily_cap.try_acquire():
         logger.warning("Daily /generate cap of %d reached", daily_cap.cap)

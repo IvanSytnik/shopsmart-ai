@@ -1,6 +1,10 @@
 """API response models (the contract mirrored by frontend/src/types.ts)."""
 
+from datetime import date
+
 from pydantic import BaseModel
+
+from app.schemas.catalog import Category, Country, DietTag
 
 
 class Meal(BaseModel):
@@ -35,3 +39,11 @@ class GenerateResponse(BaseModel):
     notes: str
     generated_at: str
     menu: list[DayMenu] | None = None
+
+
+class CatalogMeta(BaseModel):
+    catalog_version: str
+    price_date: date
+    countries: dict[Country, list[str]]
+    diet_tags: list[DietTag]
+    categories: list[Category]

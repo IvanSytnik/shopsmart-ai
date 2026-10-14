@@ -7,7 +7,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     fake_llm.queue_plan(make_plan())
 
     response = client.post(
-        "/generate", json={"supermarkets": ["Lidl", "Aldi"], "budget": 50, "family_size": 3}
+        "/generate", json={"supermarkets": ["Lidl", "Penny"], "budget": 50, "family_size": 3}
     )
 
     assert response.status_code == 200
@@ -29,7 +29,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
 
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
     assert "Create optimized weekly shopping list" in system_prompt
-    assert "Supermarkets: Lidl, Aldi\nBudget: €50.0\nFamily: 3\n" in user_message
+    assert "Supermarkets: Lidl, Penny\nBudget: €50.0\nFamily: 3\n" in user_message
     assert user_message.endswith("Generate 15-25 items.")
 
 
@@ -40,7 +40,7 @@ def test_menu_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     response = client.post(
         "/generate",
         json={
-            "supermarkets": ["Rewe"],
+            "supermarkets": ["Penny"],
             "budget": 80,
             "language": "de",
             "mode": "menu",

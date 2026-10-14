@@ -15,6 +15,8 @@ logger = logging.getLogger(__name__)
 
 ErrorCode = Literal[
     "validation_error",
+    "unknown_store",
+    "not_enough_products",
     "rate_limited",
     "daily_limit",
     "ai_unavailable",

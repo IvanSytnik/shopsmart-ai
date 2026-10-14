@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Collection
 from pathlib import Path
+from typing import get_args
 
 from pydantic import ValidationError
 
@@ -25,6 +26,13 @@ class ProductCatalog:
 
     def get(self, product_id: str) -> Product | None:
         return self._by_id.get(product_id)
+
+    def stores_by_country(self) -> dict[Country, list[str]]:
+        """Every country, each with its stores sorted by name (empty if it has none)."""
+        stores: dict[Country, set[str]] = {country: set() for country in get_args(Country)}
+        for product in self.catalog.products:
+            stores[product.country].add(product.store)
+        return {country: sorted(names) for country, names in stores.items()}
 
     def candidates(
         self, country: Country, stores: Collection[str], diets: Collection[DietTag]

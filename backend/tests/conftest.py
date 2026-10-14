@@ -3,6 +3,7 @@ import json
 import os
 import socket
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -20,6 +21,7 @@ from app.main import create_app  # noqa: E402
 from app.services.limits import limiter  # noqa: E402
 
 ALLOWED_ORIGIN = "http://localhost:3000"
+FIXTURE_CATALOG = Path(__file__).parent / "fixtures" / "catalog_small.json"
 FAKE_BASE_URL = "https://openai.test/v1"
 
 MEAL = {"name": "Oatmeal", "description": "With apples", "calories": 350}
@@ -142,6 +144,7 @@ def make_settings(**overrides: Any) -> Settings:
         "openai_temperature": 0.1,
         "openai_max_tokens": 123,
         "cors_origins": [ALLOWED_ORIGIN],
+        "catalog_path": FIXTURE_CATALOG,
         **overrides,
     }
     return Settings(_env_file=None, **values)
