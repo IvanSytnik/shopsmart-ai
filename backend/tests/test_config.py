@@ -57,5 +57,6 @@ def test_llm_client_uses_timeout_and_retries_from_settings() -> None:
 def test_timeout_and_retry_defaults() -> None:
     settings = Settings(_env_file=None, openai_api_key="sk-test")
 
-    assert (settings.openai_timeout_s, settings.openai_max_retries) == (45, 1)
+    assert (settings.openai_timeout_s, settings.openai_max_retries) == (25, 0)
+    assert (settings.request_deadline_s, settings.repair_min_remaining_s) == (55, 20)
     assert (settings.rate_limit, settings.daily_generate_cap) == ("10/minute", 200)

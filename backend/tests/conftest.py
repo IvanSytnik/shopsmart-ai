@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import socket
@@ -78,6 +79,7 @@ class FakeOpenAI:
     def __init__(self) -> None:
         self._replies: list[httpx.Response | Exception] = []
         self.requests: list[dict[str, Any]] = []
+        self.delay_s = 0.0  # simulated latency of every call
         self.client = AsyncOpenAI(
             api_key="sk-test-not-a-real-key",
             base_url=FAKE_BASE_URL,
@@ -85,8 +87,9 @@ class FakeOpenAI:
             http_client=httpx.AsyncClient(transport=httpx.MockTransport(self._handle)),
         )
 
-    def _handle(self, request: httpx.Request) -> httpx.Response:
+    async def _handle(self, request: httpx.Request) -> httpx.Response:
         self.requests.append(json.loads(request.content))
+        await asyncio.sleep(self.delay_s)
         if not self._replies:
             raise AssertionError("unexpected extra OpenAI call")
         reply = self._replies.pop(0)
