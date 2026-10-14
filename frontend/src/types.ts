@@ -1,11 +1,16 @@
+import type { Language } from './translations';
+
+export type StoreName = 'Lidl' | 'Aldi' | 'Edeka' | 'Rewe' | 'Kaufland';
+
+// Mirrors backend app/schemas/requests.py (GenerateRequest).
 export interface UserInput {
-  supermarkets: string[];
-  budget: number;
-  preferences: string;
-  family_size: number;
-  language: string;
+  supermarkets: StoreName[]; // 1-5, unique
+  budget: number; // 10-1000
+  preferences: string; // max 300 chars after trimming
+  family_size: number; // 1-10
+  language: Language;
   mode: 'shopping' | 'menu';
-  days?: number;
+  days?: number; // 1-7, only used for mode 'menu'
 }
 
 export interface ShoppingItem {

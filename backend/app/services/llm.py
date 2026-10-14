@@ -5,19 +5,30 @@ Phase 1.2 replaces this with `AsyncOpenAI` + `chat.completions.parse()`.
 """
 
 import json
-from typing import Any
 
 from openai import OpenAI
+from pydantic import ValidationError
 
 from app.config import Settings
+from app.schemas.llm import LLMPlan
+
+
+class LLMOutputError(Exception):
+    """The model replied, but not with a usable plan."""
 
 
 def create_llm_client(settings: Settings) -> OpenAI:
     return OpenAI(api_key=settings.openai_api_key.get_secret_value())
 
 
-def complete_json(client: OpenAI, settings: Settings, system_prompt: str, user_message: str) -> Any:
-    """Send the prompt and return the decoded JSON body of the reply."""
+def generate_plan(
+    client: OpenAI, settings: Settings, system_prompt: str, user_message: str
+) -> LLMPlan:
+    """Send the prompt and validate the reply against `LLMPlan`.
+
+    Raises `LLMOutputError` for empty, non-JSON or wrongly shaped replies;
+    `openai.APIError` propagates unchanged.
+    """
     response = client.chat.completions.create(
         model=settings.openai_model,
         messages=[
@@ -29,9 +40,14 @@ def complete_json(client: OpenAI, settings: Settings, system_prompt: str, user_m
     )
 
     content = response.choices[0].message.content
+    if not content:
+        raise LLMOutputError("empty completion")
     if "```json" in content:
         content = content.split("```json")[1].split("```")[0]
     elif "```" in content:
         content = content.split("```")[1].split("```")[0]
 
-    return json.loads(content.strip())
+    try:
+        return LLMPlan.model_validate(json.loads(content.strip()))
+    except (json.JSONDecodeError, ValidationError) as e:
+        raise LLMOutputError("completion is not a valid plan") from e

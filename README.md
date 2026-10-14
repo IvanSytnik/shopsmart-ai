@@ -148,9 +148,23 @@ Content-Type: application/json
   "supermarkets": ["Lidl", "Aldi"],
   "budget": 50.0,
   "preferences": "vegetarian diet",
-  "family_size": 2
+  "family_size": 2,
+  "language": "en",
+  "mode": "shopping"
 }
 ```
+
+| Field | Rules |
+|---|---|
+| `supermarkets` | 1–5 unique values of `Lidl`, `Aldi`, `Edeka`, `Rewe`, `Kaufland` |
+| `budget` | 10–1000 |
+| `family_size` | 1–10 (default 2) |
+| `language` | `en`, `uk`, `de` (default `en`) |
+| `mode` | `shopping` or `menu` (default `shopping`) |
+| `days` | 1–7 (default 7), used only for `menu` |
+| `preferences` | ≤ 300 chars after trimming |
+
+Invalid input returns `422`. Errors from the AI step return a generic `detail`: `502 Failed to generate plan` (unusable model output), `503 AI service unavailable` (OpenAI error), `500 Failed to generate plan` (anything else).
 
 ### Response
 

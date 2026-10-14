@@ -30,7 +30,9 @@ class ApiService {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+        // 422 validation errors carry a list in `detail`; only show plain-string details.
+        const detail = typeof error.detail === 'string' ? error.detail : null;
+        throw new Error(detail || `HTTP error! status: ${response.status}`);
       }
 
       return await response.json();

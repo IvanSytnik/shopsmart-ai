@@ -1,4 +1,6 @@
-export const SUPERMARKETS = [
+import type { StoreName } from './types';
+
+export const SUPERMARKETS: { name: StoreName; color: string }[] = [
   { name: 'Lidl', color: 'bg-blue-500' },
   { name: 'Aldi', color: 'bg-orange-500' },
   { name: 'Edeka', color: 'bg-yellow-500' },
@@ -7,6 +9,12 @@ export const SUPERMARKETS = [
 ];
 
 export const BUDGET_PRESETS = [30, 50, 75, 100, 150];
+
+export const BUDGET_MIN = 10;
+export const BUDGET_MAX = 1000;
+
+// Backend allows 300 chars for chips + free text combined; all chips together are ≤ 102 chars.
+export const PREFERENCES_TEXT_MAX_LENGTH = 190;
 
 export const FAMILY_SIZE_OPTIONS = [1, 2, 3, 4, 5];
 

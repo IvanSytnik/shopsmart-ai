@@ -77,7 +77,7 @@ def build_messages(request: GenerateRequest) -> tuple[str, str]:
         f"Preferences: {request.preferences or 'None'}\n\n"
     )
     if request.mode == "menu":
-        system_prompt = get_menu_prompt(request.language, request.days or 7)
+        system_prompt = get_menu_prompt(request.language, request.days)
         user_message = context + f"Create {request.days}-day meal plan with shopping list."
     else:
         system_prompt = get_shopping_prompt(request.language)

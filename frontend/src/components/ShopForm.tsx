@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
-import { UserInput } from '../types';
-import { SUPERMARKETS, BUDGET_PRESETS, FAMILY_SIZE_OPTIONS } from '../constants';
+import { StoreName, UserInput } from '../types';
+import {
+  SUPERMARKETS,
+  BUDGET_PRESETS,
+  BUDGET_MIN,
+  BUDGET_MAX,
+  FAMILY_SIZE_OPTIONS,
+  PREFERENCES_TEXT_MAX_LENGTH,
+} from '../constants';
 import { useLanguage } from '../LanguageContext';
 
 interface ShopFormProps {
@@ -20,7 +27,7 @@ const preferenceKeys = [
 
 export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const { t, language } = useLanguage();
-  const [selectedSupermarkets, setSelectedSupermarkets] = useState<string[]>(['Lidl', 'Aldi']);
+  const [selectedSupermarkets, setSelectedSupermarkets] = useState<StoreName[]>(['Lidl', 'Aldi']);
   const [budget, setBudget] = useState<number>(50);
   const [familySize, setFamilySize] = useState<number>(2);
   const [preferences, setPreferences] = useState<string>('');
@@ -28,7 +35,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const [mode, setMode] = useState<'shopping' | 'menu'>('shopping');
   const [days, setDays] = useState<number>(7);
 
-  const toggleSupermarket = (name: string) => {
+  const toggleSupermarket = (name: StoreName) => {
     setSelectedSupermarkets(prev =>
       prev.includes(name) ? prev.filter(s => s !== name) : [...prev, name]
     );
@@ -39,6 +46,8 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
       prev.includes(pref) ? prev.filter(p => p !== pref) : [...prev, pref]
     );
   };
+
+  const budgetValid = Number.isFinite(budget) && budget >= BUDGET_MIN && budget <= BUDGET_MAX;
 
   const handleSubmit = () => {
     const allPreferences = [...selectedPreferences, preferences].filter(Boolean).join(', ');
@@ -162,8 +171,8 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           value={budget}
           onChange={(e) => setBudget(Number(e.target.value))}
           className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          min="10"
-          max="1000"
+          min={BUDGET_MIN}
+          max={BUDGET_MAX}
         />
       </div>
 
@@ -223,13 +232,14 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           placeholder={t('preferencesPlaceholder')}
           className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none"
           rows={3}
+          maxLength={PREFERENCES_TEXT_MAX_LENGTH}
         />
       </div>
 
       {/* Submit Button */}
       <button
         onClick={handleSubmit}
-        disabled={selectedSupermarkets.length === 0}
+        disabled={selectedSupermarkets.length === 0 || !budgetValid}
         className="w-full py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
       >
         {mode === 'menu' ? t('generateMenu') : t('generateList')} ✨
