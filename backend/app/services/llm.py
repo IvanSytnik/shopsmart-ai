@@ -1,12 +1,13 @@
 """OpenAI access via Structured Outputs (`AsyncOpenAI` + `chat.completions.parse`)."""
 
+from typing import TypeVar
+
 import openai
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from app.config import Settings
-from app.schemas.llm import LLMPlan
 
 # Phrased as instructions to the model: they become the repair message on retry.
 TRUNCATED = (
@@ -25,6 +26,9 @@ SCHEMA_MISMATCH = (
     "Your previous reply did not match the required JSON schema. "
     "Return the plan again, matching the schema exactly."
 )
+
+
+M = TypeVar("M", bound=BaseModel)
 
 
 class LLMOutputError(Exception):
@@ -49,9 +53,12 @@ def create_llm_client(settings: Settings) -> AsyncOpenAI:
 
 
 async def request_plan(
-    client: AsyncOpenAI, settings: Settings, messages: list[ChatCompletionMessageParam]
-) -> tuple[LLMPlan, str | None]:
-    """One completion call. Returns the parsed plan and the raw reply text.
+    client: AsyncOpenAI,
+    settings: Settings,
+    messages: list[ChatCompletionMessageParam],
+    response_model: type[M],
+) -> tuple[M, str | None]:
+    """One completion call. Returns the reply parsed as `response_model` and its raw text.
 
     Raises `LLMOutputError` for refusals, truncation, filtered or unparseable replies;
     `openai.APIError` (incl. `APITimeoutError`) propagates unchanged.
@@ -60,7 +67,7 @@ async def request_plan(
         completion = await client.chat.completions.parse(
             model=settings.openai_model,
             messages=messages,
-            response_format=LLMPlan,
+            response_format=response_model,
             temperature=settings.openai_temperature,
             max_completion_tokens=settings.openai_max_tokens,
         )

@@ -5,10 +5,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.services.llm import FILTERED, REFUSED, SCHEMA_MISMATCH, TRUNCATED
-from tests.conftest import FakeOpenAI, make_plan
+from tests.conftest import BODY, FakeOpenAI, make_plan
 
-SHOPPING = {"supermarkets": ["Lidl"], "budget": 50}
-MENU_3_DAYS = {"supermarkets": ["Lidl"], "budget": 50, "mode": "menu", "days": 3}
+SHOPPING = BODY
+MENU_3_DAYS = {**BODY, "mode": "menu", "days": 3}
 
 
 def repair_turn(fake_llm: FakeOpenAI) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -37,7 +37,7 @@ def test_refusal_is_retried_and_succeeds(
 
 
 def test_truncated_reply_is_retried(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_raw('{"items": [{"product": "Mi', finish_reason="length")
+    fake_llm.queue_raw('{"lines": [{"product_id": "at-li', finish_reason="length")
     fake_llm.queue_plan(make_plan())
 
     response = client.post("/generate", json=SHOPPING)
@@ -59,8 +59,17 @@ def test_content_filter_is_retried(client: TestClient, fake_llm: FakeOpenAI) -> 
     assert repair_turn(fake_llm)[1]["content"] == FILTERED
 
 
-def test_schema_mismatch_is_retried(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_raw('{"items": [{"product": "Milk"}]}')
+@pytest.mark.parametrize(
+    "reply",
+    [
+        '{"lines": [{"product_id": "at-lidl-milk-1l"}], "menu": null, "notes": ""}',
+        '{"lines": [{"product_id": "made-up-id", "packs": 1}], "menu": null, "notes": ""}',
+        '{"lines": [{"product_id": "at-lidl-milk-1l", "packs": 21}], "menu": null, "notes": ""}',
+    ],
+    ids=["missing-packs", "id-not-a-candidate", "packs-over-20"],
+)
+def test_schema_mismatch_is_retried(client: TestClient, fake_llm: FakeOpenAI, reply: str) -> None:
+    fake_llm.queue_raw(reply)
     fake_llm.queue_plan(make_plan())
 
     response = client.post("/generate", json=SHOPPING)
@@ -75,9 +84,9 @@ def test_schema_mismatch_is_retried(client: TestClient, fake_llm: FakeOpenAI) ->
         (make_plan(days=2), "had 2 days in `menu`, but exactly 3 are required"),
         (make_plan(days=4), "had 4 days in `menu`, but exactly 3 are required"),
         (make_plan(days=None), "had no `menu`. Return a menu with exactly 3 days"),
-        (make_plan(days=3, items=[]), "empty `items` list"),
+        ({**make_plan(days=3), "lines": []}, "empty `lines` list"),
     ],
-    ids=["menu-too-short", "menu-too-long", "menu-missing", "items-empty"],
+    ids=["menu-too-short", "menu-too-long", "menu-missing", "lines-empty"],
 )
 def test_business_check_failure_is_retried_with_exact_problem(
     client: TestClient,
@@ -103,7 +112,7 @@ def test_two_unusable_replies_return_502_after_exactly_two_calls(
     client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
     fake_llm.queue_raw("Sure! Milk, bread, eggs.")
-    fake_llm.queue_plan(make_plan(items=[]))
+    fake_llm.queue_plan({**make_plan(), "lines": []})
 
     response = client.post("/generate", json=SHOPPING)
 
@@ -113,8 +122,8 @@ def test_two_unusable_replies_return_502_after_exactly_two_calls(
     assert "LLM attempt 2/2 unusable" in caplog.text
 
 
-def test_empty_items_in_shopping_mode_is_retried(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_plan(make_plan(items=[]))
+def test_empty_lines_in_shopping_mode_is_retried(client: TestClient, fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan({**make_plan(), "lines": []})
     fake_llm.queue_plan(make_plan())
 
     response = client.post("/generate", json=SHOPPING)

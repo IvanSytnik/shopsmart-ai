@@ -4,9 +4,7 @@ from datetime import date
 from fastapi.testclient import TestClient
 
 from app.services.limits import DailyCap
-from tests.conftest import ALLOWED_ORIGIN, FakeOpenAI, make_plan
-
-BODY = {"supermarkets": ["Lidl"], "budget": 50}
+from tests.conftest import ALLOWED_ORIGIN, BODY, FakeOpenAI, make_plan
 
 
 def test_eleventh_request_in_a_minute_is_rate_limited(

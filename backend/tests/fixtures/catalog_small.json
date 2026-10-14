@@ -1,5 +1,5 @@
 {
-  "version": "test-small-1",
+  "version": "test-small-2",
   "price_date": "2026-10-01",
   "products": [
     {
@@ -640,6 +640,340 @@
         "lactose_free"
       ],
       "source_url": "https://example.com/penny-de/frozen-spinach-450g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-red-lentils-500g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Red lentils",
+        "uk": "Червона сочевиця",
+        "de": "Rote Linsen"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 1.79,
+      "kcal": 1700,
+      "protein_g": 120,
+      "fat_g": 8,
+      "carbs_g": 250,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/red-lentils-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-peanut-butter-350g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Peanut butter",
+        "uk": "Арахісова паста",
+        "de": "Erdnussbutter"
+      },
+      "category": "pantry",
+      "unit": "pack",
+      "pack_size": 0.35,
+      "price_eur": 2.49,
+      "kcal": 2170,
+      "protein_g": 90,
+      "fat_g": 175,
+      "carbs_g": 50,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/peanut-butter-350g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-lidl-oat-flakes-500g",
+      "country": "AT",
+      "store": "Lidl",
+      "name": {
+        "en": "Oat flakes",
+        "uk": "Вівсяні пластівці",
+        "de": "Haferflocken"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 0.89,
+      "kcal": 1860,
+      "protein_g": 67,
+      "fat_g": 35,
+      "carbs_g": 300,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-at/oat-flakes-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-chickpeas-400g",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Chickpeas, canned",
+        "uk": "Нут консервований",
+        "de": "Kichererbsen"
+      },
+      "category": "pantry",
+      "unit": "pack",
+      "pack_size": 0.4,
+      "price_eur": 0.99,
+      "kcal": 290,
+      "protein_g": 17,
+      "fat_g": 5,
+      "carbs_g": 40,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/chickpeas-400g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-onions-1kg",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Onions",
+        "uk": "Цибуля",
+        "de": "Zwiebeln"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.29,
+      "kcal": 400,
+      "protein_g": 11,
+      "fat_g": 1,
+      "carbs_g": 90,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/onions-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "at-penny-bananas-1kg",
+      "country": "AT",
+      "store": "Penny",
+      "name": {
+        "en": "Bananas",
+        "uk": "Банани",
+        "de": "Bananen"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.59,
+      "kcal": 890,
+      "protein_g": 11,
+      "fat_g": 3,
+      "carbs_g": 228,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-at/bananas-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-rice-1kg",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Long-grain rice",
+        "uk": "Довгозерний рис",
+        "de": "Langkornreis"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 1.99,
+      "kcal": 3500,
+      "protein_g": 70,
+      "fat_g": 7,
+      "carbs_g": 780,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/rice-1kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-potatoes-2kg",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Potatoes",
+        "uk": "Картопля",
+        "de": "Kartoffeln"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 2,
+      "price_eur": 2.49,
+      "kcal": 1540,
+      "protein_g": 40,
+      "fat_g": 2,
+      "carbs_g": 340,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/potatoes-2kg",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-lidl-wholegrain-bread-500g",
+      "country": "DE",
+      "store": "Lidl",
+      "name": {
+        "en": "Wholegrain bread",
+        "uk": "Цільнозерновий хліб",
+        "de": "Vollkornbrot"
+      },
+      "category": "bread",
+      "unit": "pack",
+      "pack_size": 0.5,
+      "price_eur": 1.49,
+      "kcal": 1100,
+      "protein_g": 40,
+      "fat_g": 7,
+      "carbs_g": 200,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/lidl-de/wholegrain-bread-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-pasta-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Spaghetti",
+        "uk": "Спагеті",
+        "de": "Spaghetti"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 0.79,
+      "kcal": 1780,
+      "protein_g": 60,
+      "fat_g": 8,
+      "carbs_g": 360,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/pasta-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-red-lentils-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Red lentils",
+        "uk": "Червона сочевиця",
+        "de": "Rote Linsen"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 1.69,
+      "kcal": 1700,
+      "protein_g": 120,
+      "fat_g": 8,
+      "carbs_g": 250,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/red-lentils-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-oat-flakes-500g",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Oat flakes",
+        "uk": "Вівсяні пластівці",
+        "de": "Haferflocken"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "price_eur": 0.75,
+      "kcal": 1860,
+      "protein_g": 67,
+      "fat_g": 35,
+      "carbs_g": 300,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/oat-flakes-500g",
+      "price_date": "2026-10-01"
+    },
+    {
+      "id": "de-penny-apples-1kg",
+      "country": "DE",
+      "store": "Penny",
+      "name": {
+        "en": "Apples",
+        "uk": "Яблука",
+        "de": "Äpfel"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 1,
+      "price_eur": 2.29,
+      "kcal": 520,
+      "protein_g": 3,
+      "fat_g": 2,
+      "carbs_g": 140,
+      "diet_tags": [
+        "vegetarian",
+        "vegan",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://example.com/penny-de/apples-1kg",
       "price_date": "2026-10-01"
     }
   ]

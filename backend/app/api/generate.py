@@ -13,7 +13,12 @@ from app.schemas.responses import GenerateResponse
 from app.services.catalog import ProductCatalog
 from app.services.limits import DailyCap, current_rate_limit, limiter
 from app.services.llm import LLMOutputError
-from app.services.planner import create_plan, to_response
+from app.services.planner import (
+    NotEnoughProductsError,
+    create_plan,
+    select_candidates,
+    to_response,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +40,13 @@ async def generate(
     if unknown := [s for s in user_input.supermarkets if s not in known_stores]:
         logger.info("Unknown stores for %s: %s", user_input.country, unknown)
         raise AppError(422, "unknown_store", "Unknown store for the selected country")
+    try:
+        candidates = select_candidates(catalog, user_input)
+    except NotEnoughProductsError as e:
+        logger.info("Not enough products: %s", e)
+        raise AppError(
+            422, "not_enough_products", "Not enough products for these stores and diets"
+        ) from None
 
     # Checked after the per-IP limit, so throttled requests don't use up the daily budget.
     if not daily_cap.try_acquire():
@@ -42,14 +54,15 @@ async def generate(
         raise AppError(503, "daily_limit", "Daily limit reached, try tomorrow")
 
     logger.info(
-        "Mode: %s, Budget: €%s, Family: %s",
+        "Mode: %s, Budget: €%s, Family: %s, Candidates: %d",
         user_input.mode,
         user_input.budget,
         user_input.family_size,
+        len(candidates),
     )
     try:
-        plan = await create_plan(client, settings, user_input)
-        return to_response(plan, user_input.language)
+        result = await create_plan(client, settings, catalog, user_input, candidates)
+        return to_response(result, user_input, catalog)
     except openai.APITimeoutError:
         logger.exception("OpenAI request timed out")
         raise AppError(504, "ai_timeout", "AI service timed out") from None

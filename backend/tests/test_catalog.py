@@ -49,7 +49,7 @@ def test_app_starts_with_placeholder_catalog() -> None:
 
 
 def test_fixture_catalog_loads(catalog: ProductCatalog) -> None:
-    assert len(catalog) == 26
+    assert len(catalog) == 39
     assert {p.country for p in catalog.catalog.products} == {"AT", "DE"}
     assert {p.store for p in catalog.catalog.products} == {"Lidl", "Penny"}
 
@@ -137,7 +137,7 @@ def test_get(catalog: ProductCatalog) -> None:
 def test_candidates_filter_by_country(catalog: ProductCatalog) -> None:
     candidates = catalog.candidates("DE", ["Lidl", "Penny"], [])
 
-    assert len(candidates) == 12
+    assert len(candidates) == 19
     assert {p.country for p in candidates} == {"DE"}
 
 
@@ -145,7 +145,7 @@ def test_candidates_filter_by_store(catalog: ProductCatalog) -> None:
     candidates = catalog.candidates("AT", ["Penny"], [])
 
     assert {p.store for p in candidates} == {"Penny"}
-    assert len(candidates) == 6
+    assert len(candidates) == 9
 
 
 def test_candidates_same_store_name_in_other_country_is_excluded(

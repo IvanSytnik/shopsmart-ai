@@ -4,9 +4,7 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from tests.conftest import FakeOpenAI, make_plan
-
-BODY = {"supermarkets": ["Lidl"], "budget": 50}
+from tests.conftest import BODY, FakeOpenAI, make_plan
 
 
 def test_openai_connection_error_returns_503(

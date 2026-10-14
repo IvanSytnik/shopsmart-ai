@@ -24,31 +24,43 @@ ALLOWED_ORIGIN = "http://localhost:3000"
 FIXTURE_CATALOG = Path(__file__).parent / "fixtures" / "catalog_small.json"
 FAKE_BASE_URL = "https://openai.test/v1"
 
-MEAL = {"name": "Oatmeal", "description": "With apples", "calories": 350}
-ITEM = {
-    "product": "Milk",
-    "quantity": "1L",
-    "store": "Lidl",
-    "approx_price": 1.29,
-    "category": "dairy",
-    "calories": 640,
-    "protein": 34.0,
-    "fat": 35.0,
-    "carbs": 48.0,
-}
+# A valid request against the fixture catalog: AT, 18 food candidates.
+BODY: dict[str, Any] = {"supermarkets": ["Lidl", "Penny"], "budget": 50}
+
+# AT fixture products used by the default plan.
+MILK = "at-lidl-milk-1l"  # €1.29
+APPLES = "at-lidl-apples-1kg"  # €1.99
+RICE = "at-penny-rice-1kg"  # €2.29
+SOAP = "at-lidl-dish-soap-500ml"  # €0.99, non-food
+DEFAULT_LINES = {MILK: 2, APPLES: 2, RICE: 1}  # €8.85
 
 
-def day(name: str) -> dict[str, Any]:
-    return {"day": name, "breakfast": MEAL, "lunch": MEAL, "dinner": MEAL, "snack": MEAL}
+def meal(*ingredient_ids: str, name: str = "Porridge") -> dict[str, Any]:
+    return {
+        "name": name,
+        "description": "Quick and filling",
+        "ingredient_ids": list(ingredient_ids),
+    }
 
 
-def make_plan(days: int | None = None, **overrides: Any) -> dict[str, Any]:
-    """A schema-valid LLMPlan payload; `days` adds a menu with that many days."""
+def day(name: str, snack: bool = True) -> dict[str, Any]:
+    return {
+        "day": name,
+        "breakfast": meal(MILK, APPLES),
+        "lunch": meal(RICE, name="Rice bowl"),
+        "dinner": meal(RICE, APPLES, name="Rice with apples"),
+        "snack": meal(APPLES, name="Apple") if snack else None,
+    }
+
+
+def make_plan(
+    lines: dict[str, int] | None = None, days: int | None = None, **overrides: Any
+) -> dict[str, Any]:
+    """An LLMPlan payload; `lines` maps product id -> packs, `days` adds a menu."""
     plan: dict[str, Any] = {
-        "items": [ITEM],
-        "total_cost": 1.29,
-        "notes": "Buy seasonal.",
+        "lines": [{"product_id": i, "packs": n} for i, n in (lines or DEFAULT_LINES).items()],
         "menu": [day(f"Day {i + 1}") for i in range(days)] if days else None,
+        "notes": "Buy seasonal.",
     }
     return {**plan, **overrides}
 

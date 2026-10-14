@@ -1,22 +1,46 @@
+from datetime import datetime
+
 from fastapi.testclient import TestClient
 
-from tests.conftest import ITEM, MEAL, FakeOpenAI, day, make_plan
+from tests.conftest import APPLES, BODY, MILK, RICE, SOAP, FakeOpenAI, make_plan
+
+# make_plan() default: milk x2 (2.58) + apples x2 (3.98) at Lidl, rice x1 (2.29) at Penny.
+DEFAULT_NUTRITION = {"kcal": 5820.0, "protein_g": 144.0, "fat_g": 81.0, "carbs_g": 1156.0}
 
 
 def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     fake_llm.queue_plan(make_plan())
 
-    response = client.post(
-        "/generate", json={"supermarkets": ["Lidl", "Penny"], "budget": 50, "family_size": 3}
-    )
+    response = client.post("/generate", json={**BODY, "family_size": 3})
 
     assert response.status_code == 200
     body = response.json()
-    assert body["items"] == [ITEM]
-    assert body["total_cost"] == 1.29
-    assert body["notes"] == "Buy seasonal."
+    assert [(i["product_id"], i["packs"]) for i in body["items"]] == [
+        (MILK, 2),
+        (APPLES, 2),
+        (RICE, 1),
+    ]
+    assert body["items"][0] == {
+        "product_id": MILK,
+        "name": "Whole milk 3.5%",
+        "store": "Lidl",
+        "category": "dairy",
+        "packs": 2,
+        "pack_size": 1.0,
+        "unit": "l",
+        "unit_price": 1.29,
+        "line_total": 2.58,
+        "nutrition": {"kcal": 1280.0, "protein_g": 68.0, "fat_g": 70.0, "carbs_g": 96.0},
+    }
+    assert body["subtotals_by_store"] == {"Lidl": 6.56, "Penny": 2.29}
+    assert (body["total"], body["budget"], body["budget_remaining"]) == (8.85, 50.0, 41.15)
+    assert body["nutrition_totals"] == DEFAULT_NUTRITION
+    assert body["kcal_per_person_day"] == 277  # 5820 / (3 people x 7 days)
+    assert body["trimmed"] == []
     assert body["menu"] is None
-    assert body["generated_at"]
+    assert body["notes"] == "Buy seasonal."
+    assert (body["catalog_version"], body["price_date"]) == ("test-small-2", "2026-10-01")
+    assert datetime.fromisoformat(body["generated_at"]).tzinfo is not None
 
     assert fake_llm.calls == 1
     request = fake_llm.requests[0]
@@ -28,81 +52,79 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert request["response_format"]["json_schema"]["name"] == "LLMPlan"
 
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
-    assert "Create optimized weekly shopping list" in system_prompt
-    assert "Supermarkets: Lidl, Penny\nBudget: €50.0\nFamily: 3\n" in user_message
-    assert user_message.endswith("Generate 15-25 items.")
+    assert "Return `menu` as null" in system_prompt
+    assert "Write meal names, descriptions and `notes` in English" in system_prompt
+    assert user_message.startswith(
+        "Country: AT\nStores: Lidl, Penny\nBudget: €50.00\nHousehold: 3 people\nDays: 7\n"
+        "Diets: none\n"
+    )
+    assert "\nat-lidl-milk-1l | Whole milk 3.5% | 1 l | €1.29 | Lidl | dairy\n" in user_message
 
 
 def test_menu_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    menu = [day("Montag"), day("Dienstag"), day("Mittwoch")]
-    fake_llm.queue_plan(make_plan(menu=menu, notes="Gut."))
+    plan = make_plan(days=3, notes="Gut.")
+    plan["menu"] = [
+        {**d, "day": n}
+        for d, n in zip(plan["menu"], ["Montag", "Dienstag", "Mittwoch"], strict=True)
+    ]
+    fake_llm.queue_plan(plan)
 
-    response = client.post(
-        "/generate",
-        json={
-            "supermarkets": ["Penny"],
-            "budget": 80,
-            "language": "de",
-            "mode": "menu",
-            "days": 3,
-        },
-    )
+    response = client.post("/generate", json={**BODY, "language": "de", "mode": "menu", "days": 3})
 
     assert response.status_code == 200
     body = response.json()
     assert [d["day"] for d in body["menu"]] == ["Montag", "Dienstag", "Mittwoch"]
-    assert body["menu"][0]["breakfast"] == MEAL
-    assert body["items"] == [ITEM]
+    assert body["menu"][0]["breakfast"] == plan["menu"][0]["breakfast"]
+    assert body["menu"][0]["breakfast"]["ingredient_ids"] == [MILK, APPLES]
+    assert body["items"][0]["name"] == "Vollmilch 3,5%"
+    assert body["total"] == 8.85
+    assert body["kcal_per_person_day"] == 970  # 5820 / (2 people x 3 days)
     assert fake_llm.calls == 1
 
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
-    assert "Antworte auf Deutsch." in system_prompt
-    assert "Create a 3-day meal plan" in system_prompt
-    assert "Days: Montag, Dienstag, Mittwoch\n" in system_prompt
-    assert user_message.endswith("Create 3-day meal plan with shopping list.")
+    assert "in German" in system_prompt
+    assert "exactly 3 days, in this order: Montag, Dienstag, Mittwoch" in system_prompt
+    assert "\nDays: 3\n" in user_message
+    assert "| Vollmilch 3,5% |" in user_message
 
 
 def test_empty_notes_use_localized_fallback(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_plan(make_plan(notes=""))
+    fake_llm.queue_plan(make_plan(notes="  "))
 
-    response = client.post(
-        "/generate", json={"supermarkets": ["Lidl"], "budget": 50, "language": "uk"}
-    )
+    response = client.post("/generate", json={**BODY, "language": "uk"})
 
     assert response.status_code == 200
     assert response.json()["notes"] == "Список оптимізовано під ваш бюджет."
 
 
-def test_null_nutrition_is_returned_as_zero(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    soap = {**ITEM, "product": "Soap", "calories": None, "protein": None, "fat": None}
-    fake_llm.queue_plan(make_plan(items=[{**soap, "carbs": None}]))
+def test_non_food_item_has_no_nutrition(client: TestClient, fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan({SOAP: 2, MILK: 1}))
 
-    response = client.post("/generate", json={"supermarkets": ["Lidl"], "budget": 50})
-
-    assert response.status_code == 200
-    item = response.json()["items"][0]
-    assert (item["calories"], item["protein"], item["fat"], item["carbs"]) == (0, 0, 0, 0)
-
-
-def test_preferences_are_stripped(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_plan(make_plan())
-
-    response = client.post(
-        "/generate", json={"supermarkets": ["Lidl"], "budget": 50, "preferences": "  vegan  "}
-    )
+    response = client.post("/generate", json=BODY)
 
     assert response.status_code == 200
-    assert "\nPreferences: vegan\n" in fake_llm.messages()[1]["content"]
+    soap, milk = response.json()["items"]
+    assert (soap["product_id"], soap["nutrition"], soap["line_total"]) == (SOAP, None, 1.98)
+    assert response.json()["nutrition_totals"]["kcal"] == milk["nutrition"]["kcal"] == 640
 
 
-def test_days_ignored_in_shopping_mode(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    fake_llm.queue_plan(make_plan())
+def test_menu_from_llm_is_ignored_in_shopping_mode(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    fake_llm.queue_plan(make_plan(days=2))
 
-    response = client.post(
-        "/generate", json={"supermarkets": ["Lidl"], "budget": 50, "mode": "shopping", "days": 2}
-    )
+    response = client.post("/generate", json={**BODY, "mode": "shopping", "days": 2})
 
     assert response.status_code == 200
-    system_prompt, user_message = (m["content"] for m in fake_llm.messages())
-    assert "meal plan" not in system_prompt
-    assert "day" not in user_message
+    assert response.json()["menu"] is None
+    assert "\nDays: 7\n" in fake_llm.messages()[1]["content"]
+
+
+def test_de_request_uses_de_candidates(client: TestClient, fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan({"de-lidl-milk-1l": 1, "de-penny-tomatoes-500g": 2}))
+
+    response = client.post("/generate", json={**BODY, "country": "DE"})
+
+    assert response.status_code == 200
+    assert response.json()["total"] == 4.07  # 1.09 + 2 x 1.49
+    assert "\nat-" not in fake_llm.messages()[1]["content"]
