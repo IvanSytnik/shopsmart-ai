@@ -2,7 +2,7 @@
   "name": "shopsmart-ai-frontend",
   "version": "1.0.0",
   "description": "ShopSmart AI - Intelligent Shopping Assistant Frontend",
-  "author": "Ivan Sytnyk <sytnyk@khpi.edu.ua>",
+  "author": "Ivan Sytnik <ivan.sytnik02@gmail.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {

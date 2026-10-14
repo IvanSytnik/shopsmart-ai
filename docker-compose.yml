@@ -1,7 +1,5 @@
 # ShopSmart AI - Docker Compose Configuration
-# Author: Ivan Sytnyk (КН-М524)
-
-version: '3.8'
+# Author: Ivan Sytnik (КН-М524)
 
 services:
   # Backend API Service
@@ -47,6 +45,3 @@ services:
 networks:
   shopsmart-network:
     driver: bridge
-
-volumes:
-  backend-data:

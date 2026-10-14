@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ShopSmart AI - Start Script
-# Author: Ivan Sytnyk (КН-М524)
+# Author: Ivan Sytnik (КН-М524)
 
 set -e
 

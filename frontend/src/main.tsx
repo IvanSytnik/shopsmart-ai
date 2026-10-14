@@ -1,6 +1,6 @@
 /**
  * ShopSmart AI - Application Entry Point
- * Author: Ivan Sytnyk (КН-М524)
+ * Author: Ivan Sytnik (КН-М524)
  */
 
 import React from 'react';

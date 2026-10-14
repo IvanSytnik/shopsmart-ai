@@ -177,8 +177,6 @@ Content-Type: application/json
 |--------|----------|-------------|
 | GET | `/` | API information |
 | GET | `/health` | Health check |
-| GET | `/api/supermarkets` | List of supermarkets |
-| GET | `/api/categories` | List of categories |
 | POST | `/generate` | Generate shopping list |
 
 ## 📁 Project Structure
@@ -231,20 +229,6 @@ VITE_API_URL=http://localhost:8000
 
 `VITE_API_URL` is read at build time. `npm run dev` falls back to `http://localhost:8000` when it is unset; production builds (including the Docker image, via the `VITE_API_URL` build arg, default `http://localhost:8000` in Compose) must set it.
 
-## 🧪 Testing
-
-### Backend Tests
-```bash
-cd backend
-pytest tests/ -v
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm run test
-```
-
 ## 📊 Performance
 
 - **API Response Time:** 3-8 seconds (GPT-4o-mini)
@@ -254,7 +238,6 @@ npm run test
 
 ## 🔒 Security
 
-- CORS configured for specific origins
 - Input validation with Pydantic
 - No sensitive data stored
 
@@ -279,8 +262,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 **Ivan Sytnik**
-- Email: i.sytnik02@gmail.com
-- GitHub: [@isytnik](https://github.com/ivansytnik)
+- Email: ivan.sytnik02@gmail.com
+- GitHub: [@IvanSytnik](https://github.com/IvanSytnik)
 
 ---
 
