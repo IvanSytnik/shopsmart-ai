@@ -81,7 +81,7 @@ cp .env.example .env
 # Edit .env and add your OPENAI_API_KEY
 
 # Run the server
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 ### 3. Frontend Setup
@@ -184,7 +184,12 @@ Content-Type: application/json
 ```
 shopsmart-ai/
 ├── backend/
-│   ├── main.py              # FastAPI application
+│   ├── app/
+│   │   ├── main.py          # App factory (create_app), middleware, routers
+│   │   ├── config.py        # Settings (env-driven, pydantic-settings)
+│   │   ├── api/             # Routers: health, generate; dependencies
+│   │   ├── schemas/         # Request, response and LLM output models
+│   │   └── services/        # OpenAI client, prompt building
 │   ├── requirements.txt     # Python runtime dependencies
 │   ├── requirements-dev.txt # Test + lint tooling
 │   ├── pyproject.toml       # ruff config
@@ -216,11 +221,15 @@ shopsmart-ai/
 
 #### Backend (.env)
 ```env
-OPENAI_API_KEY=sk-your-api-key
-HOST=0.0.0.0
-PORT=8000
-ENVIRONMENT=development
+OPENAI_API_KEY=sk-your-api-key            # required
+OPENAI_MODEL=gpt-4o-mini                   # default
+OPENAI_TEMPERATURE=0.7                     # default
+OPENAI_MAX_TOKENS=4000                     # default
+CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
+ENVIRONMENT=development                    # development | production
 ```
+
+Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default.
 
 #### Frontend (.env.local)
 ```env

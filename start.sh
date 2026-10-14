@@ -34,7 +34,7 @@ fi
 echo "Starting Backend (port 8000)..."
 cd backend
 source venv/bin/activate
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
 cd ..
 
