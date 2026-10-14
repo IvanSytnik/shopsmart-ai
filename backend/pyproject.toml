@@ -1,0 +1,10 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Legacy v1 single-file app, rewritten in Phase 1.1 (app/ layout). Drop this entry then.
+"main.py" = ["E501", "E701", "W293", "I001", "UP006", "UP035", "UP045", "B904"]

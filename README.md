@@ -70,8 +70,11 @@ cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (runtime + dev tooling)
+pip install -r requirements.txt -r requirements-dev.txt
+
+# Lint
+ruff check .
 
 # Configure environment
 cp .env.example .env
@@ -184,7 +187,9 @@ Content-Type: application/json
 shopsmart-ai/
 ├── backend/
 │   ├── main.py              # FastAPI application
-│   ├── requirements.txt     # Python dependencies
+│   ├── requirements.txt     # Python runtime dependencies
+│   ├── requirements-dev.txt # Test + lint tooling
+│   ├── pyproject.toml       # ruff config
 │   ├── Dockerfile          # Backend container
 │   └── .env.example        # Environment template
 ├── frontend/

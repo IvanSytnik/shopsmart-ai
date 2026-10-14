@@ -1,0 +1,9 @@
+# ShopSmart AI - Backend dev/test dependencies
+-r requirements.txt
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+
+# Lint + format
+ruff==0.17.0
