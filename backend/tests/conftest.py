@@ -15,6 +15,7 @@ os.environ["OPENAI_API_KEY"] = "sk-test-not-a-real-key"
 from app.api.deps import get_llm_client  # noqa: E402
 from app.config import Settings  # noqa: E402
 from app.main import create_app  # noqa: E402
+from app.services.limits import limiter  # noqa: E402
 
 ALLOWED_ORIGIN = "http://localhost:3000"
 FAKE_BASE_URL = "https://openai.test/v1"
@@ -122,6 +123,12 @@ def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
         raise RuntimeError("network access attempted in tests")
 
     monkeypatch.setattr(socket.socket, "connect", guard)
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter() -> None:
+    # The limiter is module-level (one per process), so clear its counters between tests.
+    limiter.reset()
 
 
 @pytest.fixture

@@ -16,5 +16,9 @@ openai==3.31.0
 # Environment Variables
 python-dotenv==1.2.4
 
+# Rate limiting (limits is slowapi's backend; also used to validate RATE_LIMIT)
+slowapi==0.1.10
+limits==5.8.0
+
 # HTTP Client
 httpx==0.26.0

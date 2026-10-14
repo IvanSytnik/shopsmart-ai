@@ -14,6 +14,9 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000}
+      - RATE_LIMIT=${RATE_LIMIT:-10/minute}
+      - DAILY_GENERATE_CAP=${DAILY_GENERATE_CAP:-200}
+      - FORWARDED_ALLOW_IPS=${FORWARDED_ALLOW_IPS:-127.0.0.1}
       - HOST=0.0.0.0
       - PORT=8000
       - ENVIRONMENT=production

@@ -29,6 +29,10 @@ class ApiService {
 
       clearTimeout(timeoutId);
 
+      if (response.status === 429) {
+        throw new Error(translations[input.language].errorRateLimited);
+      }
+
       if (response.status === 504) {
         throw new Error(translations[input.language].errorTimeout);
       }

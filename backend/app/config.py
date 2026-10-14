@@ -1,6 +1,7 @@
 from typing import Annotated, Literal
 
-from pydantic import SecretStr, field_validator
+import limits
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
@@ -18,6 +19,16 @@ class Settings(BaseSettings):
     # Comma-separated in the environment: CORS_ORIGINS=http://localhost:3000,https://example.com
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
     environment: Literal["development", "production"] = "development"
+    # Per client IP on POST /generate, slowapi syntax: "10/minute", "100/hour"
+    rate_limit: str = "10/minute"
+    # Max /generate calls per UTC day (in-memory, per process)
+    daily_generate_cap: int = Field(default=200, ge=1)
+
+    @field_validator("rate_limit")
+    @classmethod
+    def check_rate_limit(cls, value: str) -> str:
+        limits.parse(value)  # raises ValueError on bad syntax
+        return value
 
     @field_validator("cors_origins", mode="before")
     @classmethod
