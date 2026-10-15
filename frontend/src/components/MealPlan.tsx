@@ -1,7 +1,7 @@
 import React from 'react';
 import { DayMenu, GenerateResponse } from '../types';
 import { useLanguage } from '../LanguageContext';
-import { formatPortion, itemsById, nameFromId, productName } from './results/format';
+import { formatPortion, itemsById, nameFromId, portionUnitOf, productName } from './results/format';
 
 interface MealPlanProps {
   response: GenerateResponse;
@@ -83,7 +83,7 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
                                 </span>
                               )}
                               {productName(item, language)} ·{' '}
-                              {formatPortion(amount_per_person, item.unit, language, t)}
+                              {formatPortion(amount_per_person, portionUnitOf(item), language, t)}
                             </li>
                           ) : (
                             <li

@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from app.main import create_app
 from app.schemas.catalog import NON_FOOD_CATEGORIES
 from app.services.catalog import CatalogLoadError, ProductCatalog, load_catalog
-from tests.conftest import make_settings
+from tests.conftest import FIXTURE_CATALOG, make_settings
 
 FIXTURE = Path(__file__).parent / "fixtures" / "catalog_small.json"
 PLACEHOLDER = Path(__file__).parents[1] / "app" / "data" / "catalog.json"
@@ -83,6 +83,12 @@ def _break_first_product(**changes: Any) -> dict[str, Any]:
             "whole number for unit 'pack'",
         ),
         (
+            "portion unit that doesn't fit the unit",
+            _break_first_product(portion_unit="g"),  # milk is sold by the litre
+            "portion_unit 'g' doesn't fit unit 'l'",
+        ),
+        ("unknown portion unit", _break_first_product(portion_unit="cup"), "portion_unit"),
+        (
             "fractional pcs",
             _break_first_product(unit="pcs", pack_size=2.5),
             "whole number for unit 'pcs'",
@@ -120,6 +126,23 @@ def test_valid_pack_sizes(
     catalog = load_catalog(write_catalog(_break_first_product(unit=unit, pack_size=pack_size)))
 
     assert catalog.get("at-lidl-milk-1l") is not None
+
+
+def test_portion_unit_defaults_from_the_unit() -> None:
+    catalog = load_catalog(FIXTURE_CATALOG)
+
+    units = {
+        product_id: (p.unit, p.portion_unit)
+        for product_id in ("at-lidl-milk-1l", "at-lidl-apples-1kg", "de-lidl-eggs-10")
+        if (p := catalog.get(product_id)) is not None
+    }
+    assert units == {
+        "at-lidl-milk-1l": ("l", "ml"),
+        "at-lidl-apples-1kg": ("kg", "g"),
+        "de-lidl-eggs-10": ("pcs", "pcs"),
+    }
+    pizza = catalog.get("at-penny-frozen-pizza-350g")
+    assert pizza is not None and (pizza.unit, pizza.portion_unit) == ("kg", "pack")
 
 
 def test_missing_catalog_file_fails_fast(tmp_path: Path) -> None:

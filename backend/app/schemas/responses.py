@@ -9,7 +9,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.schemas.catalog import Category, Country, DietTag, LocalizedName, Unit
+from app.schemas.catalog import Category, Country, DietTag, LocalizedName, PortionUnit, Unit
 
 
 class Nutrition(BaseModel):
@@ -28,6 +28,8 @@ class Item(BaseModel):
     packs: int
     pack_size: float
     unit: Unit
+    # Menu portions of this product (amount_per_person) are in g, ml, pcs or packs.
+    portion_unit: PortionUnit
     unit_price: float  # per pack
     line_total: float
     nutrition: Nutrition | None  # for all packs; None for non-food
@@ -45,8 +47,8 @@ class TrimmedItem(BaseModel):
 
 class MealIngredient(BaseModel):
     product_id: str
-    # One person's amount in this meal: grams (unit kg), ml (unit l) or pieces (pcs, pack).
-    amount_per_person: int
+    # One person's amount in this meal, in the item's `portion_unit`.
+    amount_per_person: float
 
 
 class Meal(BaseModel):

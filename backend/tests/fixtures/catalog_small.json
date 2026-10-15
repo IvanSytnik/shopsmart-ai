@@ -312,6 +312,7 @@
       "category": "frozen",
       "unit": "kg",
       "pack_size": 0.35,
+      "portion_unit": "pack",
       "price_eur": 2.79,
       "kcal": 840,
       "protein_g": 34,

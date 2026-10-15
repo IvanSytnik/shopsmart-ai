@@ -180,7 +180,7 @@ How a plan is made:
 1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
 2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 500 candidates in shopping mode and above 125 in menu mode, where the ids appear in each of the 4 meals). No prices, no totals from the model.
    - `shopping`: `lines: [{product_id, packs 1–20}]` and notes.
-   - `menu`: only dishes (food candidates only). Each meal lists `ingredients: [{product_id, amount_per_person}]`, the amount one person eats in that meal in the product's portion unit: grams for products sold by kg, ml for l, pieces for pcs/pack (5–800 g or ml, 1–6 pcs; the server clamps a portion outside this range to the nearest bound instead of asking for a repair). The prompt gives typical portions and each candidate's energy per portion unit.
+   - `menu`: only dishes (food candidates only). Each meal lists `ingredients: [{product_id, amount_per_person}]`, the amount one person eats in that meal in the product's `portion_unit`: `g`, `ml`, `pcs`, or `pack` = a fraction of one whole pack in steps of 0.25 (e.g. 0.5 of a frozen pizza). Allowed: 5–800 g or ml, 1–6 pcs, 0.25–2 packs; the server clamps a portion outside this range to the nearest bound instead of asking for a repair. The catalog's optional `portion_unit` defaults from `unit` (kg → g, l → ml, pcs → pcs, pack → pack); `pack` is allowed for any unit. The prompt gives typical portions and each candidate's energy per portion unit.
 3. **Quantities (menu mode)**: per product, required = Σ `amount_per_person` × `family_size` over all meals; packs = ⌈required / pack size⌉ (at least 1). The model never chooses pack counts in menu mode.
    **kcal normalization**: if the portions give less than `MIN_KCAL_PER_PERSON_DAY` per person and day, all portions are scaled up by min / kcal × 1.05 (at most × 1.6); above `MAX_KCAL_PER_PERSON_DAY` they are scaled down by max / kcal × 0.95. Scaled portions are rounded (g/ml to 5, pcs to 1) and clamped to their range, then the packs are recomputed. Only a menu still outside the range after this goes to the repair step. The prompt also asks for about 450/650/650/250 kcal per person for breakfast/lunch/dinner/snack.
 4. **Checks + one repair**: empty list, wrong-length menu, meals without ingredients, a total over budget (the repair message states the overshoot in €; in menu mode it also names the 3 most expensive ingredients), or, in menu mode, eaten kcal per person and day below `MIN_KCAL_PER_PERSON_DAY` or above `MAX_KCAL_PER_PERSON_DAY` (the message states current vs limit) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal range, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and nothing is bought besides what the menu uses.
@@ -218,6 +218,7 @@ Response to the request above with the test catalog (2 of 5 items shown). The me
       "packs": 1,
       "pack_size": 1.0,
       "unit": "l",
+      "portion_unit": "ml",
       "unit_price": 1.29,
       "line_total": 1.29,
       "nutrition": {"kcal": 640.0, "protein_g": 34.0, "fat_g": 35.0, "carbs_g": 48.0}
@@ -231,6 +232,7 @@ Response to the request above with the test catalog (2 of 5 items shown). The me
       "packs": 1,
       "pack_size": 0.175,
       "unit": "kg",
+      "portion_unit": "g",
       "unit_price": 1.79,
       "line_total": 1.79,
       "nutrition": {"kcal": 940.0, "protein_g": 11.0, "fat_g": 60.0, "carbs_g": 90.0}
@@ -300,12 +302,13 @@ Response to the request above with the test catalog (2 of 5 items shown). The me
 | Field | Meaning |
 |---|---|
 | `items[].name` / `names` | product name in the request language / in all languages (`en`, `uk`, `de`) from the catalog, so a client can switch language without a new plan |
+| `items[].portion_unit` | what menu portions of this product are counted in: `g`, `ml`, `pcs` or `pack` (a fraction of one pack) |
 | `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
 | `items[].nutrition` | for all packs; `null` for non-food |
 | `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
 | `kcal_per_person_day`, `kcal_basis` | kcal / (`family_size` × days). `kcal_basis: "menu"` (menu mode): what the menu's portions provide, counting only what is bought after trimming. `kcal_basis: "purchased"` (shopping mode, 7 days): `nutrition_totals.kcal` of the purchased packs, an upper bound |
 | `trimmed` | lines the server cut to fit the budget, with `name` and `names` like `items` (a removed line isn't in `items`); `to_packs: 0` = removed |
-| `menu` | `null` in shopping mode. `ingredients[].product_id` refers to `items` (an ingredient may be missing if it was trimmed); `amount_per_person` is in g (unit kg), ml (unit l) or pieces (pcs, pack). Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
+| `menu` | `null` in shopping mode. `ingredients[].product_id` refers to `items` (an ingredient may be missing if it was trimmed); `amount_per_person` is in the item's `portion_unit`. Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
 | `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt and any trimming; `budget_trimmed`: `trimmed` is not empty |
 | `catalog_version`, `price_date` | which reference prices were used |
 

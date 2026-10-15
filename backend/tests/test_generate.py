@@ -29,6 +29,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
         "packs": 2,
         "pack_size": 1.0,
         "unit": "l",
+        "portion_unit": "ml",
         "unit_price": 1.29,
         "line_total": 2.58,
         "nutrition": {"kcal": 1280.0, "protein_g": 68.0, "fat_g": 70.0, "carbs_g": 96.0},
@@ -101,10 +102,10 @@ def test_menu_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert "exactly 3 days, in this order: Montag, Dienstag, Mittwoch" in system_prompt
     assert "\nDays: 3\n" in user_message
     assert (
-        "\nat-lidl-milk-1l | Vollmilch 3,5% | 1 l | €1.29 | Lidl | dairy | ml | 64 kcal/100 ml\n"
-        in (user_message)
+        "\nat-lidl-milk-1l | Vollmilch 3,5% | 1 l | €1.29 | Lidl | dairy | portion: ml | "
+        "64 kcal/100 ml\n" in user_message
     )
-    assert "| portion unit | energy):" in user_message
+    assert "| portion | energy):" in user_message
     assert "dish-soap" not in user_message  # menus use food only
 
 

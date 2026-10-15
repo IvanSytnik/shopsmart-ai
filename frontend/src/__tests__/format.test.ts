@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { formatPortion, formatSize } from '../components/results/format';
+import { formatPortion, formatSize, portionUnitOf } from '../components/results/format';
+import type { Item } from '../types';
 import { translations, Language, TranslationKey } from '../translations';
 
 const fmt = (size: number, unit: 'kg' | 'l' | 'pcs' | 'pack', language: Language = 'en') =>
@@ -29,15 +30,21 @@ describe('formatSize', () => {
 });
 
 describe('formatPortion', () => {
-  const portion = (amount: number, unit: 'kg' | 'l' | 'pcs' | 'pack', language: Language = 'en') =>
+  const portion = (amount: number, unit: 'g' | 'ml' | 'pcs' | 'pack', language: Language = 'en') =>
     formatPortion(amount, unit, language, (key: TranslationKey) => translations[language][key]);
 
-  it('shows grams for kg products, ml for l, pieces otherwise', () => {
-    expect(portion(80, 'kg')).toBe('80 g');
-    expect(portion(200, 'l')).toBe('200 ml');
+  it('shows the amount in its portion unit', () => {
+    expect(portion(80, 'g')).toBe('80 g');
+    expect(portion(200, 'ml')).toBe('200 ml');
     expect(portion(2, 'pcs')).toBe('2 pcs');
-    expect(portion(1, 'pack')).toBe('1 pcs');
-    expect(portion(80, 'kg', 'de')).toBe('80 g');
+    expect(portion(0.5, 'pack')).toBe('0.5 pack');
+    expect(portion(0.75, 'pack', 'de')).toBe('0,75 Pkg.');
     expect(portion(2, 'pcs', 'uk')).toBe('2 шт.');
+  });
+
+  it('derives the portion unit for plans saved without one', () => {
+    expect(portionUnitOf({ unit: 'kg', portion_unit: 'pack' })).toBe('pack');
+    const legacy = { unit: 'kg' } as unknown as Pick<Item, 'unit' | 'portion_unit'>;
+    expect(portionUnitOf(legacy)).toBe('g');
   });
 });

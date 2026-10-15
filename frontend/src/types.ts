@@ -4,6 +4,8 @@ import type { Language } from './translations';
 export type Country = 'AT' | 'DE';
 export type DietTag = 'vegetarian' | 'vegan' | 'gluten_free' | 'lactose_free';
 export type Unit = 'kg' | 'l' | 'pcs' | 'pack';
+// What a menu portion is counted in; 'pack' = a fraction of one pack.
+export type PortionUnit = 'g' | 'ml' | 'pcs' | 'pack';
 export type Category =
   | 'vegetables'
   | 'fruits'
@@ -53,6 +55,7 @@ export interface Item {
   packs: number;
   pack_size: number;
   unit: Unit;
+  portion_unit: PortionUnit;
   unit_price: number; // per pack
   line_total: number;
   nutrition: Nutrition | null; // for all packs; null for non-food
@@ -68,7 +71,7 @@ export interface TrimmedItem {
 
 export interface MealIngredient {
   product_id: string;
-  // One person's amount in this meal: g (unit kg), ml (unit l) or pieces (pcs, pack).
+  // One person's amount in this meal, in the item's portion_unit.
   amount_per_person: number;
 }
 

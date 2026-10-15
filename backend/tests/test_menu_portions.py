@@ -11,6 +11,7 @@ from tests.conftest import APPLES, BODY, MILK, RICE, FakeOpenAI, ing, make_plan,
 CHICKEN = "at-lidl-chicken-breast-500g"  # 0.5 kg, €5.99
 CHIPS = "at-lidl-potato-chips-175g"  # 0.175 kg, €1.79
 EGGS = "de-lidl-eggs-10"  # 10 pcs
+PIZZA = "at-penny-frozen-pizza-350g"  # 0.35 kg, portion unit "pack", 840 kcal
 MENU_1_DAY = {**BODY, "mode": "menu", "days": 1}
 
 
@@ -33,7 +34,7 @@ def test_menu_schema_has_portions_and_no_lines(client: TestClient, fake_llm: Fak
     assert list(menu["schema"]["properties"]) == ["menu", "notes"]
     assert "LLMLine" not in menu["schema"]["$defs"]
     amount = menu["schema"]["$defs"]["LLMIngredient"]["properties"]["amount_per_person"]
-    assert (amount["type"], amount["minimum"], amount["maximum"]) == ("integer", 1, 800)
+    assert (amount["type"], amount["minimum"], amount["maximum"]) == ("number", 0.25, 800)
     assert shopping["name"] == "LLMShoppingPlan"
     assert list(shopping["schema"]["properties"]) == ["lines", "notes"]
 
@@ -76,7 +77,7 @@ def test_pieces_are_counted_per_person(client: TestClient, fake_llm: FakeOpenAI)
     assert packs[EGGS] == 2  # 3 eggs x 4 people = 12 -> 2 boxes of 10
     assert packs["de-penny-pasta-500g"] == 2  # 200 g x 4 = 800 g -> 2 x 500 g
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
-    assert "| pcs | " in user_message and " kcal/pc\n" in user_message
+    assert "| portion: pcs | 78 kcal/pc\n" in user_message
     assert "eggs 1-3 pcs" in system_prompt
 
 
@@ -127,6 +128,36 @@ def test_meals_without_ingredients_are_repaired(client: TestClient, fake_llm: Fa
 
     assert fake_llm.messages(1)[-1]["content"] == (
         "These meals have no ingredients: Day 1 lunch. Every meal needs at least one ingredient."
+    )
+
+
+def test_pack_portions_buy_whole_packs(client: TestClient, fake_llm: FakeOpenAI) -> None:
+    menu = one_day(
+        meal(ing(RICE, 100)),
+        meal(ing(RICE, 100)),
+        meal(ing(PIZZA, 0.5), name="Half a pizza"),
+    )
+    fake_llm.queue_plan(make_plan(days=1, menu=menu))
+
+    response = client.post("/generate", json={**MENU_1_DAY, "family_size": 3})
+
+    assert response.status_code == 200
+    body = response.json()
+    pizza = next(i for i in body["items"] if i["product_id"] == PIZZA)
+    assert (pizza["packs"], pizza["unit"], pizza["portion_unit"]) == (2, "kg", "pack")  # 1.5
+    assert body["menu"][0]["dinner"]["ingredients"] == [
+        {"product_id": PIZZA, "amount_per_person": 0.5}
+    ]
+    # Per person: 200 g rice (700 kcal) + half a pizza (420 kcal).
+    assert body["kcal_per_person_day"] == 1120
+    user_message = fake_llm.messages()[1]["content"]
+    assert (
+        f"\n{PIZZA} | Frozen pizza margherita | 0.35 kg | €2.79 | Penny | frozen | "
+        "portion: pack (1 = one whole 350 g pack) | 840 kcal/pack\n" in user_message
+    )
+    assert (
+        "packs (pack: a fraction of one whole pack in steps of 0.25"
+        in (fake_llm.messages()[0]["content"])
     )
 
 

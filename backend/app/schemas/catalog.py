@@ -3,13 +3,22 @@
 from collections import Counter
 from datetime import date
 from decimal import Decimal
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
 Country = Literal["AT", "DE"]
 DietTag = Literal["vegetarian", "vegan", "gluten_free", "lactose_free"]
 Unit = Literal["kg", "l", "pcs", "pack"]
+# What a menu portion (amount_per_person) is counted in. "pack" = a fraction of one pack.
+PortionUnit = Literal["g", "ml", "pcs", "pack"]
+DEFAULT_PORTION_UNIT: dict[Unit, PortionUnit] = {"kg": "g", "l": "ml", "pcs": "pcs", "pack": "pack"}
+ALLOWED_PORTION_UNITS: dict[Unit, frozenset[PortionUnit]] = {
+    "kg": frozenset({"g", "pack"}),
+    "l": frozenset({"ml", "pack"}),
+    "pcs": frozenset({"pcs", "pack"}),
+    "pack": frozenset({"pack"}),
+}
 # Mirrors frontend/src/types.ts (ProductCategory).
 Category = Literal[
     "vegetables",
@@ -58,6 +67,8 @@ class Product(BaseModel):
     category: Category
     unit: Unit
     pack_size: float = Field(gt=0, description="Pack contents, in `unit`.")
+    # Optional in the JSON; defaults from `unit` (kg -> g, l -> ml, pcs -> pcs, pack -> pack).
+    portion_unit: PortionUnit
     price_eur: Decimal = Field(gt=0, decimal_places=2, description="Price of one pack.")
     # Per pack; all four null for non-food.
     kcal: Grams | None
@@ -67,6 +78,15 @@ class Product(BaseModel):
     diet_tags: Annotated[list[DietTag], AfterValidator(_unique_tags)]
     source_url: HttpUrl
     price_date: date
+
+    @model_validator(mode="before")
+    @classmethod
+    def default_portion_unit(cls, data: Any) -> Any:
+        if isinstance(data, dict) and data.get("portion_unit") is None:
+            unit = data.get("unit")
+            if unit in DEFAULT_PORTION_UNIT:
+                return {**data, "portion_unit": DEFAULT_PORTION_UNIT[unit]}
+        return data
 
     @model_validator(mode="after")
     def check_consistency(self) -> "Product":
@@ -78,6 +98,8 @@ class Product(BaseModel):
         # pcs/pack count whole things; a fractional weight belongs in kg or l.
         if self.unit in ("pcs", "pack") and not self.pack_size.is_integer():
             raise ValueError(f"pack_size must be a whole number for unit {self.unit!r}")
+        if self.portion_unit not in ALLOWED_PORTION_UNITS[self.unit]:
+            raise ValueError(f"portion_unit {self.portion_unit!r} doesn't fit unit {self.unit!r}")
         return self
 
 

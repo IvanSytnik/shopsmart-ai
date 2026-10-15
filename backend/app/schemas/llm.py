@@ -20,9 +20,9 @@ from pydantic import BaseModel, Field, create_model
 from app.schemas.requests import Mode
 
 MAX_PACKS = 20
-# Schema-level bounds for amount_per_person; the per-unit limits (g/ml 5-800, pcs 1-6) are
-# checked by the server, see app.services.portions.PORTION_BOUNDS.
-MIN_PORTION = 1
+# Schema-level bounds for amount_per_person; the per-unit limits (g/ml 5-800, pcs 1-6,
+# pack 0.25-2) are applied by the server, see app.services.portions.PORTION_BOUNDS.
+MIN_PORTION = 0.25
 MAX_PORTION = 800
 
 
@@ -39,7 +39,7 @@ class LLMShoppingPlan(Protocol):
 
 class LLMIngredient(Protocol):
     product_id: str
-    amount_per_person: int
+    amount_per_person: float
 
 
 class LLMMeal(Protocol):
@@ -117,7 +117,7 @@ def _menu_model(product_id: Any) -> type[BaseModel]:
     ingredient = create_model(
         "LLMIngredient",
         product_id=(product_id, ...),
-        amount_per_person=(int, Field(ge=MIN_PORTION, le=MAX_PORTION)),
+        amount_per_person=(float, Field(ge=MIN_PORTION, le=MAX_PORTION)),
     )
     meal = create_model(
         "LLMMeal",

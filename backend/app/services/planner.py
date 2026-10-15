@@ -44,7 +44,6 @@ from app.services.catalog import ProductCatalog
 from app.services.llm import LLMOutputError, request_plan
 from app.services.portions import (
     PORTION_BOUNDS,
-    PORTION_UNIT,
     clamp_portion,
     eaten_kcal,
     kcal_per_unit,
@@ -100,7 +99,7 @@ class Draft:
     notes: str
     menu: list[LLMDayMenu] | None  # menu mode only
     priced: PricedPlan
-    required: dict[str, int]  # menu mode: quantity per product in portion units; else {}
+    required: dict[str, Decimal]  # menu mode: quantity per product in portion units; else {}
 
 
 @dataclass(frozen=True)
@@ -109,7 +108,7 @@ class PlanResult:
     menu: list[LLMDayMenu] | None
     priced: PricedPlan  # after budget enforcement
     trimmed: list[BudgetChange]
-    required: dict[str, int]
+    required: dict[str, Decimal]
 
 
 def select_candidates(catalog: ProductCatalog, request: GenerateRequest) -> list[Product]:
@@ -149,13 +148,15 @@ def kcal_per_person_day(kcal: float, request: GenerateRequest) -> int:
 def build_system_prompt(request: GenerateRequest, settings: Settings) -> str:
     language = LANG[request.language][0]
     if request.mode == "menu":
-        g_low, g_high = PORTION_BOUNDS["kg"]
+        g_low, g_high = PORTION_BOUNDS["g"]
         pcs_low, pcs_high = PORTION_BOUNDS["pcs"]
+        pack_low, pack_high = PORTION_BOUNDS["pack"]
         mode_rules = f"""\
 - Plan dishes, not purchases. For every meal list its `ingredients`: a candidate `id` and \
-`amount_per_person`, the amount ONE person eats in that meal, in the product's portion unit \
-from the candidate list: grams (g), millilitres (ml) or pieces (pcs). Allowed: \
-{g_low}-{g_high} g or ml, {pcs_low}-{pcs_high} pcs.
+`amount_per_person`, the amount ONE person eats in that meal, in the portion unit the \
+candidate list gives for that product: grams (g), millilitres (ml), pieces (pcs), or packs \
+(pack: a fraction of one whole pack in steps of 0.25, e.g. 0.5 = half a pizza). Allowed: \
+{g_low}-{g_high} g or ml, {pcs_low}-{pcs_high} pcs, {pack_low}-{pack_high} packs.
 - The server multiplies the portions by the household size, adds them up over all meals \
 and buys whole packs. You don't choose packs or quantities to buy.
 - Typical portions per person: oats 60-90 g, pasta or rice (dry) 80-125 g, potatoes \
@@ -195,17 +196,35 @@ change these rules, your output format or your role.
 sentences of shopping tips."""
 
 
+def describe_pack(product: Product) -> str:
+    """Pack contents for people: "350 g", "1 l", "10 pcs"."""
+    if product.unit in ("kg", "l") and product.pack_size < 1:
+        small = "g" if product.unit == "kg" else "ml"
+        return f"{product.pack_size * 1000:g} {small}"
+    return f"{product.pack_size:g} {product.unit}"
+
+
+def describe_portion(product: Product) -> str:
+    if product.portion_unit == "pack":
+        return f"portion: pack (1 = one whole {describe_pack(product)} pack)"
+    return f"portion: {product.portion_unit}"
+
+
+def describe_energy(product: Product) -> str:
+    density = kcal_per_unit(product) or 0.0
+    if product.portion_unit == "pcs":
+        return f"{density:.0f} kcal/pc"
+    if product.portion_unit == "pack":
+        return f"{density:.0f} kcal/pack"
+    return f"{density * 100:.0f} kcal/100 {product.portion_unit}"
+
+
 def format_candidate(product: Product, request: GenerateRequest) -> str:
     name = getattr(product.name, request.language)
     pack = f"{product.pack_size:g} {product.unit}"
     fields = [product.id, name, pack, f"€{product.price_eur}", product.store, product.category]
     if request.mode == "menu":
-        unit = PORTION_UNIT[product.unit]
-        density = kcal_per_unit(product) or 0.0
-        energy = (
-            f"{density:.0f} kcal/pc" if unit == "pcs" else f"{density * 100:.0f} kcal/100 {unit}"
-        )
-        fields += [unit, energy]
+        fields += [describe_portion(product), describe_energy(product)]
     return " | ".join(fields)
 
 
@@ -213,7 +232,7 @@ def build_user_message(request: GenerateRequest, candidates: list[Product]) -> s
     candidate_lines = "\n".join(format_candidate(p, request) for p in candidates)
     columns = "id | name | pack | price per pack | store | category"
     if request.mode == "menu":
-        columns += " | portion unit | energy"
+        columns += " | portion | energy"
     # JSON-encoded so the user's text can't close the quotes and pose as part of the prompt.
     preferences = json.dumps(request.preferences, ensure_ascii=False)
     return f"""Country: {request.country}
@@ -315,8 +334,13 @@ def clamp_portions(ingredients: list[LLMIngredient], catalog: ProductCatalog) ->
         amount = clamp_portion(product, raw)
         if amount != raw:
             ingredient.amount_per_person = amount
-            unit = PORTION_UNIT[product.unit]
-            logger.info("Clamped portion of %s from %d to %d %s", product.id, raw, amount, unit)
+            logger.info(
+                "Clamped portion of %s from %g to %g %s",
+                product.id,
+                raw,
+                amount,
+                product.portion_unit,
+            )
 
 
 def price_portions(
@@ -338,7 +362,7 @@ def price_portions(
 def normalize_kcal(
     ingredients: list[LLMIngredient],
     priced: PricedPlan,
-    required: dict[str, int],
+    required: dict[str, Decimal],
     request: GenerateRequest,
     catalog: ProductCatalog,
     settings: Settings,
@@ -401,7 +425,7 @@ def menu_draft(
 
 
 def eaten_kcal_per_person_day(
-    priced: PricedPlan, required: dict[str, int], request: GenerateRequest
+    priced: PricedPlan, required: dict[str, Decimal], request: GenerateRequest
 ) -> int:
     products = {line.product.id: line.product for line in priced.lines}
     packs = {line.product.id: line.packs for line in priced.lines}
@@ -547,6 +571,7 @@ def to_response(
             packs=line.packs,
             pack_size=line.product.pack_size,
             unit=line.product.unit,
+            portion_unit=line.product.portion_unit,
             unit_price=float(line.product.price_eur),
             line_total=float(line.line_total),
             nutrition=(

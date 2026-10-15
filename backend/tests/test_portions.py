@@ -1,5 +1,7 @@
 """Portion arithmetic for menu mode: quantities, pack rounding, eaten kcal."""
 
+from decimal import Decimal
+
 import pytest
 
 from app.schemas.catalog import Product
@@ -26,6 +28,7 @@ def product(product_id: str) -> Product:
 
 CHICKEN = product("at-lidl-chicken-breast-500g")  # 0.5 kg, 550 kcal
 EGGS = product("de-lidl-eggs-10")  # 10 pcs
+PIZZA = product("at-penny-frozen-pizza-350g")  # 350 g, portion unit "pack", 840 kcal
 
 
 def test_pack_quantity_is_in_the_portion_unit() -> None:
@@ -129,3 +132,28 @@ def test_scaled_portions_are_rounded_to_the_unit_step(
     unit_product: Product, amount: int, factor: float, expected: int
 ) -> None:
     assert scale_portion(unit_product, amount, factor) == expected
+
+
+def test_pack_portions_are_fractions_of_one_pack() -> None:
+    assert pack_quantity(PIZZA) == 1
+    # Half a pizza each for 3 people: 1.5 pizzas -> 2 packs.
+    required = required_quantities([(PIZZA.id, 0.5)], family_size=3)
+    assert required == {PIZZA.id: Decimal("1.5")}
+    assert packs_needed(PIZZA, required[PIZZA.id]) == 2
+    assert packs_needed(PIZZA, Decimal("2.00")) == 2  # 0.25 steps add up exactly
+
+
+def test_pack_portion_kcal_are_per_pack() -> None:
+    # Half a pizza eaten out of 1 bought: 420 kcal.
+    assert eaten_kcal({PIZZA.id: Decimal("0.5")}, {PIZZA.id: 1}, {PIZZA.id: PIZZA}) == 420
+
+
+@pytest.mark.parametrize(
+    ("amount", "factor", "scaled", "clamped"),
+    [(0.5, 1.2, 0.5, 0.5), (0.5, 1.3, 0.75, 0.75), (1.5, 1.6, 2.5, 2.0), (0.25, 0.4, 0.0, 0.25)],
+)
+def test_pack_portions_round_to_quarters_and_clamp(
+    amount: float, factor: float, scaled: float, clamped: float
+) -> None:
+    assert scale_portion(PIZZA, amount, factor) == scaled
+    assert clamp_portion(PIZZA, scaled) == clamped
