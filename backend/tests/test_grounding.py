@@ -564,7 +564,7 @@ def test_budget_rule_depends_on_mode(
 
     shopping, menu = (fake_llm.messages(call)[0]["content"] for call in (0, 1))
     assert "Spend 85-98% of the budget and never more." in shopping
-    assert "ceiling" not in shopping and "kcal" not in shopping
+    assert "ceiling" not in shopping and "kcal per day" not in shopping
     assert "The budget is a ceiling, not a target: choose affordable dishes." in menu
     assert "Each person should get 1800-3200 kcal per day from the meals" in menu
     assert (

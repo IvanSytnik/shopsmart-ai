@@ -60,9 +60,12 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert "Write meal names, descriptions and `notes` in English" in system_prompt
     assert user_message.startswith(
         "Country: AT\nStores: Lidl, Penny\nBudget: €50.00\nHousehold: 3 people\nDays: 7\n"
-        "Diets: none\n"
+        "Budget per person per day: €2.38\nDiets: none\n"
     )
-    assert "\nat-lidl-milk-1l | Whole milk 3.5% | 1 l | €1.29 | Lidl | dairy\n" in user_message
+    assert (
+        "\nat-lidl-milk-1l | Whole milk 3.5% | 1 l | €1.29 | Lidl | dairy | €2.02/1000 kcal\n"
+        in user_message
+    )
 
 
 def test_menu_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
@@ -103,9 +106,9 @@ def test_menu_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert "\nDays: 3\n" in user_message
     assert (
         "\nat-lidl-milk-1l | Vollmilch 3,5% | 1 l | €1.29 | Lidl | dairy | portion: ml | "
-        "64 kcal/100 ml\n" in user_message
+        "64 kcal/100 ml | €2.02/1000 kcal\n" in user_message
     )
-    assert "| portion | energy):" in user_message
+    assert "| portion | energy | €/1000 kcal):" in user_message
     assert "dish-soap" not in user_message  # menus use food only
 
 

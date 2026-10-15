@@ -77,7 +77,7 @@ def test_pieces_are_counted_per_person(client: TestClient, fake_llm: FakeOpenAI)
     assert packs[EGGS] == 2  # 3 eggs x 4 people = 12 -> 2 boxes of 10
     assert packs["de-penny-pasta-500g"] == 2  # 200 g x 4 = 800 g -> 2 x 500 g
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
-    assert "| portion: pcs | 78 kcal/pc\n" in user_message
+    assert "| portion: pcs | 78 kcal/pc | €3.83/1000 kcal\n" in user_message
     assert "eggs 1-3 pcs" in system_prompt
 
 
@@ -190,7 +190,8 @@ def test_pack_portions_buy_whole_packs(client: TestClient, fake_llm: FakeOpenAI)
     user_message = fake_llm.messages()[1]["content"]
     assert (
         f"\n{PIZZA} | Frozen pizza margherita | 0.35 kg | €2.79 | Penny | frozen | "
-        "portion: pack (1 = one whole 350 g pack) | 840 kcal/pack\n" in user_message
+        "portion: pack (1 = one whole 350 g pack) | 840 kcal/pack | €3.32/1000 kcal\n"
+        in user_message
     )
     assert (
         "packs (pack: a fraction of one whole pack in steps of 0.25"

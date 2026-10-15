@@ -25,6 +25,11 @@ class Settings(BaseSettings):
     min_kcal_per_person_day: int = Field(default=1600, ge=0)
     # Menu mode: portions above this many kcal per person and day are sent back for repair.
     max_kcal_per_person_day: int = Field(default=3500, ge=1)
+    # Below this budget per person and day (EUR), food candidates with the highest cost per
+    # 1000 kcal are not offered to the LLM (0 turns the filter off).
+    tight_budget_per_person_day: float = Field(default=7.0, ge=0)
+    # A plan at most this fraction over budget is trimmed by the server instead of repaired.
+    trim_tolerance: float = Field(default=0.10, ge=0)
     # Max enum values in the LLM response schema; above it product ids are sent as plain
     # strings (see app.schemas.llm.build_plan_model). OpenAI's own limit is higher.
     max_schema_enum_values: int = Field(default=500, ge=0)

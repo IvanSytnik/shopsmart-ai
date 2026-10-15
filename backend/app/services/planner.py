@@ -11,6 +11,7 @@ Flow: candidates from the catalog -> prompt -> structured reply restricted to ca
 import asyncio
 import json
 import logging
+import statistics
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
@@ -123,6 +124,7 @@ class PlanTrace:
     usage: list[TokenUsage] = field(default_factory=list)  # per call that reported usage
     accepted_attempt: int | None = None  # the attempt whose plan was returned
     used_fallback: bool = False  # an earlier imperfect plan was returned
+    dropped_candidates: int = 0  # food left out on a tight budget
 
 
 def select_candidates(catalog: ProductCatalog, request: GenerateRequest) -> list[Product]:
@@ -138,6 +140,53 @@ def offered_candidates(candidates: list[Product], request: GenerateRequest) -> l
     if request.mode == "menu":
         return [p for p in candidates if p.category not in NON_FOOD_CATEGORIES]
     return candidates
+
+
+def cost_per_1000_kcal(product: Product) -> Decimal | None:
+    """Price per 1000 kcal; None for non-food and products without energy (water)."""
+    if product.kcal is None or product.kcal <= 0:
+        return None
+    return product.price_eur / Decimal(str(product.kcal)) * 1000
+
+
+def budget_per_person_day(request: GenerateRequest) -> Decimal:
+    return round_money(request_budget(request) / (request.family_size * plan_days(request)))
+
+
+# On a tight budget, food above this percentile of €/1000 kcal is not offered.
+TIGHT_BUDGET_PERCENTILE = 80
+
+
+def drop_expensive_calories(
+    candidates: list[Product], request: GenerateRequest, settings: Settings
+) -> tuple[list[Product], int]:
+    """On a tight budget, leave out food with the highest €/1000 kcal.
+
+    Models tend to pick salmon or steak whatever the budget, overshoot it and then fail to
+    repair. Food above the TIGHT_BUDGET_PERCENTILE of €/1000 kcal among the candidates
+    (and food without energy) is dropped, but at least MIN_FOOD_CANDIDATES food products
+    stay: the cheapest dropped ones are kept to reach it. Non-food is untouched. Returns
+    the candidates in their original order and how many were dropped.
+    """
+    if budget_per_person_day(request) >= Decimal(str(settings.tight_budget_per_person_day)):
+        return candidates, 0
+    food = [p for p in candidates if p.category not in NON_FOOD_CATEGORIES]
+    costs = {p.id: cost_per_1000_kcal(p) for p in food}
+    known = [float(c) for c in costs.values() if c is not None]
+    if len(known) < 2:
+        return candidates, 0
+    cutoff = statistics.quantiles(known, n=100, method="inclusive")[TIGHT_BUDGET_PERCENTILE - 1]
+
+    def cost(product: Product) -> float:
+        value = costs[product.id]
+        return float(value) if value is not None else float("inf")
+
+    kept = {p.id for p in food if cost(p) <= cutoff}
+    if len(kept) < MIN_FOOD_CANDIDATES:
+        by_cost = sorted(food, key=lambda p: (cost(p), p.id))
+        kept = {p.id for p in by_cost[:MIN_FOOD_CANDIDATES]}
+    result = [p for p in candidates if p.category in NON_FOOD_CATEGORIES or p.id in kept]
+    return result, len(candidates) - len(result)
 
 
 def request_budget(request: GenerateRequest) -> Decimal:
@@ -157,6 +206,15 @@ def kcal_per_person_day(kcal: float, request: GenerateRequest) -> int:
 
 
 # --- prompt -----------------------------------------------------------------------
+
+
+def tight_budget_rule(settings: Settings) -> str:
+    return (
+        "- The user message gives the budget per person per day. Below "
+        f"€{settings.tight_budget_per_person_day:.2f} it is tight: build the plan on staples "
+        "with a low €/1000 kcal (grains, pasta, rice, potatoes, oats, legumes, bread) and "
+        "use meat and fish sparingly."
+    )
 
 
 def build_system_prompt(request: GenerateRequest, settings: Settings) -> str:
@@ -186,6 +244,7 @@ dinner and {MEAL_KCAL_TARGETS["snack"]} for a snack. The candidate list gives th
 per portion unit; add up each meal's portions.
 - The budget is a ceiling, not a target: choose affordable dishes. Nothing is bought \
 besides what the menu uses.
+{tight_budget_rule(settings)}
 - Return `menu` with exactly {request.days} days, in this order: \
 {", ".join(day_names(request))}. Each day has breakfast, lunch and dinner, and a snack \
 or null."""
@@ -194,6 +253,7 @@ or null."""
 - `lines`: the products to buy. `packs` is the number of whole packs, 1-{MAX_PACKS}. \
 Prices are per pack.
 - Spend 85-98% of the budget and never more.
+{tight_budget_rule(settings)}
 - Cover the whole household for 7 days with balanced, varied food. Add non-food items \
 only when they are useful."""
     return f"""You are ShopSmart AI, a grocery and meal planner for supermarkets in Austria \
@@ -241,6 +301,8 @@ def format_candidate(product: Product, request: GenerateRequest) -> str:
     fields = [product.id, name, pack, f"€{product.price_eur}", product.store, product.category]
     if request.mode == "menu":
         fields += [describe_portion(product), describe_energy(product)]
+    cost = cost_per_1000_kcal(product)
+    fields.append(f"€{cost:.2f}/1000 kcal" if cost is not None else "-")
     return " | ".join(fields)
 
 
@@ -249,6 +311,7 @@ def build_user_message(request: GenerateRequest, candidates: list[Product]) -> s
     columns = "id | name | pack | price per pack | store | category"
     if request.mode == "menu":
         columns += " | portion | energy"
+    columns += " | €/1000 kcal"
     # JSON-encoded so the user's text can't close the quotes and pose as part of the prompt.
     preferences = json.dumps(request.preferences, ensure_ascii=False)
     return f"""Country: {request.country}
@@ -256,6 +319,7 @@ Stores: {", ".join(request.supermarkets)}
 Budget: €{request_budget(request)}
 Household: {request.family_size} people
 Days: {plan_days(request)}
+Budget per person per day: €{budget_per_person_day(request)}
 Diets: {", ".join(request.diets) or "none"}
 
 Candidates ({columns}):
@@ -521,7 +585,16 @@ async def create_plan(
     attempts and token usage.
     """
     trace = trace if trace is not None else PlanTrace()
-    offered = offered_candidates(candidates, request)
+    offered, dropped = drop_expensive_calories(
+        offered_candidates(candidates, request), request, settings
+    )
+    trace.dropped_candidates = dropped
+    if dropped:
+        logger.info(
+            "Tight budget (€%s per person and day): left out %d costly food candidates",
+            budget_per_person_day(request),
+            dropped,
+        )
     allowed = {p.id for p in offered}
     plan_model = build_plan_model(
         [p.id for p in offered], settings.max_schema_enum_values, request.mode

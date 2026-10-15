@@ -179,6 +179,7 @@ Content-Type: application/json
 How a plan is made:
 
 1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
+   **Tight budgets**: below `TIGHT_BUDGET_PER_PERSON_DAY` (default €7) per person and day (budget / (family_size × days), 7 days in shopping mode), food with a cost per 1000 kcal above the 80th percentile of the candidates is not offered, keeping at least 12 food products (the cheapest). Every candidate line in the prompt shows its €/1000 kcal, and the prompt states the budget per person and day.
 2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 500 candidates in shopping mode and above 125 in menu mode, where the ids appear in each of the 4 meals). No prices, no totals from the model.
    - `shopping`: `lines: [{product_id, packs 1–20}]` and notes.
    - `menu`: only dishes (food candidates only). Each meal lists `ingredients: [{product_id, amount_per_person}]`, the amount one person eats in that meal in the product's `portion_unit`: `g`, `ml`, `pcs`, or `pack` = a fraction of one whole pack in steps of 0.25 (e.g. 0.5 of a frozen pizza). Allowed: 5–800 g or ml, 1–6 pcs, 0.25–2 packs; a g/ml portion of 2 or less is read as packs (× pack size, e.g. 1 → 500 g of chicken); the server then clamps a portion outside this range to the nearest bound instead of asking for a repair. The catalog's optional `portion_unit` defaults from `unit` (kg → g, l → ml, pcs → pcs, pack → pack); `pack` is allowed for any unit. The prompt gives typical portions and each candidate's energy per portion unit.
@@ -397,6 +398,7 @@ REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if l
 CATALOG_PATH=app/data/catalog.json         # default; price catalog, validated at startup
 MIN_KCAL_PER_PERSON_DAY=1600               # default; menu mode repairs plans below this
 MAX_KCAL_PER_PERSON_DAY=3500               # default; menu mode repairs portions above this
+TIGHT_BUDGET_PER_PERSON_DAY=7.0            # default; below it costly calories aren't offered (0 = off)
 MAX_SCHEMA_ENUM_VALUES=500                 # default; above it product ids aren't an enum in the LLM schema
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate

@@ -167,6 +167,8 @@ def make_settings(**overrides: Any) -> Settings:
         # own tests.
         "min_kcal_per_person_day": 0,
         "max_kcal_per_person_day": 100_000,
+        # Most test budgets are "tight"; the candidate filter has its own tests.
+        "tight_budget_per_person_day": 0,
         **overrides,
     }
     return Settings(_env_file=None, **values)
