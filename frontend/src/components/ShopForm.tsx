@@ -13,6 +13,7 @@ import {
 } from '../constants';
 import { useLanguage } from '../LanguageContext';
 import { useCatalogMeta } from '../hooks/useCatalogMeta';
+import { normalizeDecimalInput, parseDecimal } from '../numberInput';
 
 interface ShopFormProps {
   onSubmit: (input: GenerateRequest) => void;
@@ -44,7 +45,8 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const catalog = useCatalogMeta();
   const [country, setCountry] = useState<Country>('AT');
   const [selectedStores, setSelectedStores] = useState<string[]>([]);
-  const [budget, setBudget] = useState<number>(50);
+  // Kept as typed so the field can be empty while editing; parsed for validation and submit.
+  const [budgetText, setBudgetText] = useState<string>('50');
   const [familySize, setFamilySize] = useState<number>(2);
   const [preferences, setPreferences] = useState<string>('');
   const [selectedDiets, setSelectedDiets] = useState<DietTag[]>([]);
@@ -73,6 +75,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
     });
   }, [stores]);
 
+  const budget = parseDecimal(budgetText);
   const budgetValid = Number.isFinite(budget) && budget >= BUDGET_MIN && budget <= BUDGET_MAX;
   const storesValid = chosenStores.length >= 1 && chosenStores.length <= MAX_STORES;
   const canSubmit = activeCountry !== undefined && storesValid && budgetValid;
@@ -229,7 +232,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           {BUDGET_PRESETS.map(preset => (
             <button
               key={preset}
-              onClick={() => setBudget(preset)}
+              onClick={() => setBudgetText(String(preset))}
               className={`px-4 py-2 rounded-lg border transition-all ${
                 budget === preset
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
@@ -242,14 +245,20 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
         </div>
         <input
           id="budget"
-          type="number"
-          value={budget}
-          onChange={e => setBudget(Number(e.target.value))}
+          type="text"
+          inputMode="decimal"
+          autoComplete="off"
+          value={budgetText}
+          onChange={e => setBudgetText(normalizeDecimalInput(e.target.value))}
           aria-invalid={!budgetValid}
+          aria-describedby={budgetValid ? undefined : 'budget-error'}
           className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          min={BUDGET_MIN}
-          max={BUDGET_MAX}
         />
+        {!budgetValid && (
+          <p id="budget-error" className="mt-2 text-sm text-red-600 dark:text-red-400">
+            {t('budgetInvalid', { min: BUDGET_MIN, max: BUDGET_MAX })}
+          </p>
+        )}
       </div>
 
       {/* Family Size */}

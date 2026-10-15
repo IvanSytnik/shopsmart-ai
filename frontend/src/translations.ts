@@ -106,6 +106,7 @@ export const translations = {
     retry: 'Retry',
     noStores: 'No stores are available yet.',
     storesHint: 'Choose 1–{max} stores',
+    budgetInvalid: 'Enter a budget between €{min} and €{max}.',
     // v2: results
     total: 'Total',
     budget: 'Budget',
@@ -236,6 +237,7 @@ export const translations = {
     retry: 'Повторити',
     noStores: 'Поки що немає доступних магазинів.',
     storesHint: 'Оберіть від 1 до {max} магазинів',
+    budgetInvalid: 'Введіть бюджет від €{min} до €{max}.',
     // v2: results
     total: 'Разом',
     budget: 'Бюджет',
@@ -368,6 +370,7 @@ export const translations = {
     retry: 'Erneut versuchen',
     noStores: 'Noch keine Geschäfte verfügbar.',
     storesHint: '1–{max} Geschäfte auswählen',
+    budgetInvalid: 'Bitte ein Budget zwischen €{min} und €{max} eingeben.',
     // v2: results
     total: 'Summe',
     budget: 'Budget',

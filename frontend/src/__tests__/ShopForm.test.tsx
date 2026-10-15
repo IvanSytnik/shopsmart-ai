@@ -114,6 +114,79 @@ describe('ShopForm', () => {
     await waitFor(() => expect(submitButton()).toHaveProperty('disabled', false));
   });
 
+  describe('budget field', () => {
+    const budgetInput = () => screen.getByLabelText<HTMLInputElement>(/Weekly Budget/);
+    const budgetError = () => screen.queryByText('Enter a budget between €10 and €1000.');
+
+    it('can be cleared to empty and retyped', async () => {
+      mockFetch();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      await screen.findByRole('button', { name: 'Lidl' });
+
+      await user.clear(budgetInput());
+      expect(budgetInput().value).toBe('');
+      expect(budgetError()).toBeTruthy();
+      expect(submitButton()).toHaveProperty('disabled', true);
+
+      await user.type(budgetInput(), '40');
+      expect(budgetInput().value).toBe('40');
+      expect(budgetError()).toBeNull();
+      expect(submitButton()).toHaveProperty('disabled', false);
+    });
+
+    it('strips leading zeros and accepts a decimal comma', async () => {
+      mockFetch();
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={onSubmit} />, 'de');
+      await screen.findByRole('button', { name: 'Lidl' });
+      const input = screen.getByLabelText<HTMLInputElement>(/Wochenbudget/);
+
+      await user.clear(input);
+      await user.type(input, '040');
+      expect(input.value).toBe('40');
+
+      await user.clear(input);
+      await user.type(input, '12,5');
+      expect(input.value).toBe('12,5');
+      await user.click(screen.getByRole('button', { name: /Einkaufsliste erstellen/ }));
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ budget: 12.5 }));
+    });
+
+    it('shows a message and blocks submit outside 10-1000', async () => {
+      mockFetch();
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
+      await screen.findByRole('button', { name: 'Lidl' });
+
+      await user.clear(budgetInput());
+      await user.type(budgetInput(), '5');
+
+      expect(budgetError()).toBeTruthy();
+      expect(budgetInput().getAttribute('aria-invalid')).toBe('true');
+      expect(submitButton()).toHaveProperty('disabled', true);
+      await user.click(submitButton());
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      await user.type(budgetInput(), '000');
+      expect(budgetInput().value).toBe('5000');
+      expect(budgetError()).toBeTruthy();
+    });
+
+    it('preset chips set the field', async () => {
+      mockFetch();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      await screen.findByRole('button', { name: 'Lidl' });
+
+      await user.clear(budgetInput());
+      await user.click(screen.getByRole('button', { name: '€100' }));
+      expect(budgetInput().value).toBe('100');
+    });
+  });
+
   it('labels the budget per mode', async () => {
     mockFetch();
     const user = userEvent.setup();
