@@ -12,7 +12,7 @@ from app.services.catalog import CatalogLoadError, ProductCatalog, load_catalog
 from tests.conftest import FIXTURE_CATALOG, make_settings
 
 FIXTURE = Path(__file__).parent / "fixtures" / "catalog_small.json"
-PLACEHOLDER = Path(__file__).parents[1] / "app" / "data" / "catalog.json"
+PRODUCTION_CATALOG = Path(__file__).parents[1] / "app" / "data" / "catalog.json"
 
 
 @pytest.fixture(scope="module")
@@ -37,15 +37,21 @@ def write_catalog(tmp_path: Path) -> Callable[[dict[str, Any]], Path]:
 # --- loading -----------------------------------------------------------------
 
 
-def test_placeholder_catalog_is_valid_and_empty() -> None:
-    assert len(load_catalog(PLACEHOLDER)) == 0
+def test_production_catalog_is_valid() -> None:
+    catalog = load_catalog(PRODUCTION_CATALOG)
+
+    assert len(catalog) > 0
+    assert catalog.catalog.version.startswith("at-")
 
 
-def test_app_starts_with_placeholder_catalog() -> None:
-    app = create_app(make_settings(catalog_path=PLACEHOLDER))
+def test_app_starts_with_the_production_catalog() -> None:
+    app = create_app(make_settings(catalog_path=PRODUCTION_CATALOG))
+    client = TestClient(app)
 
-    assert TestClient(app).get("/health").status_code == 200
-    assert len(app.state.catalog) == 0
+    assert client.get("/health").status_code == 200
+    countries = client.get("/api/catalog/meta").json()["countries"]
+    assert countries["AT"] == ["Billa", "Hofer"]
+    assert countries["DE"] == []
 
 
 def test_fixture_catalog_loads(catalog: ProductCatalog) -> None:

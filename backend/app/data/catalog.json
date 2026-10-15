@@ -1,5 +1,2063 @@
 {
-  "version": "0-placeholder",
-  "price_date": "2026-10-14",
-  "products": []
+  "version": "at-2026-10-15",
+  "price_date": "2026-10-15",
+  "products": [
+    {
+      "id": "at-hofer-whole-milk-1l",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Whole milk 3.5%, longer fresh",
+        "uk": "Молоко 3,5%",
+        "de": "Vollmilch 3,5% länger frisch"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 1.32,
+      "kcal": 640.0,
+      "protein_g": 33.0,
+      "fat_g": 35.0,
+      "carbs_g": 48.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-vollmilch-laenger-frisch-000000000000106876",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-gouda-450g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Dutch Gouda",
+        "uk": "Голландський сир Гауда",
+        "de": "Holländischer Gouda"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.45,
+      "portion_unit": "g",
+      "price_eur": 3.99,
+      "kcal": 1602.0,
+      "protein_g": 112.5,
+      "fat_g": 126.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-hollaendischer-gouda-000000000000106896",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-emmentaler-slices-250g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Emmental cheese slices",
+        "uk": "Сир Емменталь, скибочки",
+        "de": "Emmentaler Scheiben"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 950.0,
+      "protein_g": 70.0,
+      "fat_g": 75.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-emmentaler-scheiben-000000000000106972",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-pizza-cheese-250g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Grated pizza cheese",
+        "uk": "Тертий сир для піци",
+        "de": "Pizzakäse"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 825.0,
+      "protein_g": 60.0,
+      "fat_g": 65.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-pizzakaese-000000000000108256",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-organic-feta-200g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Organic feta",
+        "uk": "Органічна фета",
+        "de": "BIO Feta"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 2.79,
+      "kcal": 540.0,
+      "protein_g": 34.0,
+      "fat_g": 44.0,
+      "carbs_g": 1.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/bio-natura-bio-feta-000000000000309165",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-natural-yogurt-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Natural yogurt 3.6%",
+        "uk": "Натуральний йогурт 3,6%",
+        "de": "Naturjoghurt 3,6% Fett"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.94,
+      "kcal": 330.0,
+      "protein_g": 19.0,
+      "fat_g": 18.0,
+      "carbs_g": 23.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-naturjoghurt-3-6-fett-000000000112360002",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-protein-yogurt-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "High-protein natural yogurt",
+        "uk": "Натуральний йогурт з високим вмістом білка",
+        "de": "High Protein Naturjoghurt"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.23,
+      "kcal": 300.0,
+      "protein_g": 50.0,
+      "fat_g": 1.0,
+      "carbs_g": 20.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-high-protein-naturjoghurt-000000000000517851",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-buttermilk-500ml",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Buttermilk",
+        "uk": "Маслянка",
+        "de": "Buttermilch"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 0.5,
+      "portion_unit": "ml",
+      "price_eur": 0.79,
+      "kcal": 185.0,
+      "protein_g": 16.5,
+      "fat_g": 2.5,
+      "carbs_g": 20.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-buttermilch-standard-000000000110591001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-lactose-free-butter-250g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Butter, lactose-free",
+        "uk": "Вершкове масло без лактози",
+        "de": "Butter, laktosefrei"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 1850.0,
+      "protein_g": 1.8,
+      "fat_g": 205.0,
+      "carbs_g": 1.5,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-butter-laktosefrei-000000000000107104",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-cream-cheese-200g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Cream cheese, plain",
+        "uk": "Вершковий сир, натуральний",
+        "de": "Frischkäsefass Natur"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 1.59,
+      "kcal": 380.0,
+      "protein_g": 18.0,
+      "fat_g": 32.0,
+      "carbs_g": 6.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milfina-frischkaesefass-natur-20-fett-000000000113411002",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-whipping-cream-250ml",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Whipping cream",
+        "uk": "Вершки для збивання",
+        "de": "Schlagobers"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 0.25,
+      "portion_unit": "ml",
+      "price_eur": 1.49,
+      "kcal": 850.0,
+      "protein_g": 5.5,
+      "fat_g": 90.0,
+      "carbs_g": 7.5,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/milsani-schlagobers-000000000000107020",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-organic-oat-drink-970ml",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Organic oat drink",
+        "uk": "Органічний вівсяний напій",
+        "de": "BIO-Haferdrink"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 0.97,
+      "portion_unit": "ml",
+      "price_eur": 1.79,
+      "kcal": 446.2,
+      "protein_g": 2.9,
+      "fat_g": 14.5,
+      "carbs_g": 67.9,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-bio-haferdrink-000000000000513472",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-toast-bread-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Toast bread",
+        "uk": "Тостовий хліб",
+        "de": "Toastbrot"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.94,
+      "kcal": 1300.0,
+      "protein_g": 40.0,
+      "fat_g": 17.5,
+      "carbs_g": 240.0,
+      "diet_tags": [
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/happy-harvest-toastbrot-000000000000100778",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-organic-rye-bread-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Organic wholemeal rye bread",
+        "uk": "Органічний житній хліб з цільного зерна",
+        "de": "BIO-Roggenvollkornbrot"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 2.75,
+      "kcal": 1000.0,
+      "protein_g": 30.0,
+      "fat_g": 6.0,
+      "carbs_g": 190.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-bio-roggenvollkornbrot-000000000000100765",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-crust-bread-750g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Crusty bread",
+        "uk": "Хліб із хрусткою скоринкою",
+        "de": "Krustenbrot"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.75,
+      "portion_unit": "g",
+      "price_eur": 1.8,
+      "kcal": 1725.0,
+      "protein_g": 52.5,
+      "fat_g": 11.2,
+      "carbs_g": 345.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/backbox-krustenbrot-000000000000100955",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-kaiser-rolls-420g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Kaiser rolls",
+        "uk": "Булочки кайзер",
+        "de": "Kaisersemmel"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.42,
+      "portion_unit": "g",
+      "price_eur": 1.32,
+      "kcal": 1134.0,
+      "protein_g": 37.8,
+      "fat_g": 8.4,
+      "carbs_g": 226.8,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/happy-harvest-kaisersemmel-000000000000175444",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-rye-crispbread-250g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Rye crispbread",
+        "uk": "Житні хлібці",
+        "de": "Knäckebrot Roggen"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 1.49,
+      "kcal": 850.0,
+      "protein_g": 22.5,
+      "fat_g": 3.8,
+      "carbs_g": 165.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/happy-harvest-knaeckebrot-roggen-000000000101968001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-mini-baguettes-300g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Mini baguettes, 6 pack",
+        "uk": "Міні-багети, 6 шт.",
+        "de": "Mini Baguette, 6er-Packung"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.3,
+      "portion_unit": "g",
+      "price_eur": 0.84,
+      "kcal": 750.0,
+      "protein_g": 24.0,
+      "fat_g": 4.5,
+      "carbs_g": 150.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/happy-harvest-mini-baguette-6er-packung-000000000570926002",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-vegan-wholegrain-toast-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Vegan wholegrain toast",
+        "uk": "Веганський цільнозерновий тост",
+        "de": "Toast Vegan, Vollkorn"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.79,
+      "kcal": 1200.0,
+      "protein_g": 45.0,
+      "fat_g": 20.0,
+      "carbs_g": 200.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-toast-vegan-vollkorn-000000000537331001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-rye-farmhouse-slices-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Rye farmhouse bread slices",
+        "uk": "Житній селянський хліб, скибочки",
+        "de": "Bauernschnitten Roggen"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.94,
+      "kcal": 1050.0,
+      "protein_g": 30.0,
+      "fat_g": 6.0,
+      "carbs_g": 210.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://www.hofer.at/produkt/goldaehren-bauernschnitten-roggen-000000000187142001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-mixed-mince-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Mixed minced meat (beef and pork)",
+        "uk": "Змішаний фарш (яловичина і свинина)",
+        "de": "Faschiertes gemischt"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 4.99,
+      "kcal": 1250.0,
+      "protein_g": 90.0,
+      "fat_g": 100.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/sonnhof-faschiertes-gemischt-000000000000106958",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-beef-mince-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Minced beef",
+        "uk": "Яловичий фарш",
+        "de": "Rinderfaschiertes"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 6.49,
+      "kcal": 1100.0,
+      "protein_g": 95.0,
+      "fat_g": 80.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/sonnhof-rinderfaschiertes-000000000000108494",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-chicken-wings-500g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Chicken wings",
+        "uk": "Курячі крильця",
+        "de": "Chicken Wings"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 4.49,
+      "kcal": 1000.0,
+      "protein_g": 90.0,
+      "fat_g": 70.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/fairhof-chicken-wings-000000000000174857",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-chicken-strips-400g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Chicken breast strips",
+        "uk": "Нарізане куряче філе",
+        "de": "Maishendl-Geschnetzeltes"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "portion_unit": "g",
+      "price_eur": 3.49,
+      "kcal": 440.0,
+      "protein_g": 92.0,
+      "fat_g": 8.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/sonnhof-maishendl-geschnetzeltes-000000000000696879",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-chicken-thighs-400g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Chicken thighs",
+        "uk": "Курячі стегна",
+        "de": "Maishendl-Oberkeulen"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "portion_unit": "g",
+      "price_eur": 4.79,
+      "kcal": 720.0,
+      "protein_g": 72.0,
+      "fat_g": 48.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/fairhof-maishendl-oberkeulen-000000000000594221",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-cevapcici-450g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Cevapcici",
+        "uk": "Чевапчичі",
+        "de": "Cevapcici"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.45,
+      "portion_unit": "g",
+      "price_eur": 3.59,
+      "kcal": 1170.0,
+      "protein_g": 72.0,
+      "fat_g": 94.5,
+      "carbs_g": 9.0,
+      "diet_tags": [
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/sonnhof-bbq-cevapcici-000000000000527998",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-cooked-ham-125g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Cooked ham",
+        "uk": "Варена шинка",
+        "de": "Beinschinken"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.125,
+      "portion_unit": "g",
+      "price_eur": 2.99,
+      "kcal": 150.0,
+      "protein_g": 25.0,
+      "fat_g": 5.0,
+      "carbs_g": 1.2,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/fairhof-beinschinken-000000000169124001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-extrawurst-slices-200g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Extrawurst slices",
+        "uk": "Ковбаса Екстравурст, скибочки",
+        "de": "Extra-Aufschnitt Extra"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 1.49,
+      "kcal": 500.0,
+      "protein_g": 24.0,
+      "fat_g": 44.0,
+      "carbs_g": 2.0,
+      "diet_tags": [
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/genuss-100-aus-oesterreich-extra-aufschnitt-extra-000000000111270004",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-salmon-fillet-300g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Norwegian salmon fillet",
+        "uk": "Філе норвезького лосося",
+        "de": "Norwegisches Lachsfilet"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.3,
+      "portion_unit": "g",
+      "price_eur": 6.59,
+      "kcal": 600.0,
+      "protein_g": 60.0,
+      "fat_g": 39.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/golden-seafood-norwegisches-lachsfilet-000000000000276454",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-trout-fillet-125g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Smoked rainbow trout fillet",
+        "uk": "Копчене філе райдужної форелі",
+        "de": "Regenbogen Forellenfilet Natur"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.125,
+      "portion_unit": "g",
+      "price_eur": 3.29,
+      "kcal": 187.5,
+      "protein_g": 27.5,
+      "fat_g": 8.8,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/almare-seafood-regenbogen-forellenfilet-natur-000000000113828003",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-hofer-arctic-prawns-100g",
+      "country": "AT",
+      "store": "Hofer",
+      "name": {
+        "en": "Arctic prawns",
+        "uk": "Північні креветки",
+        "de": "Eismeergarnelen"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.1,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 80.0,
+      "protein_g": 18.0,
+      "fat_g": 1.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://www.hofer.at/produkt/almare-seafood-garnelen-sortiment-eismeergarnelen-000000000580827001",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-bananas-1kg",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Bananas (loose, per kg)",
+        "uk": "Банани (на вагу, за кг)",
+        "de": "Clever Bananen (lose, je kg)"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 1.0,
+      "portion_unit": "g",
+      "price_eur": 1.59,
+      "kcal": 890.0,
+      "protein_g": 11.0,
+      "fat_g": 3.0,
+      "carbs_g": 200.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-bananen-00258074",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-mandarins-750g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Mandarins",
+        "uk": "Мандарини",
+        "de": "SanLucar Mandarinen"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 0.75,
+      "portion_unit": "g",
+      "price_eur": 2.99,
+      "kcal": 375.0,
+      "protein_g": 5.2,
+      "fat_g": 2.2,
+      "carbs_g": 82.5,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/sanlucar-mandarinen-0089012",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-grapes-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "White seedless grapes",
+        "uk": "Білий виноград без кісточок",
+        "de": "Trauben weiß kernlos"
+      },
+      "category": "fruits",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 350.0,
+      "protein_g": 3.5,
+      "fat_g": 1.0,
+      "carbs_g": 80.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/trauben-weiss-kernlos-0089414",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-onions-1kg",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Yellow onions",
+        "uk": "Жовта цибуля",
+        "de": "Zwiebel gelb"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 1.0,
+      "portion_unit": "g",
+      "price_eur": 1.19,
+      "kcal": 400.0,
+      "protein_g": 12.0,
+      "fat_g": 1.0,
+      "carbs_g": 90.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/da-komm-ich-her-zwiebel-gelb-00429100",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-potatoes-2kg",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Waxy potatoes",
+        "uk": "Картопля, що не розварюється",
+        "de": "Erdäpfel festkochend"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 2.0,
+      "portion_unit": "g",
+      "price_eur": 2.49,
+      "kcal": 1440.0,
+      "protein_g": 40.0,
+      "fat_g": 2.0,
+      "carbs_g": 320.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/da-komm-ich-her-erdaepfel-festkochend-0089546",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-cherry-tomatoes-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Cherry tomatoes",
+        "uk": "Помідори черрі",
+        "de": "Clever Cherrytomaten"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 2.49,
+      "kcal": 100.0,
+      "protein_g": 5.0,
+      "fat_g": 1.0,
+      "carbs_g": 15.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-cherrytomaten-00410026",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-mushrooms-200g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Button mushrooms",
+        "uk": "Печериці",
+        "de": "Champignons"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 2.28,
+      "kcal": 44.0,
+      "protein_g": 6.0,
+      "fat_g": 0.6,
+      "carbs_g": 2.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-champignon-00410116",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-soup-vegetables-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Soup vegetables mix",
+        "uk": "Овочевий набір для супу",
+        "de": "Suppentasse"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 150.0,
+      "protein_g": 5.0,
+      "fat_g": 1.0,
+      "carbs_g": 25.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-suppentasse-0089614",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-frozen-broccoli-750g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Frozen broccoli",
+        "uk": "Заморожена броколі",
+        "de": "Clever Brokkoli"
+      },
+      "category": "frozen",
+      "unit": "kg",
+      "pack_size": 0.75,
+      "portion_unit": "g",
+      "price_eur": 1.89,
+      "kcal": 225.0,
+      "protein_g": 22.5,
+      "fat_g": 2.2,
+      "carbs_g": 22.5,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-brokkoli-00504077",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-frozen-peas-750g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Frozen young peas",
+        "uk": "Заморожений молодий горошок",
+        "de": "Junge Erbsen"
+      },
+      "category": "frozen",
+      "unit": "kg",
+      "pack_size": 0.75,
+      "portion_unit": "g",
+      "price_eur": 3.7,
+      "kcal": 600.0,
+      "protein_g": 45.0,
+      "fat_g": 3.0,
+      "carbs_g": 82.5,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-junge-erbsen-00572211",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-fish-fingers-450g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Fish fingers",
+        "uk": "Рибні палички",
+        "de": "Clever Fischstäbchen"
+      },
+      "category": "frozen",
+      "unit": "kg",
+      "pack_size": 0.45,
+      "portion_unit": "g",
+      "price_eur": 2.65,
+      "kcal": 900.0,
+      "protein_g": 58.5,
+      "fat_g": 40.5,
+      "carbs_g": 76.5,
+      "diet_tags": [],
+      "source_url": "https://shop.billa.at/produkte/clever-fischstaebchen-00714185",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-organic-spaghetti-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Organic spaghetti",
+        "uk": "Органічні спагеті",
+        "de": "BILLA Bio Spaghetti"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.85,
+      "kcal": 1775.0,
+      "protein_g": 60.0,
+      "fat_g": 7.5,
+      "carbs_g": 355.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-bio-spaghetti-00443042",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-organic-fusilli-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Organic fusilli",
+        "uk": "Органічні фузилі",
+        "de": "BILLA Bio Fusilli"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.85,
+      "kcal": 1775.0,
+      "protein_g": 60.0,
+      "fat_g": 7.5,
+      "carbs_g": 355.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-bio-fusilli-00443100",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-long-grain-rice-1kg",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Long-grain rice",
+        "uk": "Довгозерний рис",
+        "de": "Clever Langkornreis"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 1.0,
+      "portion_unit": "g",
+      "price_eur": 1.13,
+      "kcal": 3500.0,
+      "protein_g": 70.0,
+      "fat_g": 6.0,
+      "carbs_g": 780.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-langkornreis-00309662",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-oats-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Rolled oats, fine",
+        "uk": "Вівсяні пластівці, ніжні",
+        "de": "Clever Haferflocken zart"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.79,
+      "kcal": 1850.0,
+      "protein_g": 65.0,
+      "fat_g": 35.0,
+      "carbs_g": 295.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-haferflocken-zart-00249591",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-couscous-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Couscous",
+        "uk": "Кускус",
+        "de": "BILLA Couscous"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.49,
+      "kcal": 1800.0,
+      "protein_g": 60.0,
+      "fat_g": 7.5,
+      "carbs_g": 360.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-couscous-00933707",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-polenta-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Polenta",
+        "uk": "Полента",
+        "de": "BILLA Polenta"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.99,
+      "kcal": 1750.0,
+      "protein_g": 40.0,
+      "fat_g": 7.5,
+      "carbs_g": 375.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-polenta-00701933",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-dried-lentils-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Dried lentils",
+        "uk": "Сушена сочевиця",
+        "de": "Getrocknete Linsen"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.19,
+      "kcal": 1650.0,
+      "protein_g": 120.0,
+      "fat_g": 7.5,
+      "carbs_g": 250.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-getrocknete-linsen-00750434",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-dried-chickpeas-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Dried chickpeas",
+        "uk": "Сушений нут",
+        "de": "Getrocknete Kichererbsen"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 1.19,
+      "kcal": 1700.0,
+      "protein_g": 95.0,
+      "fat_g": 30.0,
+      "carbs_g": 220.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-getrocknete-kichererbsen-00750435",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-kidney-beans-400g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Red kidney beans, canned",
+        "uk": "Червона квасоля, консервована",
+        "de": "Clever Rote Kidney Bohnen"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "portion_unit": "g",
+      "price_eur": 0.65,
+      "kcal": 360.0,
+      "protein_g": 28.0,
+      "fat_g": 2.0,
+      "carbs_g": 52.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-rote-kidney-bohnen-00374436",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-chopped-tomatoes-400g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Chopped tomatoes, canned",
+        "uk": "Подрібнені томати, консервовані",
+        "de": "Clever Gehackte Tomaten"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "portion_unit": "g",
+      "price_eur": 0.69,
+      "kcal": 88.0,
+      "protein_g": 4.8,
+      "fat_g": 0.8,
+      "carbs_g": 14.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-gehackte-tomaten-00374991",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-passata-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Tomato passata",
+        "uk": "Томатне пюре пасата",
+        "de": "Clever Passierte Tomaten"
+      },
+      "category": "pantry",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.69,
+      "kcal": 150.0,
+      "protein_g": 6.5,
+      "fat_g": 1.0,
+      "carbs_g": 25.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-passierte-tomaten-00558624",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-sauerkraut-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Sauerkraut",
+        "uk": "Квашена капуста",
+        "de": "Clever Sauerkraut"
+      },
+      "category": "vegetables",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.79,
+      "kcal": 100.0,
+      "protein_g": 7.5,
+      "fat_g": 1.5,
+      "carbs_g": 5.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-sauerkraut-00405996",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-tuna-195g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Tuna in water",
+        "uk": "Тунець у власному соку",
+        "de": "Thunfisch Naturell"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.195,
+      "portion_unit": "g",
+      "price_eur": 3.49,
+      "kcal": 214.5,
+      "protein_g": 48.8,
+      "fat_g": 1.9,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/vier-diamanten-thunfisch-naturell-00415575",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-eggs-m-10",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Barn eggs, size M, 10 pack",
+        "uk": "Яйця M, 10 шт.",
+        "de": "Clever Eier aus Bodenhaltung M"
+      },
+      "category": "dairy",
+      "unit": "pcs",
+      "pack_size": 10.0,
+      "portion_unit": "pcs",
+      "price_eur": 2.66,
+      "kcal": 742.0,
+      "protein_g": 66.2,
+      "fat_g": 50.4,
+      "carbs_g": 3.7,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-eier-aus-bodenhaltung-m-00312703",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-uht-whole-milk-1l",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "UHT whole milk 3.5%",
+        "uk": "Ультрапастеризоване молоко 3,5%",
+        "de": "Clever Haltbar-Vollmilch 3,5%"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 0.94,
+      "kcal": 640.0,
+      "protein_g": 33.0,
+      "fat_g": 35.0,
+      "carbs_g": 48.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-haltbarvollmilch-35-00746506",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-lactose-free-milk-1l",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Lactose-free whole milk 3.5%",
+        "uk": "Безлактозне молоко 3,5%",
+        "de": "Laktosefreie Vollmilch 3,5%"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 1.8,
+      "kcal": 640.0,
+      "protein_g": 33.0,
+      "fat_g": 35.0,
+      "carbs_g": 48.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-laktosefreie-vollmilch-35-00802950",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-butter-250g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Butter",
+        "uk": "Вершкове масло",
+        "de": "Clever Teebutter"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 1.59,
+      "kcal": 1850.0,
+      "protein_g": 1.8,
+      "fat_g": 205.0,
+      "carbs_g": 1.5,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-oesterreichische-teebutter-00425413",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-natural-yogurt-250g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Natural yogurt 3.6%",
+        "uk": "Натуральний йогурт 3,6%",
+        "de": "Clever Joghurt Natur 3,6%"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 0.52,
+      "kcal": 165.0,
+      "protein_g": 9.5,
+      "fat_g": 9.0,
+      "carbs_g": 11.5,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-joghurt-natur-36-00668140",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-low-fat-quark-250g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Low-fat quark",
+        "uk": "Знежирений сир (топфен)",
+        "de": "Clever Magertopfen"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 0.99,
+      "kcal": 175.0,
+      "protein_g": 30.0,
+      "fat_g": 0.8,
+      "carbs_g": 10.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-magertopfen-00746455",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-mozzarella-125g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Mozzarella",
+        "uk": "Моцарела",
+        "de": "Clever Mozzarella"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.125,
+      "portion_unit": "g",
+      "price_eur": 0.79,
+      "kcal": 312.5,
+      "protein_g": 22.5,
+      "fat_g": 23.8,
+      "carbs_g": 1.2,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-mozzarella-00282168",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-gouda-slices-400g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Gouda slices",
+        "uk": "Сир Гауда, скибочки",
+        "de": "BILLA Gouda Scheiben"
+      },
+      "category": "dairy",
+      "unit": "kg",
+      "pack_size": 0.4,
+      "portion_unit": "g",
+      "price_eur": 4.39,
+      "kcal": 1424.0,
+      "protein_g": 100.0,
+      "fat_g": 112.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "vegetarian",
+        "gluten_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/billa-gouda-scheiben-00693846",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-oat-drink-1l",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Oat drink",
+        "uk": "Вівсяний напій",
+        "de": "Hafer Drink"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 1.19,
+      "kcal": 460.0,
+      "protein_g": 3.0,
+      "fat_g": 15.0,
+      "carbs_g": 70.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-hafer-drink-00891643",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-soy-drink-1l",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Soy drink, plain",
+        "uk": "Соєвий напій, натуральний",
+        "de": "Sojadrink Pur"
+      },
+      "category": "dairy",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 1.79,
+      "kcal": 400.0,
+      "protein_g": 35.0,
+      "fat_g": 20.0,
+      "carbs_g": 10.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/ja-natuerlich-sojadrink-pur-00741531",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-hummus-200g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Hummus",
+        "uk": "Хумус",
+        "de": "Clever Hummus"
+      },
+      "category": "other",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 1.69,
+      "kcal": 560.0,
+      "protein_g": 14.0,
+      "fat_g": 44.0,
+      "carbs_g": 24.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-hummus-00719717",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-wheat-toast-500g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Wheat toast bread",
+        "uk": "Пшеничний тостовий хліб",
+        "de": "Clever Weizentoast"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.5,
+      "portion_unit": "g",
+      "price_eur": 0.94,
+      "kcal": 1300.0,
+      "protein_g": 40.0,
+      "fat_g": 17.5,
+      "carbs_g": 240.0,
+      "diet_tags": [
+        "vegetarian"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-weizentoast-00425504",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-bake-off-rolls-300g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Bake-at-home rolls",
+        "uk": "Булочки для допікання",
+        "de": "Clever Brötchen zum Fertigbacken"
+      },
+      "category": "bread",
+      "unit": "kg",
+      "pack_size": 0.3,
+      "portion_unit": "g",
+      "price_eur": 0.84,
+      "kcal": 750.0,
+      "protein_g": 24.0,
+      "fat_g": 4.5,
+      "carbs_g": 150.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-broetchen-zum-fertigbacken-00288154",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-chicken-fillet-700g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Chicken breast fillet",
+        "uk": "Куряче філе",
+        "de": "Clever Hendlfilet"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.7,
+      "portion_unit": "g",
+      "price_eur": 9.09,
+      "kcal": 770.0,
+      "protein_g": 161.0,
+      "fat_g": 10.5,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-hendlfilet-00342167",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-mixed-mince-1kg",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Mixed minced meat (beef and pork)",
+        "uk": "Змішаний фарш (яловичина і свинина)",
+        "de": "Clever Faschiertes gemischt"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 1.0,
+      "portion_unit": "g",
+      "price_eur": 8.49,
+      "kcal": 2500.0,
+      "protein_g": 180.0,
+      "fat_g": 200.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-faschiertes-gemischt-00740974",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-frankfurters-480g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Frankfurter sausages",
+        "uk": "Сосиски франкфуртські",
+        "de": "Clever Frankfurter"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.48,
+      "portion_unit": "g",
+      "price_eur": 3.99,
+      "kcal": 1296.0,
+      "protein_g": 57.6,
+      "fat_g": 115.2,
+      "carbs_g": 4.8,
+      "diet_tags": [
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-frankfurter-00968433",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-toast-ham-200g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Ham for toast",
+        "uk": "Шинка для тостів",
+        "de": "Clever Toastschinken"
+      },
+      "category": "meat",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 2.49,
+      "kcal": 220.0,
+      "protein_g": 36.0,
+      "fat_g": 8.0,
+      "carbs_g": 2.0,
+      "diet_tags": [
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-toastschinken-00425215",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-smoked-salmon-200g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Smoked salmon",
+        "uk": "Копчений лосось",
+        "de": "Clever Räucherlachs"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.2,
+      "portion_unit": "g",
+      "price_eur": 4.99,
+      "kcal": 360.0,
+      "protein_g": 44.0,
+      "fat_g": 20.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-raeucherlachs-00715222",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-salmon-fillet-300g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Salmon fillet with skin",
+        "uk": "Філе лосося зі шкірою",
+        "de": "Clever Lachsfilet mit Haut"
+      },
+      "category": "fish",
+      "unit": "kg",
+      "pack_size": 0.3,
+      "portion_unit": "g",
+      "price_eur": 6.59,
+      "kcal": 600.0,
+      "protein_g": 60.0,
+      "fat_g": 39.0,
+      "carbs_g": 0.0,
+      "diet_tags": [
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-lachsfilet-mit-haut-00487616",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-pretzel-sticks-250g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Salted pretzel sticks",
+        "uk": "Солоні соломки",
+        "de": "Clever Salzstangerl"
+      },
+      "category": "snacks",
+      "unit": "kg",
+      "pack_size": 0.25,
+      "portion_unit": "g",
+      "price_eur": 0.65,
+      "kcal": 950.0,
+      "protein_g": 25.0,
+      "fat_g": 10.0,
+      "carbs_g": 187.5,
+      "diet_tags": [
+        "vegan",
+        "vegetarian"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-salzstangerl-00565867",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-cashews-150g",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Roasted salted cashews",
+        "uk": "Смажені солоні кеш'ю",
+        "de": "Clever Cashews geröstet & gesalzen"
+      },
+      "category": "snacks",
+      "unit": "kg",
+      "pack_size": 0.15,
+      "portion_unit": "g",
+      "price_eur": 1.99,
+      "kcal": 900.0,
+      "protein_g": 30.0,
+      "fat_g": 72.0,
+      "carbs_g": 37.5,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-cashews-geroestet-und-gesalzen-00278746",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-apple-juice-1l",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Apple juice",
+        "uk": "Яблучний сік",
+        "de": "Clever Apfelsaft"
+      },
+      "category": "beverages",
+      "unit": "l",
+      "pack_size": 1.0,
+      "portion_unit": "ml",
+      "price_eur": 0.86,
+      "kcal": 450.0,
+      "protein_g": 1.0,
+      "fat_g": 1.0,
+      "carbs_g": 110.0,
+      "diet_tags": [
+        "vegan",
+        "vegetarian",
+        "gluten_free",
+        "lactose_free"
+      ],
+      "source_url": "https://shop.billa.at/produkte/clever-apfelsaft-00861714",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-toilet-paper-10",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Toilet paper, 10 rolls",
+        "uk": "Туалетний папір, 10 рулонів",
+        "de": "Clever Toilettenpapier"
+      },
+      "category": "hygiene",
+      "unit": "pack",
+      "pack_size": 1.0,
+      "portion_unit": "pack",
+      "price_eur": 3.73,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://shop.billa.at/produkte/clever-toilettenpapier-00735498",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-kitchen-roll-4",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Kitchen roll, 4 rolls",
+        "uk": "Паперові рушники, 4 рулони",
+        "de": "Clever Küchenrolle"
+      },
+      "category": "cleaning",
+      "unit": "pack",
+      "pack_size": 1.0,
+      "portion_unit": "pack",
+      "price_eur": 2.59,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://shop.billa.at/produkte/clever-kuechenrolle-00736948",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-dishwasher-tabs-10",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Dishwasher tablets, 10 pcs",
+        "uk": "Таблетки для посудомийки, 10 шт.",
+        "de": "Clever Geschirr-Reiniger"
+      },
+      "category": "cleaning",
+      "unit": "pcs",
+      "pack_size": 10.0,
+      "portion_unit": "pcs",
+      "price_eur": 0.79,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://shop.billa.at/produkte/clever-geschirrreiniger-00720664",
+      "price_date": "2026-10-15"
+    },
+    {
+      "id": "at-billa-bin-bags-30l-35",
+      "country": "AT",
+      "store": "Billa",
+      "name": {
+        "en": "Bin bags with drawstring 30 l, 35 pcs",
+        "uk": "Пакети для сміття із затяжкою 30 л, 35 шт.",
+        "de": "Clever Müllsäcke mit Zugband 30 l"
+      },
+      "category": "cleaning",
+      "unit": "pcs",
+      "pack_size": 35.0,
+      "portion_unit": "pcs",
+      "price_eur": 1.09,
+      "kcal": null,
+      "protein_g": null,
+      "fat_g": null,
+      "carbs_g": null,
+      "diet_tags": [],
+      "source_url": "https://shop.billa.at/produkte/clever-muellsaecke-mit-zugband-30l-00360948",
+      "price_date": "2026-10-15"
+    }
+  ]
 }

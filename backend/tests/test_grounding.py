@@ -22,7 +22,6 @@ from tests.conftest import (
     make_settings,
     meal,
 )
-from tests.test_catalog import PLACEHOLDER
 
 CHICKEN = "at-lidl-chicken-breast-500g"  # €5.99, meat
 CHIPS = "at-lidl-potato-chips-175g"  # €1.79, snacks
@@ -611,11 +610,15 @@ def test_catalog_meta(client: TestClient) -> None:
     }
 
 
-def test_catalog_meta_with_empty_catalog(make_client: Callable[..., TestClient]) -> None:
-    client = make_client(catalog_path=PLACEHOLDER)
+def test_catalog_meta_with_empty_catalog(
+    make_client: Callable[..., TestClient], tmp_path: Any
+) -> None:
+    path = tmp_path / "empty.json"
+    path.write_text('{"version": "empty", "price_date": "2026-10-01", "products": []}')
+    client = make_client(catalog_path=path)
 
     body = client.get("/api/catalog/meta").json()
 
     assert body["countries"] == {"AT": [], "DE": []}
-    assert body["catalog_version"] == "0-placeholder"
+    assert body["catalog_version"] == "empty"
     assert client.post("/generate", json=BODY).json()["code"] == "unknown_store"

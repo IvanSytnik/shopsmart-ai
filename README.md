@@ -406,7 +406,17 @@ FORWARDED_ALLOW_IPS=127.0.0.1              # read by uvicorn; proxies trusted fo
 
 Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default.
 
-`app/data/catalog.json` is an empty placeholder until the real price catalog lands (Phase 2C): the app starts, but every `/generate` returns `unknown_store`. For local development use the test catalog: `CATALOG_PATH=tests/fixtures/catalog_small.json` (made-up prices, Lidl and Penny in AT and DE).
+#### Price catalog
+
+`app/data/catalog.json` is generated from the human-editable source `backend/data_src/catalog_at.csv` (Austria; currently Billa and Hofer, see [docs/CATALOG.md](docs/CATALOG.md) for sources and the disclaimer). Don't edit the JSON by hand:
+
+```bash
+cd backend
+python -m scripts.build_catalog          # validate the CSV and write app/data/catalog.json
+python -m scripts.build_catalog --check  # validate only
+```
+
+The script validates every row with the app's schema, converts nutrition from per 100 g/ml to per pack, fails on any error and prints counts per store, category and diet. Tests use the separate made-up catalog `tests/fixtures/catalog_small.json` (Lidl and Penny in AT and DE), which also works for local development: `CATALOG_PATH=tests/fixtures/catalog_small.json`.
 
 `RATE_LIMIT` and `DAILY_GENERATE_CAP` are kept in memory and are **per process**: with several workers or instances the effective limits multiply, and counters reset on restart. That is fine for the single-instance deployment. Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address (or `*` if the container is reachable only through the proxy) so the rate limit uses the real client IP; otherwise all clients share the proxy's limit.
 
