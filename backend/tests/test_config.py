@@ -60,3 +60,4 @@ def test_timeout_and_retry_defaults() -> None:
     assert (settings.openai_timeout_s, settings.openai_max_retries) == (25, 0)
     assert (settings.request_deadline_s, settings.repair_min_remaining_s) == (55, 20)
     assert (settings.rate_limit, settings.daily_generate_cap) == ("10/minute", 200)
+    assert (settings.min_kcal_per_person_day, settings.max_schema_enum_values) == (1600, 500)

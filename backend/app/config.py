@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     request_deadline_s: float = Field(default=55, gt=0)
     # Skip the repair call if less than this is left of the deadline.
     repair_min_remaining_s: float = Field(default=20, ge=0)
+    # Menu mode: a plan below this many kcal per person and day is sent back for repair.
+    min_kcal_per_person_day: int = Field(default=1600, ge=0)
     # Max enum values in the LLM response schema; above it product ids are sent as plain
     # strings (see app.schemas.llm.build_plan_model). OpenAI's own limit is higher.
     max_schema_enum_values: int = Field(default=500, ge=0)

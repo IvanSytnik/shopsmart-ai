@@ -157,6 +157,8 @@ def make_settings(**overrides: Any) -> Settings:
         "openai_max_tokens": 123,
         "cors_origins": [ALLOWED_ORIGIN],
         "catalog_path": FIXTURE_CATALOG,
+        # The tiny default plans are far below 1600 kcal; kcal checks have their own tests.
+        "min_kcal_per_person_day": 0,
         **overrides,
     }
     return Settings(_env_file=None, **values)

@@ -83,10 +83,18 @@ def day_names(request: GenerateRequest) -> list[str]:
     return DAY_NAMES[request.language][: request.days]
 
 
-def build_system_prompt(request: GenerateRequest) -> str:
+def kcal_per_person_day(kcal: float, request: GenerateRequest) -> int:
+    return round(kcal / (request.family_size * plan_days(request)))
+
+
+def build_system_prompt(request: GenerateRequest, min_kcal_per_person_day: int) -> str:
     language = LANG[request.language][0]
     if request.mode == "menu":
         mode_rule = (
+            "- The budget is a ceiling, not a target. Buy only what the menu needs, in whole "
+            "packs, and no filler items.\n"
+            f"- The meals must give each person at least {min_kcal_per_person_day} kcal "
+            "per day.\n"
             f"- Return `menu` with exactly {request.days} days, in this order: "
             f"{', '.join(day_names(request))}. Each day has breakfast, lunch and dinner, and "
             "a snack or null.\n"
@@ -94,7 +102,10 @@ def build_system_prompt(request: GenerateRequest) -> str:
             "must contain everything the menu needs."
         )
     else:
-        mode_rule = "- Return `menu` as null. The list covers 7 days."
+        mode_rule = (
+            "- Spend 85-98% of the budget and never more.\n"
+            "- Return `menu` as null. The list covers 7 days."
+        )
     return f"""You are ShopSmart AI, a grocery and meal planner for supermarkets in Austria \
 and Germany.
 
@@ -102,8 +113,8 @@ Rules:
 - Choose products only from the candidate list in the user message, by their `id`. \
 Never invent products or ids.
 - `packs` is the number of whole packs to buy, 1-{MAX_PACKS}. Prices are per pack.
-- Spend 85-98% of the budget and never more. The server computes all prices and totals \
-from the catalog; you only choose ids and packs.
+- Never exceed the budget. The server computes all prices and totals from the catalog; \
+you only choose ids and packs.
 - Cover the whole household for the stated number of days with balanced, varied food. \
 Add non-food items only when they are useful.
 - Every candidate already fits the household's diets.
@@ -186,6 +197,29 @@ def overshoot_problem(total: Decimal, budget: Decimal) -> str:
     )
 
 
+def low_kcal_problem(kcal: int, required: int) -> str:
+    return (
+        f"Your previous menu gives about {kcal} kcal per person per day, but at least "
+        f"{required} are required. Add more packs or more filling products that the meals "
+        "use, staying within the budget."
+    )
+
+
+def priced_plan_problems(
+    priced: PricedPlan, request: GenerateRequest, settings: Settings
+) -> list[str]:
+    """Checks on the priced plan. A plan failing only these is still usable, after trimming."""
+    problems = []
+    budget = request_budget(request)
+    if priced.total > budget:
+        problems.append(overshoot_problem(priced.total, budget))
+    if request.mode == "menu":
+        kcal = kcal_per_person_day(priced.nutrition.kcal, request)
+        if kcal < settings.min_kcal_per_person_day:
+            problems.append(low_kcal_problem(kcal, settings.min_kcal_per_person_day))
+    return problems
+
+
 def menu_ingredient_ids(plan: LLMPlan) -> list[str]:
     ids = []
     for day in plan.menu or []:
@@ -217,8 +251,9 @@ async def create_plan(
 ) -> PlanResult:
     """Ask for a plan; on an unusable reply, retry once with a message saying what was wrong.
 
-    A plan that is valid but over budget is kept as a fallback: if the repair doesn't fix
-    it (or there's no time for one) the server trims it instead of failing.
+    A plan that is valid but over budget or (in menu mode) short on kcal is kept as a
+    fallback: if the repair doesn't fix it (or there's no time for one) the server returns
+    it, trimmed to the budget, instead of failing.
 
     All attempts share one deadline (`settings.request_deadline_s`). Raises `TimeoutError`
     when it passes, or when too little of it is left for the repair attempt, and
@@ -226,9 +261,11 @@ async def create_plan(
     """
     allowed = {p.id for p in candidates}
     plan_model = build_plan_model([p.id for p in candidates], settings.max_schema_enum_values)
-    budget = request_budget(request)
     messages: list[ChatCompletionMessageParam] = [
-        {"role": "system", "content": build_system_prompt(request)},
+        {
+            "role": "system",
+            "content": build_system_prompt(request, settings.min_kcal_per_person_day),
+        },
         {"role": "user", "content": build_user_message(request, candidates)},
     ]
     fallback: tuple[LLMPlan, PricedPlan] | None = None
@@ -242,18 +279,18 @@ async def create_plan(
                 problems = find_plan_problems(plan, request, allowed)
                 if not problems:
                     priced = price_plan(plan_lines(plan), catalog, allowed)
-                    if priced.total <= budget:
+                    problems = priced_plan_problems(priced, request, settings)
+                    if not problems:
                         logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
                         return finish_plan(plan, priced, request)
                     fallback = (plan, priced)
-                    problems = [overshoot_problem(priced.total, budget)]
                 raise LLMOutputError(" ".join(problems), assistant_reply=raw_reply)
             except LLMOutputError as e:
                 logger.warning("LLM attempt %d/%d unusable: %s", attempt, MAX_ATTEMPTS, e.problem)
                 remaining = deadline - loop.time()
                 last = attempt == MAX_ATTEMPTS
                 if fallback is not None and (last or remaining < settings.repair_min_remaining_s):
-                    logger.info("Using the over-budget plan from an earlier attempt, trimmed")
+                    logger.info("Using the imperfect plan from an earlier attempt")
                     return finish_plan(*fallback, request)
                 if last:
                     raise
@@ -317,7 +354,7 @@ def to_response(
         budget=float(budget),
         budget_remaining=float(budget - priced.total),
         nutrition_totals=to_nutrition(totals.kcal, totals.protein_g, totals.fat_g, totals.carbs_g),
-        kcal_per_person_day=round(totals.kcal / (request.family_size * plan_days(request))),
+        kcal_per_person_day=kcal_per_person_day(totals.kcal, request),
         trimmed=[
             TrimmedItem(product_id=c.product_id, from_packs=c.packs_before, to_packs=c.packs_after)
             for c in result.trimmed
