@@ -1,0 +1,259 @@
+{
+  "meta": {
+    "timestamp": "20261015T235013Z",
+    "model": "gpt-4o-mini",
+    "catalog_version": "at-2026-10-15",
+    "cases": 2,
+    "repeat": 3
+  },
+  "summary": {
+    "runs": 6,
+    "rejected_before_llm": 0,
+    "valid_output_rate": 1.0,
+    "per_mode": {
+      "shopping": {
+        "runs": 0,
+        "first_attempt_acceptance": null,
+        "repair_rate": null
+      },
+      "menu": {
+        "runs": 6,
+        "first_attempt_acceptance": 0.833,
+        "repair_rate": 0.167
+      }
+    },
+    "budget_adherence": 1.0,
+    "diet_violations": 0,
+    "kcal_in_range_rate_menu": 1.0,
+    "trimmed_runs": 0,
+    "scaled_menu_runs": 6,
+    "latency_p50_s": 10.91,
+    "latency_p95_s": 13.3,
+    "avg_cost_usd": 0.00128,
+    "total_cost_usd": 0.0077
+  },
+  "results": [
+    {
+      "id": "menu-de-hofer-2p-1d-20",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 10.4,
+      "budget": 20.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1692.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.91,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 3.43,
+      "prompt_tokens": 3027,
+      "completion_tokens": 246,
+      "max_completion_tokens": 246,
+      "calls": [
+        {
+          "duration_s": 3.41,
+          "prompt_tokens": 3027,
+          "completion_tokens": 246,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00060165,
+      "error": null
+    },
+    {
+      "id": "menu-de-billa-2p-7d-100-veg-lf",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 66.45,
+      "budget": 100.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1665.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.06,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 12.99,
+      "prompt_tokens": 2840,
+      "completion_tokens": 1982,
+      "max_completion_tokens": 1982,
+      "calls": [
+        {
+          "duration_s": 12.99,
+          "prompt_tokens": 2840,
+          "completion_tokens": 1982,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0016152,
+      "error": null
+    },
+    {
+      "id": "menu-de-hofer-2p-1d-20",
+      "run": 2,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 2,
+      "first_attempt_accepted": false,
+      "repaired": true,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 19.87,
+      "budget": 20.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1668.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.94,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 9.18,
+      "prompt_tokens": 6776,
+      "completion_tokens": 1170,
+      "max_completion_tokens": 586,
+      "calls": [
+        {
+          "duration_s": 4.49,
+          "prompt_tokens": 3027,
+          "completion_tokens": 584,
+          "finish_reason": "stop"
+        },
+        {
+          "duration_s": 4.67,
+          "prompt_tokens": 3749,
+          "completion_tokens": 586,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0017184000000000001,
+      "error": null
+    },
+    {
+      "id": "menu-de-billa-2p-7d-100-veg-lf",
+      "run": 2,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 53.55,
+      "budget": 100.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1666.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.66,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 13.41,
+      "prompt_tokens": 2840,
+      "completion_tokens": 1868,
+      "max_completion_tokens": 1868,
+      "calls": [
+        {
+          "duration_s": 13.39,
+          "prompt_tokens": 2840,
+          "completion_tokens": 1868,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0015467999999999999,
+      "error": null
+    },
+    {
+      "id": "menu-de-hofer-2p-1d-20",
+      "run": 3,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 11.72,
+      "budget": 20.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1690.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.92,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 4.57,
+      "prompt_tokens": 3027,
+      "completion_tokens": 530,
+      "max_completion_tokens": 530,
+      "calls": [
+        {
+          "duration_s": 4.56,
+          "prompt_tokens": 3027,
+          "completion_tokens": 530,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0007720499999999999,
+      "error": null
+    },
+    {
+      "id": "menu-de-billa-2p-7d-100-veg-lf",
+      "run": 3,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 54.54,
+      "budget": 100.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1663.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.68,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 12.65,
+      "prompt_tokens": 2840,
+      "completion_tokens": 1658,
+      "max_completion_tokens": 1658,
+      "calls": [
+        {
+          "duration_s": 12.64,
+          "prompt_tokens": 2840,
+          "completion_tokens": 1658,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0014208,
+      "error": null
+    }
+  ]
+}
