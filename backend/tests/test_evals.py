@@ -107,7 +107,7 @@ def test_dropped_candidates_are_recorded(fake_llm: FakeOpenAI) -> None:
 
     result = run(fake_llm, case(family_size=2), tight_budget_per_person_day=7.0)
 
-    assert (result.status, result.dropped_candidates) == ("ok", 4)
+    assert (result.status, result.dropped_candidates) == ("ok", 3)
 
 
 def test_rejected_cases_never_call_the_llm(fake_llm: FakeOpenAI) -> None:

@@ -10,6 +10,7 @@ from app.schemas.catalog import NON_FOOD_CATEGORIES
 from app.schemas.requests import GenerateRequest
 from app.services.catalog import load_catalog
 from app.services.planner import (
+    CALORIE_FILTER_EXEMPT,
     MIN_FOOD_CANDIDATES,
     budget_per_person_day,
     cost_per_1000_kcal,
@@ -78,27 +79,48 @@ def test_tight_budget_drops_food_above_the_80th_percentile() -> None:
     kept, dropped = drop_expensive_calories(offered, req, TIGHT)
 
     kept_ids = [p.id for p in kept]
-    assert CHICKEN not in kept_ids and APPLES not in kept_ids
+    assert set(p.id for p in offered) - set(kept_ids) == {
+        CHICKEN,
+        "at-penny-chickpeas-400g",
+        "at-penny-frozen-pizza-350g",
+    }
+    assert dropped == 3  # 18 food -> 15
     assert OATS in kept_ids and MILK in kept_ids
     assert SOAP in kept_ids  # non-food is never dropped
-    assert dropped == len(offered) - len(kept) == 4  # 18 food -> 14
     assert kept_ids == [p.id for p in offered if p.id in kept_ids]  # order kept
-    worst_kept = max(cost_per_1000_kcal(p) or 0 for p in food(kept))
-    assert all((cost_per_1000_kcal(p) or 99) > worst_kept for p in food(offered) if p not in kept)
+    # The percentile is over non-exempt food only: everything kept costs less per kcal
+    # than everything dropped.
+    rated = [p for p in food(offered) if p.category not in CALORIE_FILTER_EXEMPT]
+    worst_kept = max(cost_per_1000_kcal(p) or 0 for p in rated if p.id in kept_ids)
+    assert all((cost_per_1000_kcal(p) or 99) > worst_kept for p in rated if p not in kept)
+
+
+def test_vegetables_and_fruit_survive_a_tight_budget() -> None:
+    req = request(budget=10, family_size=5)  # €0.29 per person per day
+    offered = candidates(req)
+    produce = [p for p in offered if p.category in CALORIE_FILTER_EXEMPT]
+    assert {p.category for p in produce} == {"vegetables", "fruits"}
+    # Apples (€3.83/1000 kcal) are above the 80th percentile of all food.
+    apples = CATALOG.get(APPLES)
+    assert apples is not None and apples in produce
+
+    kept, _ = drop_expensive_calories(offered, req, TIGHT)
+
+    assert all(p in kept for p in produce)
 
 
 def test_tight_budget_never_leaves_fewer_than_the_minimum() -> None:
-    req = request(budget=50, family_size=2, diets=["vegan"])  # 14 food candidates
+    req = request(budget=50, family_size=2, diets=["gluten_free"])
     offered = candidates(req)
-    assert len(food(offered)) == 14
+    assert len(food(offered)) == 13  # 4 vegetables/fruit + 9 others
 
     kept, dropped = drop_expensive_calories(offered, req, TIGHT)
 
-    # 80% would leave 11; the 12 cheapest stay.
+    # 80% of the 9 would leave 4 + 7 = 11 food products; the cheapest dropped one is
+    # kept to reach 12, so only chicken goes.
     assert len(food(kept)) == MIN_FOOD_CANDIDATES
-    assert dropped == 2
-    cheapest = sorted(food(offered), key=lambda p: cost_per_1000_kcal(p) or 99)
-    assert {p.id for p in food(kept)} == {p.id for p in cheapest[:MIN_FOOD_CANDIDATES]}
+    assert dropped == 1
+    assert CHICKEN not in [p.id for p in kept]
 
 
 def test_tight_request_offers_fewer_candidates_and_says_why(
@@ -107,14 +129,14 @@ def test_tight_request_offers_fewer_candidates_and_says_why(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     client = make_client(tight_budget_per_person_day=7.0)
-    fake_llm.queue_plan(make_plan({MILK: 2, OATS: 1}))  # apples would be left out
+    fake_llm.queue_plan(make_plan({MILK: 2, OATS: 1, APPLES: 1}))
 
     response = client.post("/generate", json={**BODY, "family_size": 2})
 
     assert response.status_code == 200
     schema = fake_llm.requests[0]["response_format"]["json_schema"]["schema"]
     enum = schema["$defs"]["LLMLine"]["properties"]["product_id"]["enum"]
-    assert CHICKEN not in enum and OATS in enum and len(enum) == 16
+    assert CHICKEN not in enum and OATS in enum and len(enum) == 17
     system_prompt, user_message = (m["content"] for m in fake_llm.messages())
     assert "\nBudget per person per day: €3.57\n" in user_message
     assert CHICKEN not in user_message
@@ -122,4 +144,4 @@ def test_tight_request_offers_fewer_candidates_and_says_why(
         user_message
     )
     assert "Below €7.00 it is tight" in system_prompt
-    assert "left out 4 costly food candidates" in caplog.text
+    assert "left out 3 costly food candidates" in caplog.text

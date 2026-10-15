@@ -21,7 +21,7 @@ from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
 from app.config import Settings
-from app.schemas.catalog import NON_FOOD_CATEGORIES, Product
+from app.schemas.catalog import NON_FOOD_CATEGORIES, Category, Product
 from app.schemas.llm import (
     MAX_PACKS,
     LLMDayMenu,
@@ -155,6 +155,8 @@ def budget_per_person_day(request: GenerateRequest) -> Decimal:
 
 # On a tight budget, food above this percentile of €/1000 kcal is not offered.
 TIGHT_BUDGET_PERCENTILE = 80
+# Never filtered by €/1000 kcal: chosen for nutrition, not calories.
+CALORIE_FILTER_EXEMPT: frozenset[Category] = frozenset({"vegetables", "fruits"})
 
 
 def drop_expensive_calories(
@@ -163,15 +165,19 @@ def drop_expensive_calories(
     """On a tight budget, leave out food with the highest €/1000 kcal.
 
     Models tend to pick salmon or steak whatever the budget, overshoot it and then fail to
-    repair. Food above the TIGHT_BUDGET_PERCENTILE of €/1000 kcal among the candidates
-    (and food without energy) is dropped, but at least MIN_FOOD_CANDIDATES food products
-    stay: the cheapest dropped ones are kept to reach it. Non-food is untouched. Returns
-    the candidates in their original order and how many were dropped.
+    repair. Among food outside CALORIE_FILTER_EXEMPT, products above the
+    TIGHT_BUDGET_PERCENTILE of €/1000 kcal (computed over those products only), and those
+    without energy, are dropped. At least MIN_FOOD_CANDIDATES food products stay, counting
+    the exempt ones: the cheapest dropped products are kept to reach it. Vegetables, fruit
+    and non-food are untouched. Returns the candidates in their original order and how
+    many were dropped.
     """
     if budget_per_person_day(request) >= Decimal(str(settings.tight_budget_per_person_day)):
         return candidates, 0
     food = [p for p in candidates if p.category not in NON_FOOD_CATEGORIES]
-    costs = {p.id: cost_per_1000_kcal(p) for p in food}
+    exempt = [p for p in food if p.category in CALORIE_FILTER_EXEMPT]
+    filtered = [p for p in food if p.category not in CALORIE_FILTER_EXEMPT]
+    costs = {p.id: cost_per_1000_kcal(p) for p in filtered}
     known = [float(c) for c in costs.values() if c is not None]
     if len(known) < 2:
         return candidates, 0
@@ -181,10 +187,14 @@ def drop_expensive_calories(
         value = costs[product.id]
         return float(value) if value is not None else float("inf")
 
-    kept = {p.id for p in food if cost(p) <= cutoff}
-    if len(kept) < MIN_FOOD_CANDIDATES:
-        by_cost = sorted(food, key=lambda p: (cost(p), p.id))
-        kept = {p.id for p in by_cost[:MIN_FOOD_CANDIDATES]}
+    kept = {p.id for p in filtered if cost(p) <= cutoff}
+    missing = MIN_FOOD_CANDIDATES - len(exempt) - len(kept)
+    if missing > 0:
+        dropped_by_cost = sorted(
+            (p for p in filtered if p.id not in kept), key=lambda p: (cost(p), p.id)
+        )
+        kept |= {p.id for p in dropped_by_cost[:missing]}
+    kept |= {p.id for p in exempt}
     result = [p for p in candidates if p.category in NON_FOOD_CATEGORIES or p.id in kept]
     return result, len(candidates) - len(result)
 
