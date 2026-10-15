@@ -83,9 +83,9 @@ def test_schema_mismatch_is_retried(client: TestClient, fake_llm: FakeOpenAI, re
     [
         (make_plan(days=2), "had 2 days in `menu`, but exactly 3 are required"),
         (make_plan(days=4), "had 4 days in `menu`, but exactly 3 are required"),
-        (make_plan(days=None), "had no `menu`. Return a menu with exactly 3 days"),
+        (make_plan(days=0), "had 0 days in `menu`, but exactly 3 are required"),
     ],
-    ids=["menu-too-short", "menu-too-long", "menu-missing"],
+    ids=["menu-too-short", "menu-too-long", "menu-empty"],
 )
 def test_business_check_failure_is_retried_with_exact_problem(
     client: TestClient,

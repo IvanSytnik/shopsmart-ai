@@ -178,10 +178,12 @@ Content-Type: application/json
 How a plan is made:
 
 1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
-2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 100 candidates). The model returns an optional menu whose meals list `ingredient_ids` (first, so it designs the meals before buying for them), `lines: [{product_id, packs 1–20}]`, and notes. No prices.
-3. **Completing the list**: in menu mode, every meal ingredient missing from `lines` is added by the server with 1 pack and listed in `auto_added`. The completed plan goes through the checks below.
-4. **Checks + one repair**: empty list, missing/wrong-length menu, a total over budget (the repair message states the overshoot in € and names any auto-added ingredients), or, in menu mode, fewer than `MIN_KCAL_PER_PERSON_DAY` kcal per person and day (the message states current vs required) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal target, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and the model buys just what the menu needs, with no filler items.
-5. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first), menu ingredients last. Trimmed lines are listed in `trimmed`.
+2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 500 candidates in shopping mode and above 125 in menu mode, where the ids appear in each of the 4 meals). No prices, no totals from the model.
+   - `shopping`: `lines: [{product_id, packs 1–20}]` and notes.
+   - `menu`: only dishes (food candidates only). Each meal lists `ingredients: [{product_id, amount_per_person}]`, the amount one person eats in that meal in the product's portion unit: grams for products sold by kg, ml for l, pieces for pcs/pack (5–800 g or ml, 1–6 pcs). The prompt gives typical portions and each candidate's energy per portion unit.
+3. **Quantities (menu mode)**: per product, required = Σ `amount_per_person` × `family_size` over all meals; packs = ⌈required / pack size⌉ (at least 1). The model never chooses pack counts in menu mode.
+4. **Checks + one repair**: empty list, wrong-length menu, meals without ingredients, portions outside their range, a total over budget (the repair message states the overshoot in €; in menu mode it also names the 3 most expensive ingredients), or, in menu mode, eaten kcal per person and day below `MIN_KCAL_PER_PERSON_DAY` or above `MAX_KCAL_PER_PERSON_DAY` (the message states current vs limit) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal range, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and nothing is bought besides what the menu uses.
+5. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first); in menu mode every line is a menu ingredient, so packs are reduced before any ingredient is removed. Trimmed lines are listed in `trimmed`.
 
 Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `validation_error` also has `errors: [{loc, msg}]`.
 
@@ -201,7 +203,7 @@ The `422 unknown_store` / `not_enough_products` checks run before the daily cap,
 
 ### Response
 
-Response to the request above with the test catalog (2 of 4 items shown). The model left the chicken for lunch out of `lines`, so the server added it (`auto_added`); it also picked chips, which were trimmed to fit the €15 budget; the menu ingredients were kept.
+Response to the request above with the test catalog (2 of 5 items shown). The menu needs 200 g of chips for 2 people, so the server bought 2 × 175 g; that was over the €15 budget, so it was trimmed to 1 pack. `kcal_per_person_day` is what the menu's portions provide.
 
 ```json
 {
@@ -212,69 +214,85 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
       "names": {"en": "Whole milk 3.5%", "uk": "Молоко 3,5%", "de": "Vollmilch 3,5%"},
       "store": "Lidl",
       "category": "dairy",
-      "packs": 2,
+      "packs": 1,
       "pack_size": 1.0,
       "unit": "l",
       "unit_price": 1.29,
-      "line_total": 2.58,
-      "nutrition": {"kcal": 1280.0, "protein_g": 68.0, "fat_g": 70.0, "carbs_g": 96.0}
+      "line_total": 1.29,
+      "nutrition": {"kcal": 640.0, "protein_g": 34.0, "fat_g": 35.0, "carbs_g": 48.0}
     },
     {
-      "product_id": "at-lidl-apples-1kg",
-      "name": "Apples",
-      "names": {"en": "Apples", "uk": "Яблука", "de": "Äpfel"},
+      "product_id": "at-lidl-potato-chips-175g",
+      "name": "Potato chips",
+      "names": {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
       "store": "Lidl",
-      "category": "fruits",
-      "packs": 2,
-      "pack_size": 1.0,
+      "category": "snacks",
+      "packs": 1,
+      "pack_size": 0.175,
       "unit": "kg",
-      "unit_price": 1.99,
-      "line_total": 3.98,
-      "nutrition": {"kcal": 1040.0, "protein_g": 6.0, "fat_g": 4.0, "carbs_g": 280.0}
+      "unit_price": 1.79,
+      "line_total": 1.79,
+      "nutrition": {"kcal": 940.0, "protein_g": 11.0, "fat_g": 60.0, "carbs_g": 90.0}
     }
   ],
-  "subtotals_by_store": {"Lidl": 12.55, "Penny": 2.29},
-  "total": 14.84,
+  "subtotals_by_store": {"Lidl": 11.06, "Penny": 2.29},
+  "total": 13.35,
   "budget": 15.0,
-  "budget_remaining": 0.16,
-  "nutrition_totals": {"kcal": 6370.0, "protein_g": 259.0, "fat_g": 89.0, "carbs_g": 1156.0},
-  "kcal_per_person_day": 3185.0,
+  "budget_remaining": 1.65,
+  "nutrition_totals": {"kcal": 6150.0, "protein_g": 233.0, "fat_g": 112.0, "carbs_g": 1058.0},
+  "kcal_per_person_day": 1601.0,
+  "kcal_basis": "menu",
   "trimmed": [
     {
       "product_id": "at-lidl-potato-chips-175g",
       "name": "Potato chips",
       "names": {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
       "from_packs": 2,
-      "to_packs": 0
+      "to_packs": 1
     }
   ],
-  "auto_added": ["at-lidl-chicken-breast-500g"],
   "menu": [
     {
       "day": "Monday",
       "breakfast": {
         "name": "Milk porridge with apple",
         "description": "Rice cooked in milk, topped with grated apple",
-        "ingredient_ids": ["at-lidl-milk-1l", "at-penny-rice-1kg", "at-lidl-apples-1kg"]
+        "ingredients": [
+          {"product_id": "at-lidl-milk-1l", "amount_per_person": 250},
+          {"product_id": "at-penny-rice-1kg", "amount_per_person": 60},
+          {"product_id": "at-lidl-apples-1kg", "amount_per_person": 100}
+        ]
       },
       "lunch": {
         "name": "Chicken rice bowl",
         "description": "Pan-fried chicken over rice",
-        "ingredient_ids": ["at-lidl-chicken-breast-500g", "at-penny-rice-1kg"]
+        "ingredients": [
+          {"product_id": "at-lidl-chicken-breast-500g", "amount_per_person": 150},
+          {"product_id": "at-penny-rice-1kg", "amount_per_person": 100}
+        ]
       },
       "dinner": {
         "name": "Baked apples",
         "description": "Apples baked with a splash of milk",
-        "ingredient_ids": ["at-lidl-apples-1kg", "at-lidl-milk-1l"]
+        "ingredients": [
+          {"product_id": "at-lidl-apples-1kg", "amount_per_person": 250},
+          {"product_id": "at-lidl-milk-1l", "amount_per_person": 100}
+        ]
       },
-      "snack": null
+      "snack": {
+        "name": "Chips",
+        "description": "A small bowl",
+        "ingredients": [
+          {"product_id": "at-lidl-potato-chips-175g", "amount_per_person": 100}
+        ]
+      }
     }
   ],
   "notes": "Rice and apples are the cheapest calories here.",
   "warnings": ["budget_trimmed"],
   "catalog_version": "test-small-2",
   "price_date": "2026-10-01",
-  "generated_at": "2026-10-14T21:30:00Z"
+  "generated_at": "2026-10-15T10:30:00Z"
 }
 ```
 
@@ -284,11 +302,10 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
 | `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
 | `items[].nutrition` | for all packs; `null` for non-food |
 | `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
-| `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode. Based on the purchased packs, so an upper bound of the food available, not what the menu's meals actually consume |
+| `kcal_per_person_day`, `kcal_basis` | kcal / (`family_size` × days). `kcal_basis: "menu"` (menu mode): what the menu's portions provide, counting only what is bought after trimming. `kcal_basis: "purchased"` (shopping mode, 7 days): `nutrition_totals.kcal` of the purchased packs, an upper bound |
 | `trimmed` | lines the server cut to fit the budget, with `name` and `names` like `items` (a removed line isn't in `items`); `to_packs: 0` = removed |
-| `auto_added` | meal ingredients the model left out of its list; the server added 1 pack each (before any trimming). Always `[]` in shopping mode |
-| `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed). Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
-| `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt; `budget_trimmed`: `trimmed` is not empty |
+| `menu` | `null` in shopping mode. `ingredients[].product_id` refers to `items` (an ingredient may be missing if it was trimmed); `amount_per_person` is in g (unit kg), ml (unit l) or pieces (pcs, pack). Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
+| `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt and any trimming; `budget_trimmed`: `trimmed` is not empty |
 | `catalog_version`, `price_date` | which reference prices were used |
 
 ### Catalog metadata
@@ -374,6 +391,7 @@ REQUEST_DEADLINE_S=55                      # default; total time for one POST /g
 REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if less is left
 CATALOG_PATH=app/data/catalog.json         # default; price catalog, validated at startup
 MIN_KCAL_PER_PERSON_DAY=1600               # default; menu mode repairs plans below this
+MAX_KCAL_PER_PERSON_DAY=3500               # default; menu mode repairs portions above this
 MAX_SCHEMA_ENUM_VALUES=500                 # default; above it product ids aren't an enum in the LLM schema
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate

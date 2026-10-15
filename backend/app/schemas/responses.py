@@ -43,10 +43,16 @@ class TrimmedItem(BaseModel):
     to_packs: int
 
 
+class MealIngredient(BaseModel):
+    product_id: str
+    # One person's amount in this meal: grams (unit kg), ml (unit l) or pieces (pcs, pack).
+    amount_per_person: int
+
+
 class Meal(BaseModel):
     name: str
     description: str
-    ingredient_ids: list[str]
+    ingredients: list[MealIngredient]
 
 
 class DayMenu(BaseModel):
@@ -57,9 +63,11 @@ class DayMenu(BaseModel):
     snack: Meal | None
 
 
-# low_kcal: a menu still below Settings.min_kcal_per_person_day after the final attempt.
+# low_kcal: a menu whose eaten kcal are still below Settings.min_kcal_per_person_day
+# after the final attempt (and any trimming).
 # budget_trimmed: the server cut lines to fit the budget (see `trimmed`).
 Warning = Literal["low_kcal", "budget_trimmed"]
+KcalBasis = Literal["menu", "purchased"]
 
 
 class GenerateResponse(BaseModel):
@@ -71,17 +79,13 @@ class GenerateResponse(BaseModel):
     nutrition_totals: Nutrition
     kcal_per_person_day: float = Field(
         description=(
-            "nutrition_totals.kcal / (family_size x days). Based on the purchased packs, so "
-            "an upper bound of the food available, not what the menu's meals consume."
+            "kcal / (family_size x days), see `kcal_basis`. Menu mode: what the menu's "
+            "portions provide (limited to what was bought after trimming). Shopping mode: "
+            "nutrition_totals.kcal of the purchased packs, an upper bound."
         )
     )
+    kcal_basis: KcalBasis
     trimmed: list[TrimmedItem]
-    auto_added: list[str] = Field(
-        description=(
-            "Meal ingredients the model left out of its list; the server added 1 pack "
-            "each (before any trimming)."
-        )
-    )
     menu: list[DayMenu] | None
     notes: str
     warnings: list[Warning]

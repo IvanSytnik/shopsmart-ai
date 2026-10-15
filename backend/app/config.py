@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     repair_min_remaining_s: float = Field(default=20, ge=0)
     # Menu mode: a plan below this many kcal per person and day is sent back for repair.
     min_kcal_per_person_day: int = Field(default=1600, ge=0)
+    # Menu mode: portions above this many kcal per person and day are sent back for repair.
+    max_kcal_per_person_day: int = Field(default=3500, ge=1)
     # Max enum values in the LLM response schema; above it product ids are sent as plain
     # strings (see app.schemas.llm.build_plan_model). OpenAI's own limit is higher.
     max_schema_enum_values: int = Field(default=500, ge=0)

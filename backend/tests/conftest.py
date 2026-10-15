@@ -35,33 +35,39 @@ SOAP = "at-lidl-dish-soap-500ml"  # €0.99, non-food
 DEFAULT_LINES = {MILK: 2, APPLES: 2, RICE: 1}  # €8.85
 
 
-def meal(*ingredient_ids: str, name: str = "Porridge") -> dict[str, Any]:
-    return {
-        "name": name,
-        "description": "Quick and filling",
-        "ingredient_ids": list(ingredient_ids),
-    }
+def ing(product_id: str, amount: int) -> dict[str, Any]:
+    """A menu ingredient: `amount` per person in g, ml or pcs (see the product's unit)."""
+    return {"product_id": product_id, "amount_per_person": amount}
 
 
+def meal(*ingredients: dict[str, Any], name: str = "Porridge") -> dict[str, Any]:
+    return {"name": name, "description": "Quick and filling", "ingredients": list(ingredients)}
+
+
+# Default day, per person: milk 200 ml, apples 450 g, rice 200 g = 1062 kcal.
 def day(name: str, snack: bool = True) -> dict[str, Any]:
     return {
         "day": name,
-        "breakfast": meal(MILK, APPLES),
-        "lunch": meal(RICE, name="Rice bowl"),
-        "dinner": meal(RICE, APPLES, name="Rice with apples"),
-        "snack": meal(APPLES, name="Apple") if snack else None,
+        "breakfast": meal(ing(MILK, 200), ing(APPLES, 150)),
+        "lunch": meal(ing(RICE, 100), name="Rice bowl"),
+        "dinner": meal(ing(RICE, 100), ing(APPLES, 150), name="Rice with apples"),
+        "snack": meal(ing(APPLES, 150), name="Apple") if snack else None,
     }
 
 
 def make_plan(
     lines: dict[str, int] | None = None, days: int | None = None, **overrides: Any
 ) -> dict[str, Any]:
-    """An LLMPlan payload; `lines` maps product id -> packs, `days` adds a menu."""
-    plan: dict[str, Any] = {
-        "lines": [{"product_id": i, "packs": n} for i, n in (lines or DEFAULT_LINES).items()],
-        "menu": [day(f"Day {i + 1}") for i in range(days)] if days else None,
-        "notes": "Buy seasonal.",
-    }
+    """An LLM reply. Shopping mode: `lines` maps product id -> packs. Menu mode (`days`
+    given): `days` default days, see `day`; `lines` is ignored."""
+    plan: dict[str, Any]
+    if days is not None:
+        plan = {"menu": [day(f"Day {i + 1}") for i in range(days)], "notes": "Buy seasonal."}
+    else:
+        plan = {
+            "lines": [{"product_id": i, "packs": n} for i, n in (lines or DEFAULT_LINES).items()],
+            "notes": "Buy seasonal.",
+        }
     return {**plan, **overrides}
 
 
@@ -157,8 +163,10 @@ def make_settings(**overrides: Any) -> Settings:
         "openai_max_tokens": 123,
         "cors_origins": [ALLOWED_ORIGIN],
         "catalog_path": FIXTURE_CATALOG,
-        # The tiny default plans are far below 1600 kcal; kcal checks have their own tests.
+        # The small default plans are outside the real kcal range; kcal checks have their
+        # own tests.
         "min_kcal_per_person_day": 0,
+        "max_kcal_per_person_day": 100_000,
         **overrides,
     }
     return Settings(_env_file=None, **values)
