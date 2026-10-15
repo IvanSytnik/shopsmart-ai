@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Country, DietTag, GenerateRequest, Mode } from '../types';
 import {
   BUDGET_PRESETS,
@@ -47,6 +47,9 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const [selectedStores, setSelectedStores] = useState<string[]>([]);
   // Kept as typed so the field can be empty while editing; parsed for validation and submit.
   const [budgetText, setBudgetText] = useState<string>('50');
+  // Select the whole amount on focus so typing replaces it. Chrome and Safari clear that
+  // selection on the mouseup of the focusing click, so that one mouseup is cancelled.
+  const keepBudgetSelection = useRef(false);
   const [familySize, setFamilySize] = useState<number>(2);
   const [preferences, setPreferences] = useState<string>('');
   const [selectedDiets, setSelectedDiets] = useState<DietTag[]>([]);
@@ -250,6 +253,20 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           autoComplete="off"
           value={budgetText}
           onChange={e => setBudgetText(normalizeDecimalInput(e.target.value))}
+          onFocus={e => {
+            e.currentTarget.select();
+            keepBudgetSelection.current = true;
+          }}
+          onMouseUp={e => {
+            if (keepBudgetSelection.current) e.preventDefault();
+            keepBudgetSelection.current = false;
+          }}
+          onKeyDown={() => {
+            keepBudgetSelection.current = false;
+          }}
+          onBlur={() => {
+            keepBudgetSelection.current = false;
+          }}
           aria-invalid={!budgetValid}
           aria-describedby={budgetValid ? undefined : 'budget-error'}
           className="w-full p-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"

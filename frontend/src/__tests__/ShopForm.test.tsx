@@ -170,9 +170,38 @@ describe('ShopForm', () => {
       await user.click(submitButton());
       expect(onSubmit).not.toHaveBeenCalled();
 
-      await user.type(budgetInput(), '000');
+      await user.click(budgetInput()); // selects all
+      await user.keyboard('{End}000');
       expect(budgetInput().value).toBe('5000');
       expect(budgetError()).toBeTruthy();
+    });
+
+    it('selects the whole amount on focus, so typing replaces it', async () => {
+      mockFetch();
+      const onSubmit = vi.fn();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
+      await screen.findByRole('button', { name: 'Lidl' });
+
+      await user.click(budgetInput());
+      expect([budgetInput().selectionStart, budgetInput().selectionEnd]).toEqual([0, 2]);
+
+      await user.keyboard('80');
+      expect(budgetInput().value).toBe('80');
+      await user.click(submitButton());
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ budget: 80 }));
+    });
+
+    it('a later click inside the focused field places the cursor normally', async () => {
+      mockFetch();
+      const user = userEvent.setup();
+      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      await screen.findByRole('button', { name: 'Lidl' });
+
+      await user.click(budgetInput());
+      await user.keyboard('{End}');
+      await user.keyboard('5');
+      expect(budgetInput().value).toBe('505');
     });
 
     it('preset chips set the field', async () => {
