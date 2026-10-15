@@ -28,7 +28,7 @@ export default [
       // Hooks/helpers co-located with their provider/component; move to src/hooks/ in Phase 3.
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true, allowExportNames: ['useLanguage', 'useTheme', 'saveListToHistory'] },
+        { allowConstantExport: true, allowExportNames: ['useLanguage', 'useTheme'] },
       ],
     },
   },

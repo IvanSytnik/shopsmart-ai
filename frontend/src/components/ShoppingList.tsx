@@ -1,113 +1,98 @@
 import React, { useState } from 'react';
-import { AIResponse } from '../types';
-import { CATEGORIES } from '../constants';
+import { GenerateResponse } from '../types';
+import { CATEGORY_ICONS, UNIT_KEYS } from '../constants';
 import { useLanguage } from '../LanguageContext';
+import { groupByStore, money } from './results/format';
 
 interface ShoppingListProps {
-  response: AIResponse;
-  onReset: () => void;
+  response: GenerateResponse;
 }
 
-export const ShoppingList: React.FC<ShoppingListProps> = ({ response, onReset }) => {
+export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
   const { t } = useLanguage();
-  const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
+  const [checked, setChecked] = useState<Set<string>>(new Set());
 
-  const toggleItem = (index: number) => {
-    setCheckedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(index)) {
-        newSet.delete(index);
+  const toggleItem = (productId: string) => {
+    setChecked(prev => {
+      const next = new Set(prev);
+      if (next.has(productId)) {
+        next.delete(productId);
       } else {
-        newSet.add(index);
+        next.add(productId);
       }
-      return newSet;
+      return next;
     });
   };
 
-  const groupedByStore = response.items.reduce((acc, item) => {
-    if (!acc[item.store]) acc[item.store] = [];
-    acc[item.store].push(item);
-    return acc;
-  }, {} as Record<string, typeof response.items>);
-
-  const getCategoryIcon = (category: string) => {
-    const cat = CATEGORIES.find(c => c.id.toLowerCase() === category.toLowerCase());
-    return cat?.icon || '📦';
-  };
-
-  const copyToClipboard = () => {
-    const text = response.items.map(item => `${item.product} - ${item.quantity} (${item.store}) €${item.approx_price}`).join('\n');
-    navigator.clipboard.writeText(text);
-  };
-
-  const stores = Object.keys(groupedByStore);
-  const progress = (checkedItems.size / response.items.length) * 100;
+  const progress = response.items.length ? (checked.size / response.items.length) * 100 : 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Stats */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 transition-colors">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">{t('yourShoppingList')}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{response.items.length}</div>
-            <div className="text-sm text-blue-600 dark:text-blue-400">{t('items')}</div>
-          </div>
-          <div className="bg-green-50 dark:bg-green-900/30 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">€{response.total_cost.toFixed(2)}</div>
-            <div className="text-sm text-green-600 dark:text-green-400">{t('estimatedCost')}</div>
-          </div>
-          <div className="bg-purple-50 dark:bg-purple-900/30 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stores.length}</div>
-            <div className="text-sm text-purple-600 dark:text-purple-400">{t('stores')}</div>
-          </div>
-          <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{progress.toFixed(0)}%</div>
-            <div className="text-sm text-orange-600 dark:text-orange-400">{t('completed')}</div>
-          </div>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 px-1">
+        <span>
+          {response.items.length} {t('items')} • {Object.keys(response.subtotals_by_store).length}{' '}
+          {t('stores')}
+        </span>
+        <span>
+          {progress.toFixed(0)}% {t('completed').toLowerCase()}
+        </span>
       </div>
 
-      {/* Items by Store */}
-      {Object.entries(groupedByStore).map(([store, items]) => (
-        <div key={store} className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors">
-          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-4">
+      {groupByStore(response.items).map(([store, items]) => (
+        <section
+          key={store}
+          aria-label={store}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors"
+        >
+          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-4 flex items-baseline justify-between">
             <h3 className="text-lg font-semibold text-white">{store}</h3>
-            <p className="text-primary-100 text-sm">{items.length} {t('items')} • €{items.reduce((sum, i) => sum + Number(i.approx_price), 0).toFixed(2)}</p>
+            <p className="text-primary-100 text-sm">
+              {items.length} {t('items')} •{' '}
+              <span data-testid={`subtotal-${store}`}>
+                €{money(response.subtotals_by_store[store] ?? 0)}
+              </span>
+            </p>
           </div>
-          <div className="divide-y dark:divide-gray-700">
-            {items.map((item, idx) => {
-              const globalIdx = response.items.indexOf(item);
-              const isChecked = checkedItems.has(globalIdx);
+          <ul className="divide-y dark:divide-gray-700">
+            {items.map(item => {
+              const isChecked = checked.has(item.product_id);
               return (
-                <div key={idx} onClick={() => toggleItem(globalIdx)} className={`flex items-center gap-4 p-4 cursor-pointer transition-all ${isChecked ? 'bg-green-50 dark:bg-green-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isChecked ? 'bg-green-500 border-green-500' : 'border-gray-300 dark:border-gray-600'}`}>
-                    {isChecked && <span className="text-white text-sm">✓</span>}
-                  </div>
-                  <span className="text-2xl">{getCategoryIcon(item.category)}</span>
-                  <div className="flex-1">
-                    <div className={`font-medium ${isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}>{item.product}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{item.quantity}</div>
-                    {item.calories && item.calories > 0 && (
-                      <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        🔥{item.calories} • 🥩{item.protein}g • 🧈{item.fat}g • 🍞{item.carbs}g
-                      </div>
-                    )}
-                  </div>
-                  <div className="font-semibold text-gray-800 dark:text-gray-200">€{item.approx_price}</div>
-                </div>
+                <li key={item.product_id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(item.product_id)}
+                    aria-pressed={isChecked}
+                    className={`w-full text-left flex items-center gap-4 p-4 transition-all ${isChecked ? 'bg-green-50 dark:bg-green-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}`}
+                  >
+                    <span
+                      className={`w-6 h-6 shrink-0 rounded-full border-2 flex items-center justify-center ${isChecked ? 'bg-green-500 border-green-500' : 'border-gray-300 dark:border-gray-600'}`}
+                    >
+                      {isChecked && <span className="text-white text-sm">✓</span>}
+                    </span>
+                    <span className="text-2xl" title={t(item.category)}>
+                      {CATEGORY_ICONS[item.category]}
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span
+                        className={`block font-medium ${isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}
+                      >
+                        {item.name}
+                      </span>
+                      <span className="block text-sm text-gray-500 dark:text-gray-400">
+                        {item.packs} × {item.pack_size} {t(UNIT_KEYS[item.unit])} • €
+                        {money(item.unit_price)} {t('perPack')}
+                      </span>
+                    </span>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      €{money(item.line_total)}
+                    </span>
+                  </button>
+                </li>
               );
             })}
-          </div>
-        </div>
+          </ul>
+        </section>
       ))}
-
-      {/* Actions */}
-      <div className="flex flex-wrap gap-3">
-        <button onClick={copyToClipboard} className="flex-1 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">📋 {t('copyToClipboard')}</button>
-        <button onClick={() => window.print()} className="flex-1 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">🖨️ {t('print')}</button>
-        <button onClick={onReset} className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all">✨ {t('newList')}</button>
-      </div>
     </div>
   );
 };

@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
-import { ShopForm, ShoppingList, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle, History, saveListToHistory, MealPlan } from './components';
+import { ShopForm, Results, LoadingSpinner, ErrorBanner, LanguageSelector, ThemeToggle, History } from './components';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { ThemeProvider } from './ThemeContext';
-import { apiService } from './api';
-import { AIResponse, UserInput } from './types';
+import { ApiError, ErrorCode, generate } from './api';
+import { saveToHistory } from './history';
+import { GenerateRequest, GenerateResponse } from './types';
 
 const AppContent: React.FC = () => {
-  const [response, setResponse] = useState<AIResponse | null>(null);
+  const [response, setResponse] = useState<GenerateResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorCode | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isMenuMode, setIsMenuMode] = useState(false);
   const { t } = useLanguage();
 
-  const handleGenerate = async (input: UserInput) => {
+  const handleGenerate = async (input: GenerateRequest) => {
     setLoading(true);
     setError(null);
     setIsMenuMode(input.mode === 'menu');
     try {
-      const result = await apiService.generateShoppingList(input);
+      const result = await generate(input);
       setResponse(result);
-      saveListToHistory(result, input.budget);
+      saveToHistory(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof ApiError ? err.code : 'generation_failed');
     } finally {
       setLoading(false);
     }
@@ -33,9 +34,9 @@ const AppContent: React.FC = () => {
     setError(null);
   };
 
-  const handleLoadFromHistory = (savedResponse: AIResponse) => {
+  const handleLoadFromHistory = (savedResponse: GenerateResponse) => {
+    setError(null);
     setResponse(savedResponse);
-    setIsMenuMode(!!savedResponse.menu);
   };
 
   return (
@@ -61,18 +62,15 @@ const AppContent: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400">{t('appDescription')}</p>
         </header>
 
-        {error && <ErrorBanner message={error} onDismiss={() => setError(null)} onRetry={handleReset} />}
+        {error && <ErrorBanner code={error} onDismiss={() => setError(null)} onRetry={handleReset} />}
 
-        {loading ? (
-          <LoadingSpinner isMenu={isMenuMode} />
-        ) : response ? (
-          isMenuMode && response.menu ? (
-            <MealPlan response={response} onReset={handleReset} />
-          ) : (
-            <ShoppingList response={response} onReset={handleReset} />
-          )
-        ) : (
-          <ShopForm onSubmit={handleGenerate} />
+        {loading && <LoadingSpinner isMenu={isMenuMode} />}
+        {!loading && response && <Results response={response} onReset={handleReset} />}
+        {/* Kept mounted while loading so the user's choices survive an error. */}
+        {!response && (
+          <div className={loading ? 'hidden' : undefined}>
+            <ShopForm onSubmit={handleGenerate} />
+          </div>
         )}
 
         <footer className="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">

@@ -1,8 +1,7 @@
 export { ShopForm } from './ShopForm';
-export { ShoppingList } from './ShoppingList';
+export { Results } from './results/Results';
 export { LoadingSpinner } from './LoadingSpinner';
 export { ErrorBanner } from './ErrorBanner';
 export { LanguageSelector } from './LanguageSelector';
 export { ThemeToggle } from './ThemeToggle';
-export { History, saveListToHistory } from './History';
-export { MealPlan } from './MealPlan';
+export { History } from './History';

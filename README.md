@@ -21,7 +21,8 @@ ShopSmart AI is a web application that generates optimized weekly shopping lists
 - 💰 **Budget optimization** - AI stays within your budget
 - 🥗 **Dietary preferences** - Vegetarian, vegan, gluten-free, etc.
 - 👨‍👩‍👧‍👦 **Family size scaling** - Portions adjusted for 1-5+ people
-- 📊 **Smart categorization** - Items organized by store and category
+- 📊 **Smart categorization** - Items organized by store and category, with per-store subtotals and a budget bar
+- ⚠️ **Honest results** - Notices when products were trimmed to fit the budget or a menu is short on food
 - ✅ **Progress tracking** - Check off items as you shop
 - 📋 **Export options** - Copy to clipboard or print
 
@@ -321,13 +322,18 @@ shopsmart-ai/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/     # React components
-│   │   │   ├── ShopForm.tsx
-│   │   │   ├── ShoppingList.tsx
+│   │   │   ├── ShopForm.tsx      # catalog-driven form (country, stores, diets)
+│   │   │   ├── results/          # summary, warnings, export, results container
+│   │   │   ├── ShoppingList.tsx  # items grouped by store
+│   │   │   ├── MealPlan.tsx      # menu with ingredients resolved from items
+│   │   │   ├── History.tsx
 │   │   │   ├── LoadingSpinner.tsx
-│   │   │   └── ErrorBanner.tsx
+│   │   │   └── ErrorBanner.tsx   # error code -> translated message
+│   │   ├── hooks/          # useCatalogMeta
 │   │   ├── App.tsx         # Main component
-│   │   ├── api.ts          # API service
-│   │   ├── types.ts        # TypeScript types
+│   │   ├── api.ts          # API client (typed ApiError with `code`)
+│   │   ├── history.ts      # localStorage history ("shopsmart-history-v2")
+│   │   ├── types.ts        # mirrors backend schemas
 │   │   ├── constants.ts    # Constants
 │   │   └── index.css       # Global styles
 │   ├── package.json
