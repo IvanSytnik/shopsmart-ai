@@ -458,7 +458,7 @@ The scenarios cover shopping and menu mode, 1/3/7 days, households of 1–5, bud
 
 It writes `evals/results/<timestamp>.json` (every run) and `evals/report.md`:
 - **summary:** valid output rate, first-attempt acceptance and repair rate per mode, budget adherence, diet violations, kcal-in-range rate for menus, p50/p95 latency, average cost per request;
-- **per-case table:** status, attempts, scaling, trimming, total vs budget, kcal, tokens and cost.
+- **per-case table:** status, attempts, candidates dropped on a tight budget, scaling, trimming, total vs budget, €/1000 kcal of the final plan, kcal, tokens and cost.
 
 The exit code is 1 if any plan is over budget or contains a product that breaks a requested diet. Cost uses the gpt-4o-mini price in `evals/run.py` (`PRICES_PER_M_TOKENS`).
 

@@ -74,6 +74,8 @@ def test_successful_case(fake_llm: FakeOpenAI) -> None:
     assert (result.repaired, result.used_fallback, result.scaled) == (False, False, False)
     assert (result.total, result.within_budget, result.diet_violations) == (8.85, True, [])
     assert (result.kcal_basis, result.kcal_in_range) == ("purchased", None)
+    assert result.cost_per_1000_kcal == 1.52  # 8.85 / 5820 kcal
+    assert result.dropped_candidates == 0
     assert (result.prompt_tokens, result.completion_tokens) == (1, 1)  # from the fake usage
     assert result.cost_usd == pytest.approx(0.75e-6)
 
@@ -98,6 +100,14 @@ def test_failed_case_still_counts_attempts_and_tokens(fake_llm: FakeOpenAI) -> N
 
     assert (result.status, result.attempts, result.prompt_tokens) == ("generation_failed", 2, 2)
     assert result.total is None
+
+
+def test_dropped_candidates_are_recorded(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan({MILK: 2, "at-penny-rice-1kg": 1}))
+
+    result = run(fake_llm, case(family_size=2), tight_budget_per_person_day=7.0)
+
+    assert (result.status, result.dropped_candidates) == ("ok", 4)
 
 
 def test_rejected_cases_never_call_the_llm(fake_llm: FakeOpenAI) -> None:
@@ -182,6 +192,7 @@ def test_report_has_the_summary_and_one_row_per_run() -> None:
             budget=10,
             kcal_per_person_day=400,
             kcal_basis="purchased",
+            cost_per_1000_kcal=1.2,
         ),
         result(
             id="b",
@@ -193,6 +204,7 @@ def test_report_has_the_summary_and_one_row_per_run() -> None:
             kcal_per_person_day=1200,
             kcal_basis="menu",
             kcal_in_range=False,
+            dropped_candidates=3,
         ),
     ]
     meta = {
@@ -207,7 +219,8 @@ def test_report_has_the_summary_and_one_row_per_run() -> None:
 
     assert "**PASS**" in report
     assert "| Budget adherence (must be 100%) | 100% |" in report
-    assert "| a | 1 | ok | 1 |" in report
+    assert "| a | 1 | ok | 1 |  |  |  | 9.50 / 10.00 | 1.20 | 400 (purchased) |" in report
+    assert "| b | 1 | ok | 2 | 3 |" in report
     assert "1200 (menu) ⚠" in report
 
 

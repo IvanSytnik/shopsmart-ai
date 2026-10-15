@@ -82,6 +82,8 @@ class CaseResult:
     kcal_per_person_day: float | None = None
     kcal_basis: str | None = None
     kcal_in_range: bool | None = None  # menu mode only
+    cost_per_1000_kcal: float | None = None  # final plan: total / purchased kcal x 1000
+    dropped_candidates: int = 0  # food left out on a tight budget
     warnings: list[str] = field(default_factory=list)
     latency_s: float = 0
     prompt_tokens: int = 0
@@ -155,11 +157,15 @@ async def run_case(
             low, high = settings.min_kcal_per_person_day, settings.max_kcal_per_person_day
             result.kcal_in_range = low <= kcal <= high
         result.warnings = list(response.warnings)
+        kcal_bought = response.nutrition_totals.kcal
+        if kcal_bought > 0:
+            result.cost_per_1000_kcal = round(response.total / kcal_bought * 1000, 2)
     result.latency_s = round(time.perf_counter() - start, 2)
     result.attempts = trace.attempts
     result.first_attempt_accepted = trace.accepted_attempt == 1
     result.repaired = trace.attempts > 1
     result.used_fallback = trace.used_fallback
+    result.dropped_candidates = trace.dropped_candidates
     result.prompt_tokens = sum(u.prompt_tokens for u in trace.usage)
     result.completion_tokens = sum(u.completion_tokens for u in trace.usage)
     result.cost_usd = cost_usd(
@@ -281,9 +287,10 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
         "",
         "## Cases",
         "",
-        "| Case | Run | Status | Attempts | Scaled | Trimmed | Total / budget (€) "
-        "| kcal/person/day | Diet violations | Latency (s) | Tokens in/out | Cost ($) |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Case | Run | Status | Attempts | Dropped | Scaled | Trimmed | Total / budget (€) "
+        "| €/1000 kcal | kcal/person/day | Diet violations | Latency (s) | Tokens in/out "
+        "| Cost ($) |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in results:
         kcal = "–"
@@ -293,8 +300,9 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
                 kcal += " ⚠"
         total = f"{num(r.total)} / {r.budget:.2f}"
         lines.append(
-            f"| {r.id} | {r.run} | {r.status} | {r.attempts} | {'yes' if r.scaled else ''} | "
-            f"{r.trimmed_count or ''} | {total} | {kcal} | "
+            f"| {r.id} | {r.run} | {r.status} | {r.attempts} | {r.dropped_candidates or ''} | "
+            f"{'yes' if r.scaled else ''} | {r.trimmed_count or ''} | {total} | "
+            f"{num(r.cost_per_1000_kcal)} | {kcal} | "
             f"{', '.join(r.diet_violations) or ''} | {r.latency_s:.1f} | "
             f"{r.prompt_tokens}/{r.completion_tokens} | {num(r.cost_usd, 4)} |"
         )
@@ -302,7 +310,8 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
         "",
         f"Cost uses {PRICES_PER_M_TOKENS} USD per 1M tokens (input, output); see "
         "`evals/run.py`. kcal basis: `menu` = what the portions provide, `purchased` = all "
-        "bought packs.",
+        "bought packs. €/1000 kcal = final total per 1000 purchased kcal. Dropped = food "
+        "candidates left out because the budget was tight.",
         "",
     ]
     return "\n".join(lines)
