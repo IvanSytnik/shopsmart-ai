@@ -510,13 +510,13 @@ def test_several_problems_are_reported_together(
     bad = make_plan(days=2)
     bad["menu"][0]["lunch"]["ingredients"].append(ing("made-up-id", 100))
     fake_llm.queue_plan(bad)
-    fake_llm.queue_plan(make_plan(days=1))
+    fake_llm.queue_plan(make_plan(days=3))
 
-    client.post("/generate", json=MENU_1_DAY)
+    client.post("/generate", json={**MENU_1_DAY, "days": 3})
 
     problem = fake_llm.messages(1)[-1]["content"]
     assert "These ids are not in the candidate list: made-up-id." in problem
-    assert "had 2 days in `menu`, but exactly 1 are required" in problem
+    assert "had 2 days in `menu`, but exactly 3 are required" in problem
 
 
 # --- prompt ---------------------------------------------------------------------

@@ -82,10 +82,9 @@ def test_schema_mismatch_is_retried(client: TestClient, fake_llm: FakeOpenAI, re
     ("first_plan", "expected_problem"),
     [
         (make_plan(days=2), "had 2 days in `menu`, but exactly 3 are required"),
-        (make_plan(days=4), "had 4 days in `menu`, but exactly 3 are required"),
         (make_plan(days=0), "had 0 days in `menu`, but exactly 3 are required"),
     ],
-    ids=["menu-too-short", "menu-too-long", "menu-empty"],
+    ids=["menu-too-short", "menu-empty"],
 )
 def test_business_check_failure_is_retried_with_exact_problem(
     client: TestClient,
@@ -129,3 +128,23 @@ def test_empty_lines_in_shopping_mode_is_retried(client: TestClient, fake_llm: F
 
     assert response.status_code == 200
     assert fake_llm.calls == 2
+
+
+def test_extra_menu_days_are_dropped_without_a_repair(
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
+) -> None:
+    fake_llm.queue_plan(make_plan(days=5))
+
+    response = client.post("/generate", json=MENU_3_DAYS)
+
+    assert response.status_code == 200
+    assert fake_llm.calls == 1
+    body = response.json()
+    assert [d["day"] for d in body["menu"]] == ["Day 1", "Day 2", "Day 3"]
+    # Bought for 3 days only: milk 1200 ml -> 2, apples 2700 g -> 3, rice 1200 g -> 2.
+    assert [(i["product_id"], i["packs"]) for i in body["items"]] == [
+        ("at-lidl-milk-1l", 2),
+        ("at-lidl-apples-1kg", 3),
+        ("at-penny-rice-1kg", 2),
+    ]
+    assert "Menu had 5 days, keeping the first 3" in caplog.text

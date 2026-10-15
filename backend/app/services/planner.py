@@ -417,7 +417,11 @@ def menu_draft(
     settings: Settings,
 ) -> tuple[Draft | None, list[str]]:
     problems = []
-    if len(plan.menu) != request.days:
+    if len(plan.menu) > request.days:
+        # Extra days are harmless to drop; buying for them would waste the budget.
+        logger.info("Menu had %d days, keeping the first %d", len(plan.menu), request.days)
+        plan.menu = plan.menu[: request.days]
+    if len(plan.menu) < request.days:
         problems.append(
             f"Your previous reply had {len(plan.menu)} days in `menu`, but exactly "
             f"{request.days} are required: {', '.join(day_names(request))}."
