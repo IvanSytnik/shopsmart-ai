@@ -80,35 +80,37 @@ def test_pieces_are_counted_per_person(client: TestClient, fake_llm: FakeOpenAI)
     assert "eggs 1-3 pcs" in system_prompt
 
 
-def test_portions_out_of_range_are_repaired(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    bad = one_day(meal(ing(APPLES, 3)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
-    fake_llm.queue_plan(make_plan(days=1, menu=bad))
-    fake_llm.queue_plan(make_plan(days=1))
+def test_too_many_pieces_are_clamped_and_used_for_the_packs(
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
+) -> None:
+    pasta = meal(ing("de-penny-pasta-500g", 100))
+    fake_llm.queue_plan(make_plan(days=1, menu=one_day(meal(ing(EGGS, 9)), pasta, pasta)))
+
+    response = client.post("/generate", json={**MENU_1_DAY, "country": "DE", "family_size": 4})
+
+    assert response.status_code == 200
+    assert fake_llm.calls == 1
+    body = response.json()
+    # 9 eggs is above the 6 pcs limit: 6 x 4 people = 24 -> 3 boxes (9 would need 4).
+    assert {i["product_id"]: i["packs"] for i in body["items"]}[EGGS] == 3
+    assert body["menu"][0]["breakfast"]["ingredients"] == [
+        {"product_id": EGGS, "amount_per_person": 6}
+    ]
+    assert "Clamped 1 portions to their unit's range" in caplog.text
+
+
+def test_tiny_portions_are_raised_to_the_minimum(client: TestClient, fake_llm: FakeOpenAI) -> None:
+    menu = one_day(meal(ing(APPLES, 3), ing(MILK, 2)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
+    fake_llm.queue_plan(make_plan(days=1, menu=menu))
 
     response = client.post("/generate", json=MENU_1_DAY)
 
     assert response.status_code == 200
-    assert fake_llm.messages(1)[-1]["content"] == (
-        "These portions are outside the allowed range (5-800 g or ml, 1-6 pcs per person): "
-        f"{APPLES} 3 g."
-    )
-
-
-def test_too_many_pieces_are_repaired(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    def eggs_day(eggs: int) -> list[dict[str, Any]]:
-        pasta = meal(ing("de-penny-pasta-500g", 100))
-        return one_day(meal(ing(EGGS, eggs)), pasta, pasta)
-
-    fake_llm.queue_plan(make_plan(days=1, menu=eggs_day(7)))
-    fake_llm.queue_plan(make_plan(days=1, menu=eggs_day(2)))
-
-    response = client.post("/generate", json={**MENU_1_DAY, "country": "DE"})
-
-    assert response.status_code == 200
-    assert fake_llm.messages(1)[-1]["content"] == (
-        "These portions are outside the allowed range (5-800 g or ml, 1-6 pcs per person): "
-        f"{EGGS} 7 pcs."
-    )
+    assert fake_llm.calls == 1
+    assert response.json()["menu"][0]["breakfast"]["ingredients"] == [
+        {"product_id": APPLES, "amount_per_person": 5},
+        {"product_id": MILK, "amount_per_person": 5},
+    ]
 
 
 def test_meals_without_ingredients_are_repaired(client: TestClient, fake_llm: FakeOpenAI) -> None:

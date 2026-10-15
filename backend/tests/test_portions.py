@@ -5,10 +5,10 @@ import pytest
 from app.schemas.catalog import Product
 from app.services.catalog import load_catalog
 from app.services.portions import (
+    clamp_portion,
     eaten_kcal,
     pack_quantity,
     packs_needed,
-    portion_in_bounds,
     required_quantities,
 )
 from tests.conftest import FIXTURE_CATALOG, MILK
@@ -61,19 +61,21 @@ def test_fractional_pack_sizes_are_exact() -> None:
 
 
 @pytest.mark.parametrize(
-    ("unit_product", "amount", "ok"),
+    ("unit_product", "amount", "expected"),
     [
-        (CHICKEN, 5, True),
-        (CHICKEN, 800, True),
-        (CHICKEN, 4, False),
-        (CHICKEN, 801, False),
-        (EGGS, 1, True),
-        (EGGS, 6, True),
-        (EGGS, 7, False),
+        (CHICKEN, 5, 5),
+        (CHICKEN, 800, 800),
+        (CHICKEN, 3, 5),
+        (CHICKEN, 801, 800),
+        (EGGS, 1, 1),
+        (EGGS, 6, 6),
+        (EGGS, 9, 6),
     ],
 )
-def test_portion_bounds_depend_on_the_unit(unit_product: Product, amount: int, ok: bool) -> None:
-    assert portion_in_bounds(unit_product, amount) is ok
+def test_portions_are_clamped_to_the_unit_range(
+    unit_product: Product, amount: int, expected: int
+) -> None:
+    assert clamp_portion(unit_product, amount) == expected
 
 
 def test_eaten_kcal_counts_portions_not_packs() -> None:

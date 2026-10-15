@@ -27,9 +27,10 @@ def pack_quantity(product: Product) -> Decimal:
     return size * 1000 if product.unit in ("kg", "l") else size
 
 
-def portion_in_bounds(product: Product, amount: int) -> bool:
+def clamp_portion(product: Product, amount: int) -> int:
+    """`amount` moved into the product unit's PORTION_BOUNDS, to the nearest bound."""
     low, high = PORTION_BOUNDS[product.unit]
-    return low <= amount <= high
+    return min(max(amount, low), high)
 
 
 def required_quantities(portions: Iterable[tuple[str, int]], family_size: int) -> dict[str, int]:

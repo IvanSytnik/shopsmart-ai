@@ -44,10 +44,10 @@ from app.services.llm import LLMOutputError, request_plan
 from app.services.portions import (
     PORTION_BOUNDS,
     PORTION_UNIT,
+    clamp_portion,
     eaten_kcal,
     kcal_per_unit,
     packs_needed,
-    portion_in_bounds,
     required_quantities,
 )
 from app.services.pricing import (
@@ -315,27 +315,25 @@ def menu_draft(
             f"These meals have no ingredients: {', '.join(empty)}. "
             "Every meal needs at least one ingredient."
         )
-    portions = [
-        (ingredient.product_id, ingredient.amount_per_person)
-        for day in plan.menu
-        for _, meal in meals(day)
-        for ingredient in meal.ingredients
+    ingredients = [
+        ingredient for day in plan.menu for _, meal in meals(day) for ingredient in meal.ingredients
     ]
-    problems += unknown_ids_problem({product_id for product_id, _ in portions}, allowed)
-    out_of_bounds = []
-    for product_id, amount in portions:
-        product = catalog.get(product_id)
-        if product_id in allowed and product is not None and not portion_in_bounds(product, amount):
-            out_of_bounds.append(f"{product_id} {amount} {PORTION_UNIT[product.unit]}")
-    if out_of_bounds:
-        g_low, g_high = PORTION_BOUNDS["kg"]
-        pcs_low, pcs_high = PORTION_BOUNDS["pcs"]
-        problems.append(
-            f"These portions are outside the allowed range ({g_low}-{g_high} g or ml, "
-            f"{pcs_low}-{pcs_high} pcs per person): {', '.join(dict.fromkeys(out_of_bounds))}."
-        )
+    problems += unknown_ids_problem({i.product_id for i in ingredients}, allowed)
     if problems:
         return None, problems
+    # Out-of-range portions are clamped rather than repaired: a repair round costs more than
+    # the small error. Done in place, so the menu in the response shows the amounts used.
+    clamped = 0
+    for ingredient in ingredients:
+        amount = clamp_portion(
+            catalog_product(catalog, ingredient.product_id), ingredient.amount_per_person
+        )
+        if amount != ingredient.amount_per_person:
+            ingredient.amount_per_person = amount
+            clamped += 1
+    if clamped:
+        logger.info("Clamped %d portions to their unit's range", clamped)
+    portions = [(i.product_id, i.amount_per_person) for i in ingredients]
     required = required_quantities(portions, request.family_size)
     lines = [
         PlanLine(product_id, packs_needed(catalog_product(catalog, product_id), quantity))
