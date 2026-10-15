@@ -96,10 +96,12 @@ def test_too_many_pieces_are_clamped_and_used_for_the_packs(
     assert body["menu"][0]["breakfast"]["ingredients"] == [
         {"product_id": EGGS, "amount_per_person": 6}
     ]
-    assert "Clamped 1 portions to their unit's range" in caplog.text
+    assert f"Clamped portion of {EGGS} from 9 to 6 pcs" in caplog.text
 
 
-def test_tiny_portions_are_raised_to_the_minimum(client: TestClient, fake_llm: FakeOpenAI) -> None:
+def test_tiny_portions_are_raised_to_the_minimum(
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
+) -> None:
     menu = one_day(meal(ing(APPLES, 3), ing(MILK, 2)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
     fake_llm.queue_plan(make_plan(days=1, menu=menu))
 
@@ -111,6 +113,8 @@ def test_tiny_portions_are_raised_to_the_minimum(client: TestClient, fake_llm: F
         {"product_id": APPLES, "amount_per_person": 5},
         {"product_id": MILK, "amount_per_person": 5},
     ]
+    assert f"Clamped portion of {APPLES} from 3 to 5 g" in caplog.text
+    assert f"Clamped portion of {MILK} from 2 to 5 ml" in caplog.text
 
 
 def test_meals_without_ingredients_are_repaired(client: TestClient, fake_llm: FakeOpenAI) -> None:

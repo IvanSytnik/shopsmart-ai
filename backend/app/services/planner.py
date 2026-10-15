@@ -24,6 +24,7 @@ from app.schemas.catalog import NON_FOOD_CATEGORIES, Product
 from app.schemas.llm import (
     MAX_PACKS,
     LLMDayMenu,
+    LLMIngredient,
     LLMMeal,
     LLMMenuPlan,
     LLMShoppingPlan,
@@ -295,6 +296,22 @@ def shopping_draft(
     return Draft(plan.notes, None, price_plan(lines, catalog, allowed), {}), []
 
 
+def clamp_portions(ingredients: list[LLMIngredient], catalog: ProductCatalog) -> None:
+    """Move out-of-range portions to the nearest bound of their unit, in place.
+
+    Clamped rather than repaired: a repair round costs more than the small error. In place,
+    so the menu in the response shows the amounts the packs were computed from.
+    """
+    for ingredient in ingredients:
+        product = catalog_product(catalog, ingredient.product_id)
+        raw = ingredient.amount_per_person
+        amount = clamp_portion(product, raw)
+        if amount != raw:
+            ingredient.amount_per_person = amount
+            unit = PORTION_UNIT[product.unit]
+            logger.info("Clamped portion of %s from %d to %d %s", product.id, raw, amount, unit)
+
+
 def menu_draft(
     plan: LLMMenuPlan, request: GenerateRequest, catalog: ProductCatalog, allowed: set[str]
 ) -> tuple[Draft | None, list[str]]:
@@ -321,18 +338,7 @@ def menu_draft(
     problems += unknown_ids_problem({i.product_id for i in ingredients}, allowed)
     if problems:
         return None, problems
-    # Out-of-range portions are clamped rather than repaired: a repair round costs more than
-    # the small error. Done in place, so the menu in the response shows the amounts used.
-    clamped = 0
-    for ingredient in ingredients:
-        amount = clamp_portion(
-            catalog_product(catalog, ingredient.product_id), ingredient.amount_per_person
-        )
-        if amount != ingredient.amount_per_person:
-            ingredient.amount_per_person = amount
-            clamped += 1
-    if clamped:
-        logger.info("Clamped %d portions to their unit's range", clamped)
+    clamp_portions(ingredients, catalog)
     portions = [(i.product_id, i.amount_per_person) for i in ingredients]
     required = required_quantities(portions, request.family_size)
     lines = [
