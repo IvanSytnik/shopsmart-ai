@@ -160,7 +160,6 @@ def make_settings(**overrides: Any) -> Settings:
         "openai_api_key": "sk-test-not-a-real-key",
         "openai_model": "test-model",
         "openai_temperature": 0.1,
-        "openai_max_tokens": 123,
         "cors_origins": [ALLOWED_ORIGIN],
         "catalog_path": FIXTURE_CATALOG,
         # The small default plans are outside the real kcal range; kcal checks have their

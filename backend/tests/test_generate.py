@@ -50,7 +50,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     request = fake_llm.requests[0]
     assert request["model"] == "test-model"
     assert request["temperature"] == 0.1
-    assert request["max_completion_tokens"] == 123
+    assert request["max_completion_tokens"] == 1200  # shopping
     assert request["response_format"]["type"] == "json_schema"
     assert request["response_format"]["json_schema"]["strict"] is True
     assert request["response_format"]["json_schema"]["name"] == "LLMShoppingPlan"

@@ -390,7 +390,9 @@ shopsmart-ai/
 OPENAI_API_KEY=sk-your-api-key            # required
 OPENAI_MODEL=gpt-4o-mini                   # default
 OPENAI_TEMPERATURE=0.7                     # default
-OPENAI_MAX_TOKENS=4000                     # default
+SHOPPING_MAX_TOKENS=1200                   # default; output token limit for a shopping list
+MENU_MAX_TOKENS_BASE=600                   # default; menu limit = base + per_day × days
+MENU_MAX_TOKENS_PER_DAY=450                # default
 OPENAI_TIMEOUT_S=25                        # default; per OpenAI request
 OPENAI_MAX_RETRIES=0                       # default; SDK retries on connection/5xx errors
 REQUEST_DEADLINE_S=55                      # default; total time for one POST /generate

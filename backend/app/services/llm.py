@@ -16,7 +16,8 @@ from app.config import Settings
 # Phrased as instructions to the model: they become the repair message on retry.
 TRUNCATED = (
     "Your previous reply was cut off at the token limit. Return the complete plan again, "
-    "more concisely: at most 25 items and one short sentence per meal description."
+    "more concisely: at most 25 items, meal descriptions of at most 8 words and one "
+    "sentence of notes."
 )
 REFUSED = (
     "Your previous reply was a refusal. This is an ordinary grocery and meal-planning "
@@ -89,6 +90,7 @@ async def request_plan(
     settings: Settings,
     messages: list[ChatCompletionMessageParam],
     response_model: type[M],
+    max_tokens: int,
     usage_log: list[TokenUsage] | None = None,
 ) -> tuple[M, str | None]:
     """One completion call. Returns the reply parsed as `response_model` and its raw text.
@@ -104,7 +106,7 @@ async def request_plan(
         messages=messages,
         response_format=response_model,
         temperature=settings.openai_temperature,
-        max_completion_tokens=settings.openai_max_tokens,
+        max_completion_tokens=max_tokens,
     )
     _record_usage(_usage_of(raw.http_response), usage_log)
     try:

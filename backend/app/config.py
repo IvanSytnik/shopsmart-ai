@@ -14,7 +14,11 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr
     openai_model: str = "gpt-4o-mini"
     openai_temperature: float = 0.7
-    openai_max_tokens: int = 4000
+    # Output token limit per call, sized to the request: shopping lists are short, a menu
+    # grows with its days. A reply cut off at the limit counts as unusable (repair).
+    shopping_max_tokens: int = Field(default=1200, gt=0)
+    menu_max_tokens_base: int = Field(default=600, gt=0)
+    menu_max_tokens_per_day: int = Field(default=450, gt=0)
     openai_timeout_s: float = Field(default=25, gt=0)  # per OpenAI call
     openai_max_retries: int = Field(default=0, ge=0)  # SDK retries; the deadline covers all calls
     # Whole /generate budget (first call + repair); keep below the frontend's 70 s timeout.

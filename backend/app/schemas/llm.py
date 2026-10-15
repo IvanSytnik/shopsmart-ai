@@ -20,6 +20,9 @@ from pydantic import BaseModel, Field, create_model
 from app.schemas.requests import Mode
 
 MAX_PACKS = 20
+# Shown to the model in the schema; short text keeps replies fast and within max_tokens.
+MEAL_DESCRIPTION_RULE = "At most 8 words."
+NOTES_RULE = "One short sentence of shopping tips."
 # Schema-level bounds for amount_per_person; the per-unit limits (g/ml 5-800, pcs 1-6,
 # pack 0.25-2) are applied by the server, see app.services.portions.PORTION_BOUNDS.
 MIN_PORTION = 0.25
@@ -110,7 +113,11 @@ def _shopping_model(product_id: Any) -> type[BaseModel]:
         product_id=(product_id, ...),
         packs=(int, Field(ge=1, le=MAX_PACKS)),
     )
-    return create_model("LLMShoppingPlan", lines=(list[line], ...), notes=(str, ...))
+    return create_model(
+        "LLMShoppingPlan",
+        lines=(list[line], ...),
+        notes=(str, Field(description=NOTES_RULE)),
+    )
 
 
 def _menu_model(product_id: Any) -> type[BaseModel]:
@@ -122,7 +129,7 @@ def _menu_model(product_id: Any) -> type[BaseModel]:
     meal = create_model(
         "LLMMeal",
         name=(str, ...),
-        description=(str, ...),
+        description=(str, Field(description=MEAL_DESCRIPTION_RULE)),
         ingredients=(list[ingredient], ...),
     )
     day_menu = create_model(
@@ -133,4 +140,8 @@ def _menu_model(product_id: Any) -> type[BaseModel]:
         dinner=(meal, ...),
         snack=(meal | None, ...),
     )
-    return create_model("LLMMenuPlan", menu=(list[day_menu], ...), notes=(str, ...))
+    return create_model(
+        "LLMMenuPlan",
+        menu=(list[day_menu], ...),
+        notes=(str, Field(description=NOTES_RULE)),
+    )
