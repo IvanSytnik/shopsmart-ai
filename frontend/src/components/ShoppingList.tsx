@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { GenerateResponse } from '../types';
-import { CATEGORY_ICONS, UNIT_KEYS } from '../constants';
+import { CATEGORY_ICONS } from '../constants';
 import { useLanguage } from '../LanguageContext';
-import { groupByStore, money } from './results/format';
+import { formatSize, groupByStore, money } from './results/format';
 
 interface ShoppingListProps {
   response: GenerateResponse;
 }
 
 export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   const toggleItem = (productId: string) => {
@@ -79,7 +79,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
                         {item.name}
                       </span>
                       <span className="block text-sm text-gray-500 dark:text-gray-400">
-                        {item.packs} × {item.pack_size} {t(UNIT_KEYS[item.unit])} • €
+                        {item.packs} × {formatSize(item.pack_size, item.unit, language, t)} • €
                         {money(item.unit_price)} {t('perPack')}
                       </span>
                     </span>

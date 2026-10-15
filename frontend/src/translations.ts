@@ -122,6 +122,8 @@ export const translations = {
     perPack: 'per pack',
     unitKg: 'kg',
     unitL: 'l',
+    unitG: 'g',
+    unitMl: 'ml',
     unitPcs: 'pcs',
     unitPack: 'pack',
     errorUnknownStore:
@@ -250,6 +252,8 @@ export const translations = {
     perPack: 'за уп.',
     unitKg: 'кг',
     unitL: 'л',
+    unitG: 'г',
+    unitMl: 'мл',
     unitPcs: 'шт.',
     unitPack: 'уп.',
     errorUnknownStore: 'Обраний магазин недоступний для цієї країни. Оберіть магазини ще раз.',
@@ -381,6 +385,8 @@ export const translations = {
     perPack: 'pro Pkg.',
     unitKg: 'kg',
     unitL: 'l',
+    unitG: 'g',
+    unitMl: 'ml',
     unitPcs: 'Stk.',
     unitPack: 'Pkg.',
     errorUnknownStore:

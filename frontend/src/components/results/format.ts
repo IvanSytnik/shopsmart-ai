@@ -1,9 +1,24 @@
-import type { Language } from '../../translations';
-import type { GenerateResponse, Item, TrimmedItem } from '../../types';
+import { UNIT_KEYS } from '../../constants';
+import type { Language, TranslationKey } from '../../translations';
+import type { GenerateResponse, Item, TrimmedItem, Unit } from '../../types';
+
+export type Translate = (key: TranslationKey, vars?: Record<string, string | number>) => string;
 
 const LOCALES: Record<Language, string> = { en: 'en-GB', uk: 'uk-UA', de: 'de-AT' };
 
 export const money = (value: number): string => value.toFixed(2);
+
+const number = (value: number, language: Language): string =>
+  new Intl.NumberFormat(LOCALES[language], { maximumFractionDigits: 3 }).format(value);
+
+/** Pack size for display: under 1 kg / 1 l in g / ml; whole numbers without decimals. */
+export const formatSize = (size: number, unit: Unit, language: Language, t: Translate): string => {
+  if (unit === 'kg' && size < 1)
+    return `${number(Math.round(size * 1000), language)} ${t('unitG')}`;
+  if (unit === 'l' && size < 1)
+    return `${number(Math.round(size * 1000), language)} ${t('unitMl')}`;
+  return `${number(size, language)} ${t(UNIT_KEYS[unit])}`;
+};
 
 /** A YYYY-MM-DD date in the UI language. */
 export const formatDate = (isoDate: string, language: Language): string => {

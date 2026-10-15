@@ -13,12 +13,12 @@ interface ResultsProps {
 }
 
 export const Results: React.FC<ResultsProps> = ({ response, onReset }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [tab, setTab] = useState<'menu' | 'products'>('menu');
   const menu = response.menu;
 
   const copyToClipboard = () => {
-    navigator.clipboard?.writeText(shoppingListText(response, t)).catch(() => undefined);
+    navigator.clipboard?.writeText(shoppingListText(response, language, t)).catch(() => undefined);
   };
 
   const tabClass = (active: boolean) =>

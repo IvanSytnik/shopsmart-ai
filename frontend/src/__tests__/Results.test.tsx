@@ -24,6 +24,7 @@ describe('Results', () => {
     const penny = screen.getByRole('region', { name: 'Penny' });
     expect(within(penny).getByTestId('subtotal-Penny').textContent).toBe('€2.29');
     expect(within(penny).getByText('Rice')).toBeTruthy();
+    expect(within(penny).getByText(/1 × 1 kg • €2.29 per pack/)).toBeTruthy();
 
     expect(screen.getByRole('complementary').textContent).toBe('💡 Tip: Buy seasonal.');
     expect(screen.queryByRole('status')).toBeNull(); // no warnings
