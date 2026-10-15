@@ -573,6 +573,11 @@ def test_budget_rule_depends_on_mode(
         "snack" in menu
     )
     assert "85-98%" not in menu
+    assert (
+        "A meal's name and description may mention only products that are in its "
+        "`ingredients`" in menu
+    )
+    assert "may mention only products" not in shopping
     assert "Never exceed the budget." in shopping and "Never exceed the budget." in menu
 
 

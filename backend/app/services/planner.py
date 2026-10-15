@@ -161,6 +161,8 @@ candidate list gives for that product: grams (g), millilitres (ml), pieces (pcs)
 {g_low}-{g_high} g or ml, {pcs_low}-{pcs_high} pcs, {pack_low}-{pack_high} packs.
 - The server multiplies the portions by the household size, adds them up over all meals \
 and buys whole packs. You don't choose packs or quantities to buy.
+- A meal's name and description may mention only products that are in its \
+`ingredients`: no "with cheese" unless cheese is an ingredient of that meal.
 - Typical portions per person: oats 60-90 g, pasta or rice (dry) 80-125 g, potatoes \
 200-300 g, vegetables 100-250 g, fruit 100-200 g, meat or fish 120-180 g, cheese 30-60 g, \
 bread 60-120 g, milk 150-250 ml, yogurt 150-200 g, eggs 1-3 pcs.
