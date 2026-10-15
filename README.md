@@ -17,7 +17,7 @@ ShopSmart AI is a web application that generates optimized weekly shopping lists
 
 ## ✨ Features
 
-- 🏪 **Multi-store support** - Lidl, Aldi, Edeka, Rewe, Kaufland
+- 🏪 **Multi-store support** - Austria or Germany; stores come from the price catalog (`GET /api/catalog/meta`)
 - 💰 **Budget optimization** - AI stays within your budget
 - 🥗 **Dietary preferences** - Vegetarian, vegan, gluten-free, etc.
 - 👨‍👩‍👧‍👦 **Family size scaling** - Portions adjusted for 1-5+ people

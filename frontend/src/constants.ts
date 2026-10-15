@@ -1,12 +1,5 @@
-import type { StoreName } from './types';
-
-export const SUPERMARKETS: { name: StoreName; color: string }[] = [
-  { name: 'Lidl', color: 'bg-blue-500' },
-  { name: 'Aldi', color: 'bg-orange-500' },
-  { name: 'Edeka', color: 'bg-yellow-500' },
-  { name: 'Rewe', color: 'bg-red-500' },
-  { name: 'Kaufland', color: 'bg-amber-700' },
-];
+import type { Category, Country, DietTag, Unit } from './types';
+import type { TranslationKey } from './translations';
 
 export const BUDGET_PRESETS = [30, 50, 75, 100, 150];
 
@@ -18,18 +11,41 @@ export const PREFERENCES_TEXT_MAX_LENGTH = 190;
 
 export const FAMILY_SIZE_OPTIONS = [1, 2, 3, 4, 5];
 
-export const CATEGORIES = [
-  { id: 'vegetables', icon: '🥬' },
-  { id: 'fruits', icon: '🍎' },
-  { id: 'meat', icon: '🥩' },
-  { id: 'fish', icon: '🐟' },
-  { id: 'dairy', icon: '🥛' },
-  { id: 'bread', icon: '🍞' },
-  { id: 'beverages', icon: '🥤' },
-  { id: 'snacks', icon: '🍪' },
-  { id: 'frozen', icon: '🧊' },
-  { id: 'pantry', icon: '🥫' },
-  { id: 'cleaning', icon: '🧹' },
-  { id: 'hygiene', icon: '🧴' },
-  { id: 'other', icon: '📦' },
+export const MAX_STORES = 5;
+export const DAY_OPTIONS = [1, 2, 3, 4, 5, 6, 7];
+
+// Display order; a country with no stores in the catalog is hidden.
+export const COUNTRIES: readonly { code: Country; key: TranslationKey; flag: string }[] = [
+  { code: 'AT', key: 'countryAT', flag: '🇦🇹' },
+  { code: 'DE', key: 'countryDE', flag: '🇩🇪' },
 ];
+
+export const DIET_LABELS: Record<DietTag, { key: TranslationKey; emoji: string }> = {
+  vegetarian: { key: 'vegetarian', emoji: '🥗' },
+  vegan: { key: 'vegan', emoji: '🌱' },
+  gluten_free: { key: 'glutenFree', emoji: '🚫' },
+  lactose_free: { key: 'lactoseFree', emoji: '🥛' },
+};
+
+export const UNIT_KEYS: Record<Unit, TranslationKey> = {
+  kg: 'unitKg',
+  l: 'unitL',
+  pcs: 'unitPcs',
+  pack: 'unitPack',
+};
+
+export const CATEGORY_ICONS: Record<Category, string> = {
+  vegetables: '🥬',
+  fruits: '🍎',
+  meat: '🥩',
+  fish: '🐟',
+  dairy: '🥛',
+  bread: '🍞',
+  beverages: '🥤',
+  snacks: '🍪',
+  frozen: '🧊',
+  pantry: '🥫',
+  cleaning: '🧹',
+  hygiene: '🧴',
+  other: '📦',
+};
