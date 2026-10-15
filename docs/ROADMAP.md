@@ -63,7 +63,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ⬜ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
 
 ## Phase 4 — Quality evidence (1 day)
-- ⬜ 4.1 `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
+- ⬜ 4.1 `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
 - ⬜ 4.2 GitHub Actions: backend lint+tests, frontend lint+build+tests on every push/PR.
 
 ## Phase 5 — Ship (½–1 day)

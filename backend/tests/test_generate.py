@@ -37,6 +37,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert body["nutrition_totals"] == DEFAULT_NUTRITION
     assert body["kcal_per_person_day"] == 277  # 5820 / (3 people x 7 days)
     assert body["trimmed"] == []
+    assert body["auto_added"] == []
     assert body["menu"] is None
     assert body["notes"] == "Buy seasonal."
     assert (body["catalog_version"], body["price_date"]) == ("test-small-2", "2026-10-01")

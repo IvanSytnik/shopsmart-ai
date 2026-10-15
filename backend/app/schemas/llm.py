@@ -38,8 +38,8 @@ class LLMDayMenu(Protocol):
 
 
 class LLMPlan(Protocol):
-    lines: list[LLMLine]
     menu: list[LLMDayMenu] | None
+    lines: list[LLMLine]
     notes: str
 
 
@@ -102,9 +102,11 @@ def _plan_model(product_id: Any) -> type[BaseModel]:
         dinner=(meal, ...),
         snack=(meal | None, ...),
     )
+    # Field order is generation order: the model writes the menu first, then the lines
+    # that buy it.
     return create_model(
         "LLMPlan",
-        lines=(list[line], ...),
         menu=(list[day_menu] | None, ...),
+        lines=(list[line], ...),
         notes=(str, ...),
     )

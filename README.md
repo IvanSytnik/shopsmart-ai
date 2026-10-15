@@ -174,9 +174,10 @@ Content-Type: application/json
 How a plan is made:
 
 1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
-2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 100 candidates). The model returns `lines: [{product_id, packs 1–20}]`, an optional menu whose meals list `ingredient_ids`, and notes. No prices.
-3. **Checks + one repair**: empty list, missing/wrong-length menu, meal ingredients missing from `lines`, a total over budget (the repair message states the overshoot in €), or, in menu mode, fewer than `MIN_KCAL_PER_PERSON_DAY` kcal per person and day (the message states current vs required) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal target, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and the model buys just what the menu needs, with no filler items.
-4. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first), menu ingredients last. Trimmed lines are listed in `trimmed`.
+2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 100 candidates). The model returns an optional menu whose meals list `ingredient_ids` (first, so it designs the meals before buying for them), `lines: [{product_id, packs 1–20}]`, and notes. No prices.
+3. **Completing the list**: in menu mode, every meal ingredient missing from `lines` is added by the server with 1 pack and listed in `auto_added`. The completed plan goes through the checks below.
+4. **Checks + one repair**: empty list, missing/wrong-length menu, a total over budget (the repair message states the overshoot in € and names any auto-added ingredients), or, in menu mode, fewer than `MIN_KCAL_PER_PERSON_DAY` kcal per person and day (the message states current vs required) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal target, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and the model buys just what the menu needs, with no filler items.
+5. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first), menu ingredients last. Trimmed lines are listed in `trimmed`.
 
 Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `validation_error` also has `errors: [{loc, msg}]`.
 
@@ -196,7 +197,7 @@ The `422 unknown_store` / `not_enough_products` checks run before the daily cap,
 
 ### Response
 
-Response to the request above with the test catalog (2 of 4 items shown). The model picked chips, which were trimmed to fit the €15 budget; the menu ingredients were kept.
+Response to the request above with the test catalog (2 of 4 items shown). The model left the chicken for lunch out of `lines`, so the server added it (`auto_added`); it also picked chips, which were trimmed to fit the €15 budget; the menu ingredients were kept.
 
 ```json
 {
@@ -233,6 +234,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
   "nutrition_totals": {"kcal": 6370.0, "protein_g": 259.0, "fat_g": 89.0, "carbs_g": 1156.0},
   "kcal_per_person_day": 3185.0,
   "trimmed": [{"product_id": "at-lidl-potato-chips-175g", "from_packs": 2, "to_packs": 0}],
+  "auto_added": ["at-lidl-chicken-breast-500g"],
   "menu": [
     {
       "day": "Monday",
@@ -266,8 +268,9 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
 | `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
 | `items[].nutrition` | for all packs; `null` for non-food |
 | `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
-| `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode |
+| `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode. Based on the purchased packs, so an upper bound of the food available, not what the menu's meals actually consume |
 | `trimmed` | lines the server cut to fit the budget; `to_packs: 0` = removed |
+| `auto_added` | meal ingredients the model left out of its list; the server added 1 pack each (before any trimming). Always `[]` in shopping mode |
 | `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed) |
 | `catalog_version`, `price_date` | which reference prices were used |
 

@@ -18,7 +18,6 @@ from tests.conftest import (
     MILK,
     RICE,
     FakeOpenAI,
-    day,
     make_plan,
     make_settings,
     meal,
@@ -379,37 +378,113 @@ def test_kcal_floor_does_not_apply_in_shopping_mode(
 # --- menu checks ----------------------------------------------------------------
 
 
-def test_meal_ingredient_missing_from_lines_is_repaired(
-    client: TestClient, fake_llm: FakeOpenAI
+def menu_day(name: str = "Monday") -> dict[str, Any]:
+    """A day whose meals use milk, apples, rice and chicken."""
+    return {
+        "day": name,
+        "breakfast": meal(MILK, APPLES),
+        "lunch": meal(RICE, name="Rice bowl"),
+        "dinner": meal(RICE, CHICKEN, name="Chicken with rice"),
+        "snack": meal(APPLES, name="Apple"),
+    }
+
+
+def test_meal_ingredients_missing_from_lines_are_added_by_the_server(
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
-    bad = make_plan(days=1)
-    bad["menu"][0]["dinner"]["ingredient_ids"] = [RICE, CHICKEN]  # chicken isn't in lines
-    fake_llm.queue_plan(bad)
-    fake_llm.queue_plan(make_plan(days=1))
+    fake_llm.queue_plan(make_plan({MILK: 2}, menu=[menu_day()]))  # apples, rice, chicken missing
 
     response = client.post("/generate", json=MENU_1_DAY)
 
     assert response.status_code == 200
+    assert fake_llm.calls == 1
+    body = response.json()
+    assert {i["product_id"]: i["packs"] for i in body["items"]} == {
+        MILK: 2,
+        APPLES: 1,
+        RICE: 1,
+        CHICKEN: 1,
+    }
+    assert body["auto_added"] == [APPLES, RICE, CHICKEN]  # in menu order
+    assert body["total"] == 12.85  # 2.58 + 1.99 + 2.29 + 5.99
+    assert "Auto-added 3 meal ingredients missing from lines" in caplog.text
+
+
+def test_menu_with_empty_lines_is_completed_from_the_meals(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    fake_llm.queue_plan({**make_plan(days=1), "lines": []})
+
+    response = client.post("/generate", json=MENU_1_DAY)
+
+    assert response.status_code == 200
+    assert fake_llm.calls == 1
+    assert response.json()["auto_added"] == [MILK, APPLES, RICE]
+
+
+def test_auto_added_ingredients_over_budget_are_repaired_then_trimmed(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    over = make_plan(DEFAULT_LINES, menu=[menu_day()])  # 8.85 + chicken 5.99 = 14.84
+    fake_llm.queue_plan(over, times=2)
+
+    response = client.post("/generate", json={**MENU_1_DAY, "budget": 10})
+
+    assert response.status_code == 200
     assert fake_llm.calls == 2
-    problem = fake_llm.messages(1)[-1]["content"]
-    assert problem == (
-        f"These meal ingredients are not in `lines`: {CHICKEN}. "
-        "Add them to `lines` or change the meals."
+    assert fake_llm.messages(1)[-1]["content"] == (
+        "Your previous plan costs €14.84 at catalog prices, €4.84 over the budget of €10.00. "
+        "That includes 1 pack each of these meal ingredients, which were missing from "
+        f"`lines`: {CHICKEN}. Return the full plan again with fewer packs or cheaper products "
+        "so the total is at most €10.00."
+    )
+    body = response.json()
+    assert body["total"] <= body["budget"] == 10
+    assert body["trimmed"]
+    assert body["auto_added"] == [CHICKEN]
+
+
+def test_menu_ingredients_are_not_added_in_shopping_mode(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    fake_llm.queue_plan(make_plan({MILK: 2}, menu=[menu_day()]))
+
+    response = client.post("/generate", json=BODY)
+
+    assert response.status_code == 200
+    assert [i["product_id"] for i in response.json()["items"]] == [MILK]
+    assert response.json()["auto_added"] == []
+
+
+def test_schema_asks_for_the_menu_before_the_lines(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    fake_llm.queue_plan(make_plan(days=1))
+
+    client.post("/generate", json=MENU_1_DAY)
+
+    schema = fake_llm.requests[0]["response_format"]["json_schema"]["schema"]
+    assert list(schema["properties"]) == ["menu", "lines", "notes"]
+    assert schema["required"] == ["menu", "lines", "notes"]
+    assert (
+        "- First design the meals, then list every product needed for them in `lines`."
+        in fake_llm.messages()[0]["content"]
     )
 
 
-def test_several_problems_are_reported_together(client: TestClient, fake_llm: FakeOpenAI) -> None:
-    bad = make_plan(days=1)
-    bad["menu"] = [day("Monday"), day("Tuesday")]
-    bad["menu"][1]["lunch"]["ingredient_ids"] = [CHICKEN]
+def test_several_problems_are_reported_together(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+) -> None:
+    client = make_client(max_schema_enum_values=0)  # ids are plain strings
+    bad = make_plan({**DEFAULT_LINES, "made-up-id": 1}, days=2)
     fake_llm.queue_plan(bad)
     fake_llm.queue_plan(make_plan(days=1))
 
     client.post("/generate", json=MENU_1_DAY)
 
     problem = fake_llm.messages(1)[-1]["content"]
+    assert "These ids are not in the candidate list: made-up-id." in problem
     assert "had 2 days in `menu`, but exactly 1 are required" in problem
-    assert f"These meal ingredients are not in `lines`: {CHICKEN}." in problem
 
 
 # --- prompt ---------------------------------------------------------------------

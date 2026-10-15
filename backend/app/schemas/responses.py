@@ -6,7 +6,7 @@ Money is a number rounded to cents.
 
 from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.catalog import Category, Country, DietTag, Unit
 
@@ -60,8 +60,19 @@ class GenerateResponse(BaseModel):
     budget: float
     budget_remaining: float
     nutrition_totals: Nutrition
-    kcal_per_person_day: float
+    kcal_per_person_day: float = Field(
+        description=(
+            "nutrition_totals.kcal / (family_size x days). Based on the purchased packs, so "
+            "an upper bound of the food available, not what the menu's meals consume."
+        )
+    )
     trimmed: list[TrimmedItem]
+    auto_added: list[str] = Field(
+        description=(
+            "Meal ingredients the model left out of its list; the server added 1 pack "
+            "each (before any trimming)."
+        )
+    )
     menu: list[DayMenu] | None
     notes: str
     catalog_version: str
