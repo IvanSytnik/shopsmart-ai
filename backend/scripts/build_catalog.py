@@ -21,7 +21,7 @@ from typing import Any, get_args
 
 from pydantic import ValidationError
 
-from app.schemas.catalog import NON_FOOD_CATEGORIES, Catalog, DietTag, Product
+from app.schemas.catalog import NON_FOOD_CATEGORIES, Catalog, DietTag, Product, Unit
 
 BACKEND = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = BACKEND / "data_src" / "catalog_at.csv"
@@ -71,6 +71,8 @@ def pack_grams(row: dict[str, str]) -> float:
 
 
 def to_product(row: dict[str, str]) -> dict[str, Any]:
+    if row["unit"] not in get_args(Unit):
+        raise BuildError(f"unknown unit {row['unit']!r}")
     if row["verified"] not in ("yes", "no"):
         raise BuildError(f"verified must be yes or no, not {row['verified']!r}")
     values = [row[column] for column in NUTRIENTS.values()]
