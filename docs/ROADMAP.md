@@ -56,11 +56,11 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 2.5 `GET /api/catalog/meta` (stores, countries, price_date) for the UI.
 
 ## Phase 3 — Frontend v2 (2 days)
-- ⬜ 3.1 Country switch AT/DE → store list from `/api/catalog/meta`.
-- ⬜ 3.2 Show "reference prices as of <date>", per-store subtotals, budget bar (used/remaining).
-- ⬜ 3.3 Align `types.ts` with new response; remove dead fields.
+- ✅ 3.1 Country switch AT/DE → store list from `/api/catalog/meta`.
+- ✅ 3.2 Show "reference prices as of <date>", per-store subtotals, budget bar (used/remaining).
+- ✅ 3.3 Align `types.ts` with new response; remove dead fields.
 - ⬜ 3.4 Share link: result compressed into URL fragment (`/l#<payload>`) → read-only "snapshot" view; no backend storage. History stays in localStorage.
-- ⬜ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
+- ✅ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
 
 ## Phase 4 — Quality evidence (1 day)
 - ⬜ 4.1 `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
