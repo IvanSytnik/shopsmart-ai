@@ -130,22 +130,48 @@ def test_meals_without_ingredients_are_repaired(client: TestClient, fake_llm: Fa
     )
 
 
-def test_portions_above_max_kcal_are_repaired(
+def test_portions_above_max_kcal_are_scaled_down(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
     client = make_client(max_kcal_per_person_day=2000)
     huge = one_day(meal(ing(RICE, 800)), meal(ing(RICE, 800)), meal(ing(RICE, 800)))
     fake_llm.queue_plan(make_plan(days=1, menu=huge))  # 2400 g x 3.5 kcal/g = 8400
-    fake_llm.queue_plan(make_plan(days=1))
 
     response = client.post("/generate", json=MENU_1_DAY)
 
     assert response.status_code == 200
-    assert fake_llm.messages(1)[-1]["content"] == (
-        "Your previous menu's portions are too large: about 8400 kcal per person per day, "
-        "but at most 2000 are allowed. Use smaller portions."
-    )
-    assert response.json()["kcal_per_person_day"] == 1062
+    assert fake_llm.calls == 1
+    body = response.json()
+    # Factor 2000 / 8400 x 0.95 = 0.226: 800 g -> 181 -> 180 g. 540 g = 1890 kcal.
+    assert body["menu"][0]["lunch"]["ingredients"] == [
+        {"product_id": RICE, "amount_per_person": 180}
+    ]
+    assert body["kcal_per_person_day"] == 1890
+    assert [(i["product_id"], i["packs"]) for i in body["items"]] == [(RICE, 2)]  # 1080 g
+
+
+def test_scaled_portions_are_rounded_then_clamped(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
+) -> None:
+    client = make_client(min_kcal_per_person_day=1600)
+    pasta = meal(ing("de-penny-pasta-500g", 100))
+    # 5 eggs (390 kcal) + 2 x 100 g pasta (712) = 1102 kcal: factor 1.52.
+    day_menu = one_day(meal(ing(EGGS, 5)), pasta, pasta)
+    fake_llm.queue_plan(make_plan(days=1, menu=day_menu), times=2)
+
+    response = client.post("/generate", json={**MENU_1_DAY, "country": "DE"})
+
+    assert response.status_code == 200
+    body = response.json()
+    # Eggs 5 x 1.52 = 7.6 -> 8, above 6 pcs -> 6. Pasta 152.4 g -> 150 g.
+    assert body["menu"][0]["breakfast"]["ingredients"] == [
+        {"product_id": EGGS, "amount_per_person": 6}
+    ]
+    assert body["menu"][0]["lunch"]["ingredients"][0]["amount_per_person"] == 150
+    assert f"Clamped portion of {EGGS} from 8 to 6 pcs" in caplog.text
+    # 6 x 78 + 300 g x 3.56 = 1536: still below 1600, so a repair was asked for.
+    assert fake_llm.calls == 2
+    assert (body["kcal_per_person_day"], body["warnings"]) == (1536, ["low_kcal"])
 
 
 def test_over_budget_menu_repair_names_the_three_most_expensive_ingredients(

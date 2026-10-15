@@ -7,9 +7,11 @@ from app.services.catalog import load_catalog
 from app.services.portions import (
     clamp_portion,
     eaten_kcal,
+    kcal_scale_factor,
     pack_quantity,
     packs_needed,
     required_quantities,
+    scale_portion,
 )
 from tests.conftest import FIXTURE_CATALOG, MILK
 
@@ -92,3 +94,38 @@ def test_eaten_kcal_is_limited_to_what_was_bought() -> None:
 
     # Chicken trimmed from 3 packs to 1 (500 g = 550 kcal); milk removed.
     assert eaten_kcal(required, {CHICKEN.id: 1}, products) == pytest.approx(550)
+
+
+@pytest.mark.parametrize(
+    ("kcal", "factor"),
+    [
+        (1062, 1600 / 1062 * 1.05),
+        (500, 1.6),  # capped
+        (1600, None),
+        (3500, None),
+        (8400, 3500 / 8400 * 0.95),
+        (0, None),
+    ],
+)
+def test_kcal_scale_factor(kcal: float, factor: float | None) -> None:
+    result = kcal_scale_factor(kcal, 1600, 3500)
+    if factor is None:
+        assert result is None
+    else:
+        assert result == pytest.approx(factor)
+
+
+@pytest.mark.parametrize(
+    ("unit_product", "amount", "factor", "expected"),
+    [
+        (CHICKEN, 103, 1.5, 155),  # 154.5 -> nearest 5, half up
+        (CHICKEN, 100, 1.58, 160),  # 158 -> 160
+        (CHICKEN, 100, 1.56, 155),  # 156 -> 155
+        (EGGS, 5, 1.5, 8),  # 7.5 -> 8, half up
+        (EGGS, 1, 0.4, 0),  # clamping is a separate step
+    ],
+)
+def test_scaled_portions_are_rounded_to_the_unit_step(
+    unit_product: Product, amount: int, factor: float, expected: int
+) -> None:
+    assert scale_portion(unit_product, amount, factor) == expected

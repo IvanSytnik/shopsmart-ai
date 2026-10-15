@@ -373,19 +373,56 @@ def big_day(name: str = "Monday") -> dict[str, Any]:
     }
 
 
-def test_low_kcal_menu_is_repaired_with_current_and_required_kcal(
-    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+def apple_day(name: str = "Monday") -> dict[str, Any]:
+    """Per person: 600 g apples = 312 kcal. Even scaled by the maximum 1.6 (960 g = 499
+    kcal) it stays far below 1600."""
+    apples = meal(ing(APPLES, 150), name="Apples")
+    return {"day": name, "breakfast": apples, "lunch": apples, "dinner": apples, "snack": apples}
+
+
+def test_low_kcal_menu_is_scaled_up_without_a_repair(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
     client = make_client(min_kcal_per_person_day=1600)
     fake_llm.queue_plan(make_plan(days=1))  # 1062 kcal per person
-    fake_llm.queue_plan(make_plan(days=1, menu=[big_day()]))
+
+    response = client.post("/generate", json=MENU_1_DAY)
+
+    assert response.status_code == 200
+    assert fake_llm.calls == 1
+    body = response.json()
+    # Factor 1600 / 1062 x 1.05 = 1.58, rounded to 5 g/ml: milk 200 -> 315 ml,
+    # apples 150 -> 235 g, rice 100 -> 160 g. 201.6 + 366.6 + 1120 = 1688 kcal.
+    assert body["menu"][0]["breakfast"]["ingredients"] == [
+        {"product_id": MILK, "amount_per_person": 315},
+        {"product_id": APPLES, "amount_per_person": 235},
+    ]
+    assert body["menu"][0]["lunch"]["ingredients"] == [
+        {"product_id": RICE, "amount_per_person": 160}
+    ]
+    assert (body["kcal_per_person_day"], body["warnings"]) == (1688, [])
+    # 2 people: milk 630 ml -> 1, apples 1410 g -> 2, rice 640 g -> 1.
+    assert [(i["product_id"], i["packs"]) for i in body["items"]] == [
+        (MILK, 1),
+        (APPLES, 2),
+        (RICE, 1),
+    ]
+    assert "Scaling menu portions by 1.58: 1062 kcal per person and day" in caplog.text
+
+
+def test_scaling_is_capped_and_a_still_low_menu_is_repaired(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+) -> None:
+    client = make_client(min_kcal_per_person_day=1600)
+    fake_llm.queue_plan(make_plan(days=1, menu=[apple_day()]))
+    fake_llm.queue_plan(make_plan(days=1, menu=[big_day()]))  # 1742, needs no scaling
 
     response = client.post("/generate", json=MENU_1_DAY)
 
     assert response.status_code == 200
     assert fake_llm.calls == 2
     assert fake_llm.messages(1)[-1]["content"] == (
-        "Your previous menu gives about 1062 kcal per person per day, but at least 1600 are "
+        "Your previous menu gives about 499 kcal per person per day, but at least 1600 are "
         "required. Use larger portions or more filling ingredients, staying within the "
         "budget."
     )
@@ -397,21 +434,22 @@ def test_low_kcal_after_repair_returns_the_plan(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
     client = make_client(min_kcal_per_person_day=1600)
-    fake_llm.queue_plan(make_plan(days=1), times=2)
+    fake_llm.queue_plan(make_plan(days=1, menu=[apple_day()]), times=2)
 
     response = client.post("/generate", json=MENU_1_DAY)
 
     assert response.status_code == 200  # a thin menu beats no menu
     assert response.json()["warnings"] == ["low_kcal"]
-    assert response.json()["kcal_per_person_day"] == 1062
+    assert response.json()["kcal_per_person_day"] == 499
+    assert response.json()["menu"][0]["lunch"]["ingredients"][0]["amount_per_person"] == 240
 
 
 def test_low_kcal_and_overshoot_are_reported_together(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
     client = make_client(min_kcal_per_person_day=1600)
-    # 6 people: milk 1200 ml -> 2 (2.58), apples 2700 g -> 3 (5.97), rice 1200 g -> 2 (4.58).
-    fake_llm.queue_plan(make_plan(days=1))
+    # Scaled to 960 g apples x 6 people = 5760 g -> 6 packs = 11.94.
+    fake_llm.queue_plan(make_plan(days=1, menu=[apple_day()]))
     rice_day = {
         "day": "Monday",
         "breakfast": meal(ing(RICE, 150)),
@@ -425,8 +463,8 @@ def test_low_kcal_and_overshoot_are_reported_together(
 
     assert response.status_code == 200
     problem = fake_llm.messages(1)[-1]["content"]
-    assert "€13.13 at catalog prices, €3.13 over the budget of €10.00" in problem
-    assert "about 1062 kcal per person per day, but at least 1600" in problem
+    assert "€11.94 at catalog prices, €1.94 over the budget of €10.00" in problem
+    assert "about 499 kcal per person per day, but at least 1600" in problem
     assert (response.json()["total"], response.json()["kcal_per_person_day"]) == (8.86, 1627)
 
 
@@ -530,6 +568,10 @@ def test_budget_rule_depends_on_mode(
     assert "ceiling" not in shopping and "kcal" not in shopping
     assert "The budget is a ceiling, not a target: choose affordable dishes." in menu
     assert "Each person should get 1800-3200 kcal per day from the meals" in menu
+    assert (
+        "per person about 450 kcal at breakfast, 650 at lunch, 650 at dinner and 250 for a "
+        "snack" in menu
+    )
     assert "85-98%" not in menu
     assert "Never exceed the budget." in shopping and "Never exceed the budget." in menu
 

@@ -48,8 +48,10 @@ from app.services.portions import (
     clamp_portion,
     eaten_kcal,
     kcal_per_unit,
+    kcal_scale_factor,
     packs_needed,
     required_quantities,
+    scale_portion,
 )
 from app.services.pricing import (
     BudgetChange,
@@ -69,6 +71,8 @@ MIN_FOOD_CANDIDATES = 12
 SHOPPING_DAYS = 7
 # Ingredients named in an over-budget repair message.
 TOP_EXPENSIVE = 3
+# Per-person kcal the prompt asks for in each meal.
+MEAL_KCAL_TARGETS = {"breakfast": 450, "lunch": 650, "dinner": 650, "snack": 250}
 
 LANG = {
     "en": ("English", "Shopping list optimized for your budget."),
@@ -158,8 +162,11 @@ and buys whole packs. You don't choose packs or quantities to buy.
 200-300 g, vegetables 100-250 g, fruit 100-200 g, meat or fish 120-180 g, cheese 30-60 g, \
 bread 60-120 g, milk 150-250 ml, yogurt 150-200 g, eggs 1-3 pcs.
 - Each person should get {settings.min_kcal_per_person_day}-\
-{settings.max_kcal_per_person_day} kcal per day from the meals; the candidate list gives \
-the energy per portion unit.
+{settings.max_kcal_per_person_day} kcal per day from the meals, about \
+{sum(MEAL_KCAL_TARGETS.values())}: per person about {MEAL_KCAL_TARGETS["breakfast"]} kcal \
+at breakfast, {MEAL_KCAL_TARGETS["lunch"]} at lunch, {MEAL_KCAL_TARGETS["dinner"]} at \
+dinner and {MEAL_KCAL_TARGETS["snack"]} for a snack. The candidate list gives the energy \
+per portion unit; add up each meal's portions.
 - The budget is a ceiling, not a target: choose affordable dishes. Nothing is bought \
 besides what the menu uses.
 - Return `menu` with exactly {request.days} days, in this order: \
@@ -312,8 +319,56 @@ def clamp_portions(ingredients: list[LLMIngredient], catalog: ProductCatalog) ->
             logger.info("Clamped portion of %s from %d to %d %s", product.id, raw, amount, unit)
 
 
+def price_portions(
+    ingredients: list[LLMIngredient],
+    request: GenerateRequest,
+    catalog: ProductCatalog,
+    allowed: set[str],
+) -> tuple[PricedPlan, dict[str, int]]:
+    """Packs for the household from the per-person portions, priced."""
+    portions = [(i.product_id, i.amount_per_person) for i in ingredients]
+    required = required_quantities(portions, request.family_size)
+    lines = [
+        PlanLine(product_id, packs_needed(catalog_product(catalog, product_id), quantity))
+        for product_id, quantity in required.items()
+    ]
+    return price_plan(lines, catalog, allowed), required
+
+
+def normalize_kcal(
+    ingredients: list[LLMIngredient],
+    priced: PricedPlan,
+    required: dict[str, int],
+    request: GenerateRequest,
+    catalog: ProductCatalog,
+    settings: Settings,
+) -> bool:
+    """Scale all portions in place when the menu's kcal are outside the allowed range.
+
+    Models tend to undershoot; scaling is far cheaper than a repair round. Scaled portions
+    are rounded and clamped, so the result can still be outside the range: then the usual
+    kcal check asks for a repair. Returns whether anything was scaled.
+    """
+    kcal = eaten_kcal_per_person_day(priced, required, request)
+    factor = kcal_scale_factor(
+        kcal, settings.min_kcal_per_person_day, settings.max_kcal_per_person_day
+    )
+    if factor is None:
+        return False
+    logger.info("Scaling menu portions by %.2f: %d kcal per person and day", factor, kcal)
+    for ingredient in ingredients:
+        product = catalog_product(catalog, ingredient.product_id)
+        ingredient.amount_per_person = scale_portion(product, ingredient.amount_per_person, factor)
+    clamp_portions(ingredients, catalog)
+    return True
+
+
 def menu_draft(
-    plan: LLMMenuPlan, request: GenerateRequest, catalog: ProductCatalog, allowed: set[str]
+    plan: LLMMenuPlan,
+    request: GenerateRequest,
+    catalog: ProductCatalog,
+    allowed: set[str],
+    settings: Settings,
 ) -> tuple[Draft | None, list[str]]:
     problems = []
     if len(plan.menu) != request.days:
@@ -339,13 +394,10 @@ def menu_draft(
     if problems:
         return None, problems
     clamp_portions(ingredients, catalog)
-    portions = [(i.product_id, i.amount_per_person) for i in ingredients]
-    required = required_quantities(portions, request.family_size)
-    lines = [
-        PlanLine(product_id, packs_needed(catalog_product(catalog, product_id), quantity))
-        for product_id, quantity in required.items()
-    ]
-    return Draft(plan.notes, plan.menu, price_plan(lines, catalog, allowed), required), []
+    priced, required = price_portions(ingredients, request, catalog, allowed)
+    if normalize_kcal(ingredients, priced, required, request, catalog, settings):
+        priced, required = price_portions(ingredients, request, catalog, allowed)
+    return Draft(plan.notes, plan.menu, priced, required), []
 
 
 def eaten_kcal_per_person_day(
@@ -418,7 +470,7 @@ async def create_plan(
                 parsed, raw_reply = await request_plan(client, settings, messages, plan_model)
                 if request.mode == "menu":
                     draft, problems = menu_draft(
-                        cast(LLMMenuPlan, parsed), request, catalog, allowed
+                        cast(LLMMenuPlan, parsed), request, catalog, allowed, settings
                     )
                 else:
                     draft, problems = shopping_draft(

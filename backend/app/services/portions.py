@@ -33,6 +33,32 @@ def clamp_portion(product: Product, amount: int) -> int:
     return min(max(amount, low), high)
 
 
+# Menu kcal normalization: a menu below the minimum is scaled up by min/kcal plus a margin,
+# at most by MAX_SCALE_UP; one above the maximum is scaled down by max/kcal minus a margin.
+SCALE_UP_MARGIN = 1.05
+MAX_SCALE_UP = 1.6
+SCALE_DOWN_MARGIN = 0.95
+# Scaled portions are rounded to these steps (portion unit).
+ROUNDING_STEP: dict[Unit, int] = {"kg": 5, "l": 5, "pcs": 1, "pack": 1}
+
+
+def kcal_scale_factor(kcal: float, min_kcal: float, max_kcal: float) -> float | None:
+    """How much to scale all portions to bring `kcal` into [min_kcal, max_kcal], or None."""
+    if kcal <= 0:
+        return None
+    if kcal < min_kcal:
+        return min(min_kcal / kcal * SCALE_UP_MARGIN, MAX_SCALE_UP)
+    if kcal > max_kcal:
+        return max_kcal / kcal * SCALE_DOWN_MARGIN
+    return None
+
+
+def scale_portion(product: Product, amount: int, factor: float) -> int:
+    """`amount` × `factor`, rounded half up to the unit's step (not yet clamped)."""
+    step = ROUNDING_STEP[product.unit]
+    return math.floor(amount * factor / step + 0.5) * step
+
+
 def required_quantities(portions: Iterable[tuple[str, int]], family_size: int) -> dict[str, int]:
     """Total quantity per product, in the portion unit: Σ amount_per_person × family_size.
 
