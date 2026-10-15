@@ -262,11 +262,23 @@ def test_still_over_budget_after_repair_is_trimmed_keeping_menu_ingredients(
     assert body["total"] <= body["budget"] == 10
     assert {i["product_id"]: i["packs"] for i in body["items"]} == {MILK: 2, APPLES: 2, RICE: 1}
     assert body["trimmed"] == [
-        {"product_id": CHIPS, "from_packs": 3, "to_packs": 0},
-        {"product_id": CHICKEN, "from_packs": 1, "to_packs": 0},
+        {"product_id": CHIPS, "name": "Potato chips", "from_packs": 3, "to_packs": 0},
+        {"product_id": CHICKEN, "name": "Chicken breast", "from_packs": 1, "to_packs": 0},
     ]
     assert body["warnings"] == ["budget_trimmed"]
     assert len(body["menu"]) == 1
+
+
+def test_trimmed_names_are_in_the_request_language(
+    client: TestClient, fake_llm: FakeOpenAI
+) -> None:
+    over = make_plan({MILK: 2, APPLES: 2, RICE: 1, CHIPS: 3, CHICKEN: 1}, days=1)
+    fake_llm.queue_plan(over, times=2)
+
+    response = client.post("/generate", json={**MENU_1_DAY, "budget": 10, "language": "de"})
+
+    names = [t["name"] for t in response.json()["trimmed"]]
+    assert names == ["Kartoffelchips", "Hähnchenbrust"]
 
 
 def test_menu_ingredients_are_reduced_only_when_nothing_else_is_left(
@@ -283,7 +295,12 @@ def test_menu_ingredients_are_reduced_only_when_nothing_else_is_left(
     packs = {i["product_id"]: i["packs"] for i in body["items"]}
     assert CHIPS not in packs
     assert set(packs) == {MILK, APPLES, RICE}  # reduced, not dropped
-    assert body["trimmed"][0] == {"product_id": MILK, "from_packs": 4, "to_packs": 3}
+    assert body["trimmed"][0] == {
+        "product_id": MILK,
+        "name": "Whole milk 3.5%",
+        "from_packs": 4,
+        "to_packs": 3,
+    }
 
 
 def test_over_budget_plan_is_used_when_the_repair_reply_is_unusable(

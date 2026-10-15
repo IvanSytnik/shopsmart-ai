@@ -351,6 +351,12 @@ def response_warnings(
     return warnings
 
 
+def product_name(catalog: ProductCatalog, product_id: str, language: str) -> str:
+    product = catalog.get(product_id)
+    # Trimmed ids were priced from the catalog, so the product is always there.
+    return getattr(product.name, language) if product is not None else product_id
+
+
 def to_response(
     result: PlanResult, request: GenerateRequest, catalog: ProductCatalog, settings: Settings
 ) -> GenerateResponse:
@@ -395,7 +401,12 @@ def to_response(
         kcal_per_person_day=kcal,
         auto_added=result.auto_added,
         trimmed=[
-            TrimmedItem(product_id=c.product_id, from_packs=c.packs_before, to_packs=c.packs_after)
+            TrimmedItem(
+                product_id=c.product_id,
+                name=product_name(catalog, c.product_id, request.language),
+                from_packs=c.packs_before,
+                to_packs=c.packs_after,
+            )
             for c in result.trimmed
         ],
         menu=menu,

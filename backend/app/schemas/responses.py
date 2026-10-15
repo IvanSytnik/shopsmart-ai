@@ -36,6 +36,7 @@ class TrimmedItem(BaseModel):
     """A line the server cut to fit the budget; `to_packs` 0 means removed."""
 
     product_id: str
+    name: str  # in the request language; removed lines aren't in `items`
     from_packs: int
     to_packs: int
 

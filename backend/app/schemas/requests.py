@@ -31,8 +31,6 @@ class GenerateRequest(BaseModel):
     language: Language = "en"
     mode: Mode = "shopping"
     days: int = Field(default=7, ge=1, le=7, description="Only used when mode is 'menu'.")
-    # TODO(2B): not used by /generate yet; they will select catalog candidates
-    # (ProductCatalog.candidates) once the LLM picks products by id.
     diets: Annotated[
         list[DietTag],
         Field(max_length=4, json_schema_extra={"uniqueItems": True}),

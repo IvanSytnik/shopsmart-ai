@@ -237,7 +237,9 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
   "budget_remaining": 0.16,
   "nutrition_totals": {"kcal": 6370.0, "protein_g": 259.0, "fat_g": 89.0, "carbs_g": 1156.0},
   "kcal_per_person_day": 3185.0,
-  "trimmed": [{"product_id": "at-lidl-potato-chips-175g", "from_packs": 2, "to_packs": 0}],
+  "trimmed": [
+    {"product_id": "at-lidl-potato-chips-175g", "name": "Potato chips", "from_packs": 2, "to_packs": 0}
+  ],
   "auto_added": ["at-lidl-chicken-breast-500g"],
   "menu": [
     {
@@ -274,7 +276,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
 | `items[].nutrition` | for all packs; `null` for non-food |
 | `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
 | `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode. Based on the purchased packs, so an upper bound of the food available, not what the menu's meals actually consume |
-| `trimmed` | lines the server cut to fit the budget; `to_packs: 0` = removed |
+| `trimmed` | lines the server cut to fit the budget, with `name` in the request language (a removed line isn't in `items`); `to_packs: 0` = removed |
 | `auto_added` | meal ingredients the model left out of its list; the server added 1 pack each (before any trimming). Always `[]` in shopping mode |
 | `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed) |
 | `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt; `budget_trimmed`: `trimmed` is not empty |
