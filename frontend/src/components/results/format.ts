@@ -20,6 +20,17 @@ export const formatSize = (size: number, unit: Unit, language: Language, t: Tran
   return `${number(size, language)} ${t(UNIT_KEYS[unit])}`;
 };
 
+/** A per-person meal portion: g for products sold by kg, ml for l, pieces otherwise. */
+export const formatPortion = (
+  amount: number,
+  unit: Unit,
+  language: Language,
+  t: Translate
+): string => {
+  const key = unit === 'kg' ? 'unitG' : unit === 'l' ? 'unitMl' : 'unitPcs';
+  return `${number(amount, language)} ${t(key)}`;
+};
+
 /** A YYYY-MM-DD date in the UI language. */
 export const formatDate = (isoDate: string, language: Language): string => {
   const date = new Date(`${isoDate}T00:00:00`);

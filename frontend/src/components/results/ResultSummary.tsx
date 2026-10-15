@@ -46,7 +46,12 @@ export const ResultSummary: React.FC<ResultSummaryProps> = ({ response }) => {
         />
       </div>
       <div className="mt-4 flex flex-col sm:flex-row sm:justify-between gap-1 text-sm text-gray-600 dark:text-gray-400">
-        <span>🔥 {t('purchasedKcal', { kcal: Math.round(response.kcal_per_person_day) })}</span>
+        <span>
+          🔥{' '}
+          {t(response.kcal_basis === 'menu' ? 'menuKcal' : 'purchasedKcal', {
+            kcal: Math.round(response.kcal_per_person_day),
+          })}
+        </span>
         <span>🏷️ {t('pricesAsOf', { date: formatDate(response.price_date, language) })}</span>
       </div>
     </section>

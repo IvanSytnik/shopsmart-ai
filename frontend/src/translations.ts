@@ -112,9 +112,10 @@ export const translations = {
     budget: 'Budget',
     budgetLeft: '€{amount} left',
     purchasedKcal: 'Purchased food ≈ {kcal} kcal per person/day',
+    menuKcal: 'Menu ≈ {kcal} kcal per person/day',
     pricesAsOf: 'Reference prices as of {date}',
     warningLowKcal:
-      'The purchased food is less than this menu needs (≈ {kcal} kcal per person/day). Try a larger budget or fewer days.',
+      'This menu provides less food than recommended (≈ {kcal} kcal per person/day). Try a larger budget or fewer days.',
     warningBudgetTrimmed: 'Some products were reduced or removed to stay within your budget:',
     trimmedReduced: 'reduced {from}→{to}',
     trimmedRemoved: 'removed',
@@ -243,9 +244,10 @@ export const translations = {
     budget: 'Бюджет',
     budgetLeft: 'Залишок €{amount}',
     purchasedKcal: 'Куплені продукти ≈ {kcal} ккал на людину в день',
+    menuKcal: 'Меню ≈ {kcal} ккал на людину в день',
     pricesAsOf: 'Довідкові ціни станом на {date}',
     warningLowKcal:
-      'Куплених продуктів менше, ніж потрібно для цього меню (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет або менше днів.',
+      'Це меню дає менше їжі, ніж рекомендовано (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет або менше днів.',
     warningBudgetTrimmed: 'Щоб вкластися в бюджет, деякі продукти зменшено або прибрано:',
     trimmedReduced: 'зменшено {from}→{to}',
     trimmedRemoved: 'прибрано',
@@ -376,9 +378,10 @@ export const translations = {
     budget: 'Budget',
     budgetLeft: '€{amount} übrig',
     purchasedKcal: 'Gekaufte Lebensmittel ≈ {kcal} kcal pro Person/Tag',
+    menuKcal: 'Menü ≈ {kcal} kcal pro Person/Tag',
     pricesAsOf: 'Referenzpreise vom {date}',
     warningLowKcal:
-      'Die gekauften Lebensmittel reichen nicht für dieses Menü (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget oder weniger Tage.',
+      'Dieses Menü liefert weniger Essen als empfohlen (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget oder weniger Tage.',
     warningBudgetTrimmed:
       'Einige Produkte wurden reduziert oder entfernt, um im Budget zu bleiben:',
     trimmedReduced: 'reduziert {from}→{to}',

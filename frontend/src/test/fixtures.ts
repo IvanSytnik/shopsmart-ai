@@ -58,8 +58,8 @@ export const SHOPPING: GenerateResponse = {
   budget_remaining: 1.15,
   nutrition_totals: { kcal: 5820, protein_g: 144, fat_g: 81, carbs_g: 1156 },
   kcal_per_person_day: 416,
+  kcal_basis: 'purchased',
   trimmed: [],
-  auto_added: [],
   menu: null,
   notes: 'Buy seasonal.',
   warnings: [],
@@ -71,6 +71,7 @@ export const SHOPPING: GenerateResponse = {
 export const MENU: GenerateResponse = {
   ...SHOPPING,
   kcal_per_person_day: 1455,
+  kcal_basis: 'menu',
   trimmed: [
     {
       product_id: 'at-lidl-potato-chips-175g',
@@ -94,18 +95,25 @@ export const MENU: GenerateResponse = {
       breakfast: {
         name: 'Porridge',
         description: 'Warm',
-        ingredient_ids: ['at-lidl-milk-1l', 'at-penny-rice-1kg'],
+        ingredients: [
+          { product_id: 'at-lidl-milk-1l', amount_per_person: 200 },
+          { product_id: 'at-penny-rice-1kg', amount_per_person: 80 },
+        ],
       },
-      lunch: { name: 'Rice bowl', description: 'Filling', ingredient_ids: ['at-penny-rice-1kg'] },
+      lunch: {
+        name: 'Rice bowl',
+        description: 'Filling',
+        ingredients: [{ product_id: 'at-penny-rice-1kg', amount_per_person: 100 }],
+      },
       dinner: {
         name: 'Baked apples',
         description: 'Sweet',
-        ingredient_ids: ['at-lidl-apples-1kg'],
+        ingredients: [{ product_id: 'at-lidl-apples-1kg', amount_per_person: 150 }],
       },
       snack: {
         name: 'Chips',
         description: 'Crunchy',
-        ingredient_ids: ['at-lidl-potato-chips-175g'],
+        ingredients: [{ product_id: 'at-lidl-potato-chips-175g', amount_per_person: 30 }],
       },
     },
   ],

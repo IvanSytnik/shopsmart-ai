@@ -57,7 +57,9 @@ describe('Results', () => {
 
     const monday = screen.getByRole('region', { name: 'Monday' });
     expect(within(monday).getByText('Porridge')).toBeTruthy();
-    expect(within(monday).getAllByText('Rice')).toHaveLength(2);
+    // Portions per person: g for kg products, ml for l.
+    expect(within(monday).getByText('Rice · 80 g')).toBeTruthy();
+    expect(within(monday).getByText('Whole milk 3.5% · 200 ml')).toBeTruthy();
     const removed = within(monday).getByText('Potato chips');
     expect(removed.tagName).toBe('S');
     expect(removed.parentElement?.textContent).toBe('Potato chips removed (budget)');
@@ -81,10 +83,10 @@ describe('Results', () => {
     renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />, 'de');
 
     expect(screen.getByText('entfernt (Budget)')).toBeTruthy();
-    expect(screen.getByText(/Gekaufte Lebensmittel ≈ 1455 kcal pro Person\/Tag/)).toBeTruthy();
+    expect(screen.getByText(/Menü ≈ 1455 kcal pro Person\/Tag/)).toBeTruthy();
     expect(screen.getByText('Kartoffelchips: entfernt')).toBeTruthy();
     expect(screen.getByText('Kartoffelchips').tagName).toBe('S');
-    expect(screen.getAllByText('Vollmilch 3,5%').length).toBeGreaterThan(0);
+    expect(screen.getByText('Vollmilch 3,5% · 200 ml')).toBeTruthy();
   });
 
   it('re-labels products when the UI language changes; meals stay as generated', async () => {
@@ -96,11 +98,11 @@ describe('Results', () => {
       </>
     );
     const monday = () => screen.getByRole('region', { name: 'Monday' });
-    expect(within(monday()).getByText('Whole milk 3.5%')).toBeTruthy();
+    expect(within(monday()).getByText('Whole milk 3.5% · 200 ml')).toBeTruthy();
 
     await user.click(screen.getByTitle('Українська'));
 
-    expect(within(monday()).getByText('Молоко 3,5%')).toBeTruthy();
+    expect(within(monday()).getByText('Молоко 3,5% · 200 мл')).toBeTruthy();
     expect(within(monday()).getByText('Porridge')).toBeTruthy();
     expect(screen.getByText('Картопляні чипси: прибрано')).toBeTruthy();
   });

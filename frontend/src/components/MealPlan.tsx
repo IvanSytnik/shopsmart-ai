@@ -1,7 +1,7 @@
 import React from 'react';
 import { DayMenu, GenerateResponse } from '../types';
 import { useLanguage } from '../LanguageContext';
-import { itemsById, nameFromId, productName } from './results/format';
+import { formatPortion, itemsById, nameFromId, productName } from './results/format';
 
 interface MealPlanProps {
   response: GenerateResponse;
@@ -53,20 +53,22 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       {meal.description}
                     </div>
-                    {meal.ingredient_ids.length > 0 && (
+                    {/* Plans saved before portions existed have no `ingredients`. */}
+                    {(meal.ingredients ?? []).length > 0 && (
                       <ul className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                        {meal.ingredient_ids.map(id => {
+                        {meal.ingredients.map(({ product_id: id, amount_per_person }, index) => {
                           const item = items.get(id);
                           return item ? (
                             <li
-                              key={id}
+                              key={index}
                               className="px-2 py-0.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                             >
-                              {productName(item, language)}
+                              {productName(item, language)} ·{' '}
+                              {formatPortion(amount_per_person, item.unit, language, t)}
                             </li>
                           ) : (
                             <li
-                              key={id}
+                              key={index}
                               className="px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500"
                             >
                               <s>{removedName(id)}</s> {t('removedBudget')}

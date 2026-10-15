@@ -66,10 +66,16 @@ export interface TrimmedItem {
   to_packs: number; // 0 = removed
 }
 
+export interface MealIngredient {
+  product_id: string;
+  // One person's amount in this meal: g (unit kg), ml (unit l) or pieces (pcs, pack).
+  amount_per_person: number;
+}
+
 export interface Meal {
   name: string;
   description: string;
-  ingredient_ids: string[];
+  ingredients: MealIngredient[];
 }
 
 export interface DayMenu {
@@ -81,6 +87,8 @@ export interface DayMenu {
 }
 
 export type ResponseWarning = 'low_kcal' | 'budget_trimmed';
+// menu: what the menu's portions provide; purchased: all purchased packs (an upper bound).
+export type KcalBasis = 'menu' | 'purchased';
 
 export interface GenerateResponse {
   items: Item[];
@@ -89,9 +97,9 @@ export interface GenerateResponse {
   budget: number;
   budget_remaining: number;
   nutrition_totals: Nutrition;
-  kcal_per_person_day: number; // from purchased packs: an upper bound, not menu consumption
+  kcal_per_person_day: number; // see kcal_basis
+  kcal_basis: KcalBasis;
   trimmed: TrimmedItem[];
-  auto_added: string[];
   menu: DayMenu[] | null;
   notes: string;
   warnings: ResponseWarning[];
