@@ -257,6 +257,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
     }
   ],
   "notes": "Rice and apples are the cheapest calories here.",
+  "warnings": ["budget_trimmed"],
   "catalog_version": "test-small-2",
   "price_date": "2026-10-01",
   "generated_at": "2026-10-14T21:30:00Z"
@@ -272,6 +273,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
 | `trimmed` | lines the server cut to fit the budget; `to_packs: 0` = removed |
 | `auto_added` | meal ingredients the model left out of its list; the server added 1 pack each (before any trimming). Always `[]` in shopping mode |
 | `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed) |
+| `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt; `budget_trimmed`: `trimmed` is not empty |
 | `catalog_version`, `price_date` | which reference prices were used |
 
 ### Catalog metadata

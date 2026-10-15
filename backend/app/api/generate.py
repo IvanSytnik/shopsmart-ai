@@ -62,7 +62,7 @@ async def generate(
     )
     try:
         result = await create_plan(client, settings, catalog, user_input, candidates)
-        return to_response(result, user_input, catalog)
+        return to_response(result, user_input, catalog, settings)
     except openai.APITimeoutError:
         logger.exception("OpenAI request timed out")
         raise AppError(504, "ai_timeout", "AI service timed out") from None

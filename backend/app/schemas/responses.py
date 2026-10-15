@@ -5,6 +5,7 @@ Money is a number rounded to cents.
 """
 
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -53,6 +54,11 @@ class DayMenu(BaseModel):
     snack: Meal | None
 
 
+# low_kcal: a menu still below Settings.min_kcal_per_person_day after the final attempt.
+# budget_trimmed: the server cut lines to fit the budget (see `trimmed`).
+Warning = Literal["low_kcal", "budget_trimmed"]
+
+
 class GenerateResponse(BaseModel):
     items: list[Item]
     subtotals_by_store: dict[str, float]
@@ -75,6 +81,7 @@ class GenerateResponse(BaseModel):
     )
     menu: list[DayMenu] | None
     notes: str
+    warnings: list[Warning]
     catalog_version: str
     price_date: date
     generated_at: datetime

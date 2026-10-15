@@ -265,6 +265,7 @@ def test_still_over_budget_after_repair_is_trimmed_keeping_menu_ingredients(
         {"product_id": CHIPS, "from_packs": 3, "to_packs": 0},
         {"product_id": CHICKEN, "from_packs": 1, "to_packs": 0},
     ]
+    assert body["warnings"] == ["budget_trimmed"]
     assert len(body["menu"]) == 1
 
 
@@ -332,6 +333,7 @@ def test_low_kcal_menu_is_repaired_with_current_and_required_kcal(
         "within the budget."
     )
     assert response.json()["kcal_per_person_day"] == 2330
+    assert response.json()["warnings"] == []
 
 
 def test_low_kcal_after_repair_returns_the_plan(
@@ -343,6 +345,7 @@ def test_low_kcal_after_repair_returns_the_plan(
     response = client.post("/generate", json={**MENU_1_DAY, "family_size": 4})
 
     assert response.status_code == 200  # a thin menu beats no menu
+    assert response.json()["warnings"] == ["low_kcal"]
     assert response.json()["kcal_per_person_day"] == 1455
 
 
@@ -362,6 +365,22 @@ def test_low_kcal_and_overshoot_are_reported_together(
     assert (response.json()["total"], response.json()["kcal_per_person_day"]) == (7.86, 1632)
 
 
+def test_trimming_can_cause_low_kcal_and_both_warnings_are_reported(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+) -> None:
+    client = make_client(min_kcal_per_person_day=1600)
+    # 14.22 and 8640 kcal / 4 = 2160: only over budget. Trimming the chips leaves 1455.
+    fake_llm.queue_plan(make_plan({**DEFAULT_LINES, CHIPS: 3}, days=1), times=2)
+
+    response = client.post("/generate", json={**MENU_1_DAY, "family_size": 4, "budget": 10})
+
+    assert response.status_code == 200
+    body = response.json()
+    assert "kcal" not in fake_llm.messages(1)[-1]["content"]
+    assert (body["total"], body["kcal_per_person_day"]) == (8.85, 1455)
+    assert body["warnings"] == ["low_kcal", "budget_trimmed"]
+
+
 def test_kcal_floor_does_not_apply_in_shopping_mode(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
@@ -372,6 +391,7 @@ def test_kcal_floor_does_not_apply_in_shopping_mode(
 
     assert response.status_code == 200
     assert response.json()["kcal_per_person_day"] == 83  # 5820 / 70
+    assert response.json()["warnings"] == []
     assert fake_llm.calls == 1
 
 

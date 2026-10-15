@@ -19,7 +19,14 @@ from app.config import Settings
 from app.schemas.catalog import NON_FOOD_CATEGORIES, Product
 from app.schemas.llm import MAX_PACKS, LLMPlan, build_plan_model
 from app.schemas.requests import GenerateRequest
-from app.schemas.responses import DayMenu, GenerateResponse, Item, Nutrition, TrimmedItem
+from app.schemas.responses import (
+    DayMenu,
+    GenerateResponse,
+    Item,
+    Nutrition,
+    TrimmedItem,
+    Warning,
+)
 from app.services.catalog import ProductCatalog
 from app.services.llm import LLMOutputError, request_plan
 from app.services.pricing import (
@@ -333,8 +340,19 @@ def to_nutrition(kcal: float, protein_g: float, fat_g: float, carbs_g: float) ->
     )
 
 
+def response_warnings(
+    result: PlanResult, request: GenerateRequest, kcal: int, settings: Settings
+) -> list[Warning]:
+    warnings: list[Warning] = []
+    if request.mode == "menu" and kcal < settings.min_kcal_per_person_day:
+        warnings.append("low_kcal")
+    if result.trimmed:
+        warnings.append("budget_trimmed")
+    return warnings
+
+
 def to_response(
-    result: PlanResult, request: GenerateRequest, catalog: ProductCatalog
+    result: PlanResult, request: GenerateRequest, catalog: ProductCatalog, settings: Settings
 ) -> GenerateResponse:
     priced = result.priced
     items = [
@@ -362,6 +380,7 @@ def to_response(
         for line in priced.lines
     ]
     totals = priced.nutrition
+    kcal = kcal_per_person_day(totals.kcal, request)
     budget = request_budget(request)
     menu = None
     if request.mode == "menu" and result.plan.menu is not None:
@@ -373,7 +392,7 @@ def to_response(
         budget=float(budget),
         budget_remaining=float(budget - priced.total),
         nutrition_totals=to_nutrition(totals.kcal, totals.protein_g, totals.fat_g, totals.carbs_g),
-        kcal_per_person_day=kcal_per_person_day(totals.kcal, request),
+        kcal_per_person_day=kcal,
         auto_added=result.auto_added,
         trimmed=[
             TrimmedItem(product_id=c.product_id, from_packs=c.packs_before, to_packs=c.packs_after)
@@ -381,6 +400,7 @@ def to_response(
         ],
         menu=menu,
         notes=result.plan.notes.strip() or LANG[request.language][1],
+        warnings=response_warnings(result, request, kcal, settings),
         catalog_version=catalog.catalog.version,
         price_date=catalog.catalog.price_date,
         generated_at=datetime.now(UTC),
