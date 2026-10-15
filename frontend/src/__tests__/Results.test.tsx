@@ -91,6 +91,27 @@ describe('Results', () => {
     expect(screen.getByRole('region', { name: 'Penny' })).toBeTruthy();
   });
 
+  it('marks an ingredient bought in fewer packs than the menu needs', () => {
+    renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />);
+
+    const monday = screen.getByRole('region', { name: 'Monday' });
+    // Apples were reduced from 3 to 2 packs; chips were removed completely.
+    const apples = within(monday).getByText(/Apples · 150 g/);
+    expect(apples.getAttribute('title')).toBe('only 2 of 3 packs bought (budget)');
+    expect(
+      within(apples).getByRole('img', { name: 'only 2 of 3 packs bought (budget)' })
+    ).toBeTruthy();
+    const milk = within(monday).getByText(/Whole milk 3.5% · 200 ml/);
+    expect(milk.getAttribute('title')).toBeNull();
+    expect(within(monday).getByText('Potato chips').tagName).toBe('S');
+  });
+
+  it('translates the partial-purchase note', () => {
+    renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />, 'uk');
+
+    expect(screen.getByTitle('куплено лише 2 з 3 уп. (бюджет)')).toBeTruthy();
+  });
+
   it('derives a name from the id for plans saved without trimmed names', () => {
     const old = {
       ...MENU,

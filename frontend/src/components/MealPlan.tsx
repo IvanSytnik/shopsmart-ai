@@ -58,11 +58,30 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
                       <ul className="mt-2 flex flex-wrap gap-1.5 text-xs">
                         {meal.ingredients.map(({ product_id: id, amount_per_person }, index) => {
                           const item = items.get(id);
+                          // Bought, but fewer packs than the portions need.
+                          const reduced = trimmed.get(id);
+                          const partial = reduced && reduced.to_packs > 0;
+                          const shortage = partial
+                            ? t('partiallyBought', {
+                                to: reduced.to_packs,
+                                from: reduced.from_packs,
+                              })
+                            : undefined;
                           return item ? (
                             <li
                               key={index}
-                              className="px-2 py-0.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300"
+                              title={shortage}
+                              className={`px-2 py-0.5 rounded-full bg-white dark:bg-gray-800 border ${
+                                partial
+                                  ? 'border-yellow-400 dark:border-yellow-600'
+                                  : 'border-gray-200 dark:border-gray-600'
+                              } text-gray-700 dark:text-gray-300`}
                             >
+                              {partial && (
+                                <span role="img" aria-label={shortage}>
+                                  ⚠{' '}
+                                </span>
+                              )}
                               {productName(item, language)} ·{' '}
                               {formatPortion(amount_per_person, item.unit, language, t)}
                             </li>
