@@ -20,14 +20,18 @@ describe('ShopForm', () => {
 
     await screen.findByRole('button', { name: 'Penny' });
     // The first two stores are preselected.
-    expect(storeChips()).toEqual(['Lidl ✓', 'Penny ✓', 'Spar']);
+    await waitFor(() => {
+      expect(storeChips()).toEqual(['Lidl ✓', 'Penny ✓', 'Spar']);
+    });
     expect(screen.getByRole('button', { name: /Austria/ }).getAttribute('aria-pressed')).toBe(
       'true'
     );
 
     await user.click(screen.getByRole('button', { name: /Germany/ }));
     // Lidl exists in DE too and stays selected; Penny doesn't and is dropped.
-    expect(storeChips()).toEqual(['Lidl ✓', 'Rewe']);
+    await waitFor(() => {
+      expect(storeChips()).toEqual(['Lidl ✓', 'Rewe']);
+    });
   });
 
   it('preselects the first two stores when nothing valid is left after a country change', async () => {
@@ -38,7 +42,9 @@ describe('ShopForm', () => {
     await screen.findByRole('button', { name: 'Penny' });
     await user.click(screen.getByRole('button', { name: /Germany/ }));
 
-    expect(storeChips()).toEqual(['Edeka ✓', 'Lidl ✓', 'Rewe']);
+    await waitFor(() => {
+      expect(storeChips()).toEqual(['Edeka ✓', 'Lidl ✓', 'Rewe']);
+    });
   });
 
   it('hides a country without stores', async () => {
