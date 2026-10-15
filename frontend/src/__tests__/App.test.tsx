@@ -74,9 +74,14 @@ describe('App', () => {
   it('ignores v1 history without crashing', async () => {
     localStorage.setItem(
       'shopsmart-history',
-      JSON.stringify([{ id: '1', totalCost: 40, response: { items: [{ product: 'Milk', quantity: '1 l' }] } }])
+      JSON.stringify([
+        { id: '1', totalCost: 40, response: { items: [{ product: 'Milk', quantity: '1 l' }] } },
+      ])
     );
-    localStorage.setItem(HISTORY_KEY, JSON.stringify([{ id: '2', itemCount: 1, response: { items: [] } }]));
+    localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify([{ id: '2', itemCount: 1, response: { items: [] } }])
+    );
     mockFetch();
     render(<App />);
 

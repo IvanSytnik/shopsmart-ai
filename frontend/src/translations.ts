@@ -51,7 +51,8 @@ export const translations = {
     refreshPage: 'Refresh Page',
     errorTimeout: 'The AI service took too long to respond. Please try again.',
     errorRateLimited: 'Too many requests. Please wait a minute and try again.',
-    errorDailyLimit: 'The daily limit for the AI service has been reached. Please try again tomorrow.',
+    errorDailyLimit:
+      'The daily limit for the AI service has been reached. Please try again tomorrow.',
     errorAiUnavailable: 'The AI service is unavailable right now. Please try again later.',
     errorGenerationFailed: 'Could not generate a plan. Please try again.',
     errorValidation: 'Some of the entered values are invalid. Please check the form.',
@@ -63,7 +64,8 @@ export const translations = {
     aiCreating: 'AI is creating your shopping list...',
     analyzingPrices: 'Analyzing prices and optimizing for your budget',
     didYouKnow: 'Did you know?',
-    funFact: 'ShopSmart AI considers current German supermarket prices and distributes items based on typical pricing at each store.',
+    funFact:
+      'ShopSmart AI considers current German supermarket prices and distributes items based on typical pricing at each store.',
     history: 'History',
     savedLists: 'Saved Lists',
     saveList: 'Save List',
@@ -110,7 +112,8 @@ export const translations = {
     budgetLeft: '€{amount} left',
     purchasedKcal: 'Purchased food ≈ {kcal} kcal per person/day',
     pricesAsOf: 'Reference prices as of {date}',
-    warningLowKcal: 'The purchased food is less than this menu needs (≈ {kcal} kcal per person/day). Try a larger budget or fewer days.',
+    warningLowKcal:
+      'The purchased food is less than this menu needs (≈ {kcal} kcal per person/day). Try a larger budget or fewer days.',
     warningBudgetTrimmed: 'Some products were reduced or removed to stay within your budget:',
     trimmedReduced: 'reduced {from}→{to}',
     trimmedRemoved: 'removed',
@@ -121,17 +124,19 @@ export const translations = {
     unitL: 'l',
     unitPcs: 'pcs',
     unitPack: 'pack',
-    errorUnknownStore: 'A selected store is not available for this country. Please choose the stores again.',
-    errorNotEnoughProducts: 'Too few products match these stores and diets. Choose more stores or fewer diets.',
+    errorUnknownStore:
+      'A selected store is not available for this country. Please choose the stores again.',
+    errorNotEnoughProducts:
+      'Too few products match these stores and diets. Choose more stores or fewer diets.',
     errorNetwork: 'Cannot reach the server. Check your connection and try again.',
   },
-  
+
   uk: {
     appName: 'ShopSmart AI',
     appDescription: 'Ваш розумний помічник для покупок на базі GPT-4',
     selectSupermarkets: 'Оберіть супермаркети',
     weeklyBudget: 'Тижневий бюджет',
-    familySize: 'Розмір сім\'ї',
+    familySize: "Розмір сім'ї",
     person: 'особа',
     people: 'осіб',
     dietaryPreferences: 'Дієтичні переваги',
@@ -145,7 +150,7 @@ export const translations = {
     lactoseFree: 'Без лактози',
     highProtein: 'Високобілкове',
     lowCarb: 'Низьковуглеводне',
-    familyFriendly: 'Для сім\'ї',
+    familyFriendly: "Для сім'ї",
     organic: 'Органічне',
     budgetSaver: 'Економне',
     yourShoppingList: 'Ваш список покупок',
@@ -159,7 +164,7 @@ export const translations = {
     completed: 'Виконано',
     vegetables: 'Овочі',
     fruits: 'Фрукти',
-    meat: 'М\'ясо',
+    meat: "М'ясо",
     fish: 'Риба',
     dairy: 'Молочні продукти',
     bread: 'Хліб та випічка',
@@ -219,7 +224,7 @@ export const translations = {
     yourMealPlan: 'Ваш план харчування',
     productsForMenu: 'Продукти для цього меню',
     aiCreatingMenu: 'ШІ створює ваш план харчування...',
-    planningMeals: 'Плануємо збалансоване харчування для вашої сім\'ї',
+    planningMeals: "Плануємо збалансоване харчування для вашої сім'ї",
     // v2: catalog-driven form
     country: 'Країна',
     countryAT: 'Австрія',
@@ -235,7 +240,8 @@ export const translations = {
     budgetLeft: 'Залишок €{amount}',
     purchasedKcal: 'Куплені продукти ≈ {kcal} ккал на людину в день',
     pricesAsOf: 'Довідкові ціни станом на {date}',
-    warningLowKcal: 'Куплених продуктів менше, ніж потрібно для цього меню (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет або менше днів.',
+    warningLowKcal:
+      'Куплених продуктів менше, ніж потрібно для цього меню (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет або менше днів.',
     warningBudgetTrimmed: 'Щоб вкластися в бюджет, деякі продукти зменшено або прибрано:',
     trimmedReduced: 'зменшено {from}→{to}',
     trimmedRemoved: 'прибрано',
@@ -247,10 +253,11 @@ export const translations = {
     unitPcs: 'шт.',
     unitPack: 'уп.',
     errorUnknownStore: 'Обраний магазин недоступний для цієї країни. Оберіть магазини ще раз.',
-    errorNotEnoughProducts: 'Замало продуктів для цих магазинів і дієт. Оберіть більше магазинів або менше дієт.',
+    errorNotEnoughProducts:
+      'Замало продуктів для цих магазинів і дієт. Оберіть більше магазинів або менше дієт.',
     errorNetwork: 'Не вдалося зʼєднатися з сервером. Перевірте зʼєднання та спробуйте ще раз.',
   },
-  
+
   de: {
     appName: 'ShopSmart AI',
     appDescription: 'Ihr intelligenter Einkaufsassistent mit GPT-4',
@@ -300,9 +307,12 @@ export const translations = {
     dismiss: 'Schließen',
     refreshPage: 'Seite aktualisieren',
     errorTimeout: 'Der KI-Dienst hat zu lange gebraucht. Bitte versuchen Sie es erneut.',
-    errorRateLimited: 'Zu viele Anfragen. Bitte warten Sie eine Minute und versuchen Sie es erneut.',
-    errorDailyLimit: 'Das Tageslimit des KI-Dienstes ist erreicht. Bitte versuchen Sie es morgen erneut.',
-    errorAiUnavailable: 'Der KI-Dienst ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.',
+    errorRateLimited:
+      'Zu viele Anfragen. Bitte warten Sie eine Minute und versuchen Sie es erneut.',
+    errorDailyLimit:
+      'Das Tageslimit des KI-Dienstes ist erreicht. Bitte versuchen Sie es morgen erneut.',
+    errorAiUnavailable:
+      'Der KI-Dienst ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.',
     errorGenerationFailed: 'Der Plan konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
     errorValidation: 'Einige Eingaben sind ungültig. Bitte überprüfen Sie das Formular.',
     builtWith: 'Erstellt mit',
@@ -360,8 +370,10 @@ export const translations = {
     budgetLeft: '€{amount} übrig',
     purchasedKcal: 'Gekaufte Lebensmittel ≈ {kcal} kcal pro Person/Tag',
     pricesAsOf: 'Referenzpreise vom {date}',
-    warningLowKcal: 'Die gekauften Lebensmittel reichen nicht für dieses Menü (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget oder weniger Tage.',
-    warningBudgetTrimmed: 'Einige Produkte wurden reduziert oder entfernt, um im Budget zu bleiben:',
+    warningLowKcal:
+      'Die gekauften Lebensmittel reichen nicht für dieses Menü (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget oder weniger Tage.',
+    warningBudgetTrimmed:
+      'Einige Produkte wurden reduziert oder entfernt, um im Budget zu bleiben:',
     trimmedReduced: 'reduziert {from}→{to}',
     trimmedRemoved: 'entfernt',
     removedBudget: 'entfernt (Budget)',
@@ -371,10 +383,13 @@ export const translations = {
     unitL: 'l',
     unitPcs: 'Stk.',
     unitPack: 'Pkg.',
-    errorUnknownStore: 'Ein ausgewähltes Geschäft ist für dieses Land nicht verfügbar. Bitte wählen Sie die Geschäfte erneut.',
-    errorNotEnoughProducts: 'Zu wenige Produkte für diese Geschäfte und Ernährungsformen. Wählen Sie mehr Geschäfte oder weniger Ernährungsformen.',
-    errorNetwork: 'Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
-  }
+    errorUnknownStore:
+      'Ein ausgewähltes Geschäft ist für dieses Land nicht verfügbar. Bitte wählen Sie die Geschäfte erneut.',
+    errorNotEnoughProducts:
+      'Zu wenige Produkte für diese Geschäfte und Ernährungsformen. Wählen Sie mehr Geschäfte oder weniger Ernährungsformen.',
+    errorNetwork:
+      'Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+  },
 };
 
 export type TranslationKey = keyof typeof translations.en;

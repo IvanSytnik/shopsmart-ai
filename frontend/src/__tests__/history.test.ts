@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { HISTORY_KEY, clearHistory, deleteFromHistory, loadHistory, saveToHistory } from '../history';
+import {
+  HISTORY_KEY,
+  clearHistory,
+  deleteFromHistory,
+  loadHistory,
+  saveToHistory,
+} from '../history';
 import { SHOPPING } from '../test/fixtures';
 
 describe('history', () => {
@@ -22,7 +28,11 @@ describe('history', () => {
       HISTORY_KEY,
       JSON.stringify([
         { id: 'ok', savedAt: '2026-10-15T10:00:00Z', response: SHOPPING },
-        { id: 'v1', savedAt: '2026-10-15T10:00:00Z', response: { items: [{ product: 'Milk', quantity: '1 l' }] } },
+        {
+          id: 'v1',
+          savedAt: '2026-10-15T10:00:00Z',
+          response: { items: [{ product: 'Milk', quantity: '1 l' }] },
+        },
         null,
       ])
     );

@@ -37,7 +37,11 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({ code, onDismiss, onRet
             </button>
           </div>
         </div>
-        <button onClick={onDismiss} aria-label={t('dismiss')} className="text-red-400 hover:text-red-600">
+        <button
+          onClick={onDismiss}
+          aria-label={t('dismiss')}
+          className="text-red-400 hover:text-red-600"
+        >
           ✕
         </button>
       </div>

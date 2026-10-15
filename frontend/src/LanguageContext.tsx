@@ -22,7 +22,9 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const t = (key: TranslationKey, vars?: Record<string, string | number>): string => {
     const text: string = translations[language][key] || translations.en[key] || key;
-    return vars ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(vars[name] ?? match)) : text;
+    return vars
+      ? text.replace(/\{(\w+)\}/g, (match, name: string) => String(vars[name] ?? match))
+      : text;
   };
 
   return (

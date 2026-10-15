@@ -13,7 +13,7 @@ export const LanguageSelector: React.FC = () => {
 
   return (
     <div className="flex items-center gap-1 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full px-2 py-1 shadow-md">
-      {languages.map((lang) => (
+      {languages.map(lang => (
         <button
           key={lang.code}
           onClick={() => setLanguage(lang.code)}

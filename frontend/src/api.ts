@@ -69,8 +69,7 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs?: numb
   }
 }
 
-export const getCatalogMeta = (): Promise<CatalogMeta> =>
-  request<CatalogMeta>('/api/catalog/meta');
+export const getCatalogMeta = (): Promise<CatalogMeta> => request<CatalogMeta>('/api/catalog/meta');
 
 export const generate = (input: GenerateRequest): Promise<GenerateResponse> =>
   request<GenerateResponse>(

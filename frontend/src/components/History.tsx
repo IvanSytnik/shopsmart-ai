@@ -48,9 +48,7 @@ export const History: React.FC<HistoryProps> = ({ isOpen, onClose, onLoad }) => 
         {/* Content */}
         <div className="p-4 overflow-y-auto max-h-[60vh]">
           {plans.length === 0 ? (
-            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
-              {t('noSavedLists')}
-            </p>
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">{t('noSavedLists')}</p>
           ) : (
             <div className="space-y-3">
               {plans.map(plan => (
@@ -60,7 +58,8 @@ export const History: React.FC<HistoryProps> = ({ isOpen, onClose, onLoad }) => 
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {plan.response.menu ? '📅' : '🛒'} {new Date(plan.savedAt).toLocaleDateString()}
+                      {plan.response.menu ? '📅' : '🛒'}{' '}
+                      {new Date(plan.savedAt).toLocaleDateString()}
                     </span>
                     <span className="text-sm font-semibold text-green-600 dark:text-green-400">
                       €{plan.response.total.toFixed(2)} / €{plan.response.budget.toFixed(2)}

@@ -21,7 +21,9 @@ describe('ShopForm', () => {
     await screen.findByRole('button', { name: 'Penny' });
     // The first two stores are preselected.
     expect(storeChips()).toEqual(['Lidl ✓', 'Penny ✓', 'Spar']);
-    expect(screen.getByRole('button', { name: /Austria/ }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: /Austria/ }).getAttribute('aria-pressed')).toBe(
+      'true'
+    );
 
     await user.click(screen.getByRole('button', { name: /Germany/ }));
     // Lidl exists in DE too and stays selected; Penny doesn't and is dropped.

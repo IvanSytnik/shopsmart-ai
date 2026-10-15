@@ -20,9 +20,18 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ isMenu = false }
         {isMenu ? t('planningMeals') : t('analyzingPrices')}
       </p>
       <div className="flex justify-center gap-2">
-        <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-        <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-        <div className="w-3 h-3 bg-primary-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        <div
+          className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"
+          style={{ animationDelay: '0ms' }}
+        ></div>
+        <div
+          className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"
+          style={{ animationDelay: '150ms' }}
+        ></div>
+        <div
+          className="w-3 h-3 bg-primary-500 rounded-full animate-bounce"
+          style={{ animationDelay: '300ms' }}
+        ></div>
       </div>
     </div>
   );

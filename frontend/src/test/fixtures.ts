@@ -23,7 +23,13 @@ const item = (overrides: Partial<Item> & Pick<Item, 'product_id' | 'name'>): Ite
 
 export const SHOPPING: GenerateResponse = {
   items: [
-    item({ product_id: 'at-lidl-milk-1l', name: 'Whole milk 3.5%', packs: 2, unit_price: 1.29, line_total: 2.58 }),
+    item({
+      product_id: 'at-lidl-milk-1l',
+      name: 'Whole milk 3.5%',
+      packs: 2,
+      unit_price: 1.29,
+      line_total: 2.58,
+    }),
     item({
       product_id: 'at-lidl-apples-1kg',
       name: 'Apples',
@@ -70,10 +76,22 @@ export const MENU: GenerateResponse = {
   menu: [
     {
       day: 'Monday',
-      breakfast: { name: 'Porridge', description: 'Warm', ingredient_ids: ['at-lidl-milk-1l', 'at-penny-rice-1kg'] },
+      breakfast: {
+        name: 'Porridge',
+        description: 'Warm',
+        ingredient_ids: ['at-lidl-milk-1l', 'at-penny-rice-1kg'],
+      },
       lunch: { name: 'Rice bowl', description: 'Filling', ingredient_ids: ['at-penny-rice-1kg'] },
-      dinner: { name: 'Baked apples', description: 'Sweet', ingredient_ids: ['at-lidl-apples-1kg'] },
-      snack: { name: 'Chips', description: 'Crunchy', ingredient_ids: ['at-lidl-potato-chips-175g'] },
+      dinner: {
+        name: 'Baked apples',
+        description: 'Sweet',
+        ingredient_ids: ['at-lidl-apples-1kg'],
+      },
+      snack: {
+        name: 'Chips',
+        description: 'Crunchy',
+        ingredient_ids: ['at-lidl-potato-chips-175g'],
+      },
     },
   ],
 };
