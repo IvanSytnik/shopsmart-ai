@@ -4,16 +4,19 @@ import csv
 import json
 import subprocess
 import sys
+from collections.abc import Callable
 from itertools import combinations
 from pathlib import Path
 from typing import get_args
 from urllib.parse import urlparse
 
 import pytest
+from fastapi.testclient import TestClient
 
 from app.schemas.catalog import NON_FOOD_CATEGORIES, DietTag
 from app.services.catalog import load_catalog
 from scripts.build_catalog import BACKEND, DEFAULT_SOURCE, BuildError, build, main
+from tests.conftest import FakeOpenAI
 from tests.test_catalog import PRODUCTION_CATALOG
 
 CATALOG = load_catalog(PRODUCTION_CATALOG)
@@ -56,6 +59,39 @@ def test_every_store_pair_has_enough_candidates_per_diet(
     pair: tuple[str, str], diet: DietTag | None
 ) -> None:
     assert food_count(list(pair), [diet] if diet else []) >= MIN_CANDIDATES
+
+
+# Single stores that can't offer enough food for a diet. Requests for them get
+# 422 not_enough_products; update this when the catalog grows.
+SHORT_SINGLE_STORE_DIETS = {("Hofer", "vegan")}
+
+
+def test_single_store_diet_gaps_are_the_known_ones() -> None:
+    short = {
+        (store, diet)
+        for store in AT_STORES
+        for diet in get_args(DietTag)
+        if food_count([store], [diet]) < MIN_CANDIDATES
+    }
+    assert short == SHORT_SINGLE_STORE_DIETS
+    assert all(food_count([store], []) >= MIN_CANDIDATES for store in AT_STORES)
+
+
+@pytest.mark.parametrize("diet", get_args(DietTag))
+@pytest.mark.parametrize("store", AT_STORES)
+def test_single_store_with_a_diet_is_planned_or_rejected_clearly(
+    store: str, diet: DietTag, make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+) -> None:
+    client = make_client(catalog_path=PRODUCTION_CATALOG)
+    body = {"country": "AT", "supermarkets": [store], "budget": 50, "diets": [diet]}
+    if (store, diet) in SHORT_SINGLE_STORE_DIETS:
+        response = client.post("/generate", json=body)
+
+        assert response.status_code == 422
+        assert response.json()["code"] == "not_enough_products"
+        assert fake_llm.calls == 0
+    else:
+        assert food_count([store], [diet]) >= MIN_CANDIDATES
 
 
 @pytest.mark.parametrize("pair", list(combinations(AT_STORES, 2)))

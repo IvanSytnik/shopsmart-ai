@@ -28,7 +28,7 @@ describe('App', () => {
 
   it.each([
     ['unknown_store', 422, 'A selected store is not available for this country.'],
-    ['not_enough_products', 422, 'Too few products match these stores and diets.'],
+    ['not_enough_products', 422, 'Add another store, or remove a diet.'],
     ['rate_limited', 429, 'Too many requests.'],
     ['ai_timeout', 504, 'The AI service took too long to respond.'],
   ])('shows the translated message for %s, not the backend detail', async (code, status, text) => {

@@ -132,7 +132,7 @@ export const translations = {
     errorUnknownStore:
       'A selected store is not available for this country. Please choose the stores again.',
     errorNotEnoughProducts:
-      'Too few products match these stores and diets. Choose more stores or fewer diets.',
+      'Too few products match these stores and diets. Add another store, or remove a diet.',
     errorNetwork: 'Cannot reach the server. Check your connection and try again.',
   },
 
@@ -264,7 +264,7 @@ export const translations = {
     unitPack: 'уп.',
     errorUnknownStore: 'Обраний магазин недоступний для цієї країни. Оберіть магазини ще раз.',
     errorNotEnoughProducts:
-      'Замало продуктів для цих магазинів і дієт. Оберіть більше магазинів або менше дієт.',
+      'Замало продуктів для цих магазинів і дієт. Додайте ще один магазин або приберіть дієту.',
     errorNetwork: 'Не вдалося зʼєднатися з сервером. Перевірте зʼєднання та спробуйте ще раз.',
   },
 
@@ -401,7 +401,7 @@ export const translations = {
     errorUnknownStore:
       'Ein ausgewähltes Geschäft ist für dieses Land nicht verfügbar. Bitte wählen Sie die Geschäfte erneut.',
     errorNotEnoughProducts:
-      'Zu wenige Produkte für diese Geschäfte und Ernährungsformen. Wählen Sie mehr Geschäfte oder weniger Ernährungsformen.',
+      'Zu wenige Produkte für diese Geschäfte und Ernährungsformen. Fügen Sie ein weiteres Geschäft hinzu oder entfernen Sie eine Ernährungsform.',
     errorNetwork:
       'Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
   },
