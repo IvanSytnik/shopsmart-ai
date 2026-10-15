@@ -1,6 +1,8 @@
 """OpenAI access via Structured Outputs (`AsyncOpenAI` + `chat.completions.parse`)."""
 
+import asyncio
 import logging
+import time
 from dataclasses import dataclass
 from typing import TypeVar
 
@@ -38,30 +40,34 @@ M = TypeVar("M", bound=BaseModel)
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True)
-class TokenUsage:
-    """Tokens of one completion call (for evals and cost estimates)."""
+@dataclass
+class LLMCall:
+    """One completion call, for evals and cost estimates. Recorded for every call."""
 
-    prompt_tokens: int
-    completion_tokens: int
+    duration_s: float = 0
+    # None when the API reported nothing, e.g. the call timed out.
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    # The API's finish_reason ("stop", "length", ...), or "timeout" / "cancelled" (the
+    # request deadline passed) / "error" when there was no reply.
+    finish_reason: str | None = None
 
 
-def _usage_of(response: httpx.Response) -> CompletionUsage | None:
+def _read_reply_meta(response: httpx.Response, call: LLMCall) -> None:
+    """Token usage and finish_reason from the raw reply, before parsing."""
     try:
-        usage = response.json().get("usage")
-        return CompletionUsage.model_validate(usage) if usage else None
-    except (ValueError, ValidationError):
-        return None
-
-
-def _record_usage(usage: CompletionUsage | None, usage_log: list[TokenUsage] | None) -> None:
-    if usage is None:
+        body = response.json()
+        usage = CompletionUsage.model_validate(body["usage"]) if body.get("usage") else None
+        call.finish_reason = (body.get("choices") or [{}])[0].get("finish_reason")
+    except (ValueError, ValidationError, AttributeError, IndexError):
         return
-    logger.debug(
-        "LLM usage: %d prompt + %d completion tokens", usage.prompt_tokens, usage.completion_tokens
-    )
-    if usage_log is not None:
-        usage_log.append(TokenUsage(usage.prompt_tokens, usage.completion_tokens))
+    if usage is not None:
+        call.prompt_tokens, call.completion_tokens = usage.prompt_tokens, usage.completion_tokens
+        logger.debug(
+            "LLM usage: %d prompt + %d completion tokens",
+            usage.prompt_tokens,
+            usage.completion_tokens,
+        )
 
 
 class LLMOutputError(Exception):
@@ -91,24 +97,41 @@ async def request_plan(
     messages: list[ChatCompletionMessageParam],
     response_model: type[M],
     max_tokens: int,
-    usage_log: list[TokenUsage] | None = None,
+    call_log: list[LLMCall] | None = None,
 ) -> tuple[M, str | None]:
     """One completion call. Returns the reply parsed as `response_model` and its raw text.
 
-    Token usage, when the API reports it, is appended to `usage_log` (also for unusable
-    replies). Raises `LLMOutputError` for refusals, truncation, filtered or unparseable
-    replies; `openai.APIError` (incl. `APITimeoutError`) propagates unchanged.
+    An `LLMCall` (duration, tokens, finish_reason) is appended to `call_log` for every
+    call, also for unusable replies, timeouts and API errors. Raises `LLMOutputError` for
+    refusals, truncation, filtered or unparseable replies; `openai.APIError` (incl.
+    `APITimeoutError`) propagates unchanged.
     """
-    # The raw response gives the token usage before parsing, so it is recorded even when
-    # the reply can't be parsed. API errors are raised by this call.
-    raw = await client.chat.completions.with_raw_response.parse(
-        model=settings.openai_model,
-        messages=messages,
-        response_format=response_model,
-        temperature=settings.openai_temperature,
-        max_completion_tokens=max_tokens,
-    )
-    _record_usage(_usage_of(raw.http_response), usage_log)
+    call = LLMCall()
+    if call_log is not None:
+        call_log.append(call)
+    start = time.perf_counter()
+    try:
+        # The raw response gives usage and finish_reason before parsing, so they are
+        # recorded even when the reply can't be parsed. API errors are raised here.
+        raw = await client.chat.completions.with_raw_response.parse(
+            model=settings.openai_model,
+            messages=messages,
+            response_format=response_model,
+            temperature=settings.openai_temperature,
+            max_completion_tokens=max_tokens,
+        )
+    except openai.APITimeoutError:
+        call.finish_reason = "timeout"
+        raise
+    except openai.APIError:
+        call.finish_reason = "error"
+        raise
+    except asyncio.CancelledError:  # the request deadline passed during the call
+        call.finish_reason = "cancelled"
+        raise
+    finally:
+        call.duration_s = round(time.perf_counter() - start, 2)
+    _read_reply_meta(raw.http_response, call)
     try:
         completion = raw.parse()
     except openai.LengthFinishReasonError as e:

@@ -3,6 +3,7 @@
     cd backend
     .venv/bin/python -m evals.run                 # all cases in evals/cases.yaml
     .venv/bin/python -m evals.run --cases 2       # the first 2 cases
+    .venv/bin/python -m evals.run --cases menu-de-hofer-2p-1d-20,shop-en-both-2p-50
     .venv/bin/python -m evals.run --repeat 3      # every case 3 times
 
 Costs money (OPENAI_API_KEY from the environment or backend/.env), so it is not part of
@@ -86,8 +87,10 @@ class CaseResult:
     dropped_candidates: int = 0  # food left out on a tight budget
     warnings: list[str] = field(default_factory=list)
     latency_s: float = 0
-    prompt_tokens: int = 0
+    prompt_tokens: int = 0  # known tokens only; a timed-out call reports none
     completion_tokens: int = 0
+    max_completion_tokens: int | None = None  # largest reply among the attempts
+    calls: list[dict[str, Any]] = field(default_factory=list)  # per attempt, see LLMCall
     cost_usd: float | None = None
     error: str | None = None
 
@@ -95,6 +98,20 @@ class CaseResult:
 def load_cases(path: Path = CASES_FILE) -> list[EvalCase]:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     return [EvalCase.model_validate(case) for case in data["cases"]]
+
+
+def select_cases(cases: list[EvalCase], spec: str | None) -> list[EvalCase]:
+    """All cases, the first N (`"2"`), or the given ids (`"a,b"`, in that order)."""
+    if not spec:
+        return cases
+    if spec.isdigit():
+        return cases[: int(spec)]
+    by_id = {c.id: c for c in cases}
+    ids = [i.strip() for i in spec.split(",") if i.strip()]
+    unknown = [i for i in ids if i not in by_id]
+    if unknown:
+        raise ValueError(f"unknown case ids: {', '.join(unknown)}")
+    return [by_id[i] for i in ids]
 
 
 def cost_usd(model: str, prompt_tokens: int, completion_tokens: int) -> float | None:
@@ -166,8 +183,11 @@ async def run_case(
     result.repaired = trace.attempts > 1
     result.used_fallback = trace.used_fallback
     result.dropped_candidates = trace.dropped_candidates
-    result.prompt_tokens = sum(u.prompt_tokens for u in trace.usage)
-    result.completion_tokens = sum(u.completion_tokens for u in trace.usage)
+    result.calls = [asdict(call) for call in trace.calls]
+    result.prompt_tokens = sum(c.prompt_tokens or 0 for c in trace.calls)
+    result.completion_tokens = sum(c.completion_tokens or 0 for c in trace.calls)
+    known = [c.completion_tokens for c in trace.calls if c.completion_tokens is not None]
+    result.max_completion_tokens = max(known) if known else None
     result.cost_usd = cost_usd(
         settings.openai_model, result.prompt_tokens, result.completion_tokens
     )
@@ -258,6 +278,22 @@ def num(value: float | None, digits: int = 2) -> str:
     return "–" if value is None else f"{value:.{digits}f}"
 
 
+def max_tokens_cell(r: CaseResult) -> str:
+    """Largest reply; `?` marks attempts that reported no tokens (timed out)."""
+    unknown = any(c["completion_tokens"] is None for c in r.calls)
+    if r.max_completion_tokens is None:
+        return "?" if unknown else "–"
+    return f"{r.max_completion_tokens}{' + ?' if unknown else ''}"
+
+
+def attempts_cell(r: CaseResult) -> str:
+    return "; ".join(
+        f"{c['completion_tokens'] if c['completion_tokens'] is not None else '?'} "
+        f"{c['finish_reason'] or '?'} {c['duration_s']:.1f}"
+        for c in r.calls
+    )
+
+
 def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict[str, Any]) -> str:
     shopping, menu = summary["per_mode"]["shopping"], summary["per_mode"]["menu"]
     verdict = "PASS" if passed(summary) else "FAIL"
@@ -289,8 +325,8 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
         "",
         "| Case | Run | Status | Attempts | Dropped | Scaled | Trimmed | Total / budget (€) "
         "| €/1000 kcal | kcal/person/day | Diet violations | Latency (s) | Tokens in/out "
-        "| Cost ($) |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Out tokens (max attempt) | Attempts (out tokens, finish, s) | Cost ($) |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in results:
         kcal = "–"
@@ -304,7 +340,8 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
             f"{'yes' if r.scaled else ''} | {r.trimmed_count or ''} | {total} | "
             f"{num(r.cost_per_1000_kcal)} | {kcal} | "
             f"{', '.join(r.diet_violations) or ''} | {r.latency_s:.1f} | "
-            f"{r.prompt_tokens}/{r.completion_tokens} | {num(r.cost_usd, 4)} |"
+            f"{r.prompt_tokens}/{r.completion_tokens} | {max_tokens_cell(r)} | "
+            f"{attempts_cell(r)} | {num(r.cost_usd, 4)} |"
         )
     lines += [
         "",
@@ -319,7 +356,9 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run offline evals with the real OpenAI API.")
-    parser.add_argument("--cases", type=int, help="run only the first N cases")
+    parser.add_argument(
+        "--cases", help="the first N cases, or case ids separated by commas (default: all)"
+    )
     parser.add_argument("--repeat", type=int, default=1, help="run every case N times")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
@@ -329,7 +368,10 @@ def main(argv: list[str] | None = None) -> int:
     except ValidationError as e:
         print(f"Settings are incomplete (is OPENAI_API_KEY set?):\n{e}", file=sys.stderr)
         return 2
-    cases = load_cases()[: args.cases]
+    try:
+        cases = select_cases(load_cases(), args.cases)
+    except ValueError as e:
+        parser.error(str(e))
     catalog = load_catalog(settings.catalog_path)
     client = create_llm_client(settings)
     results = asyncio.run(run_cases(cases, client, settings, catalog, args.repeat, progress=True))

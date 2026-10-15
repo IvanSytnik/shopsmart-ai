@@ -453,6 +453,7 @@ CI (`.github/workflows/ci.yml`) runs exactly these on every push and pull reques
 cd backend
 .venv/bin/python -m evals.run                # 20 scenarios from evals/cases.yaml
 .venv/bin/python -m evals.run --cases 2      # only the first 2
+.venv/bin/python -m evals.run --cases menu-de-hofer-2p-1d-20,menu-en-both-2p-1d-25   # by id
 .venv/bin/python -m evals.run --repeat 3     # every scenario 3 times
 ```
 
@@ -460,7 +461,7 @@ The scenarios cover shopping and menu mode, 1/3/7 days, households of 1–5, bud
 
 It writes `evals/results/<timestamp>.json` (every run) and `evals/report.md`:
 - **summary:** valid output rate, first-attempt acceptance and repair rate per mode, budget adherence, diet violations, kcal-in-range rate for menus, p50/p95 latency, average cost per request;
-- **per-case table:** status, attempts, candidates dropped on a tight budget, scaling, trimming, total vs budget, €/1000 kcal of the final plan, kcal, tokens and cost.
+- **per-case table:** status, attempts, candidates dropped on a tight budget, scaling, trimming, total vs budget, €/1000 kcal of the final plan, kcal, tokens, the largest reply (out tokens) and cost, plus every attempt's output tokens, finish reason and duration (`?` = no tokens reported, e.g. timed out).
 
 The exit code is 1 if any plan is over budget or contains a product that breaks a requested diet. Cost uses the gpt-4o-mini price in `evals/run.py` (`PRICES_PER_M_TOKENS`).
 

@@ -42,7 +42,7 @@ from app.schemas.responses import (
     Warning,
 )
 from app.services.catalog import ProductCatalog
-from app.services.llm import LLMOutputError, TokenUsage, request_plan
+from app.services.llm import LLMCall, LLMOutputError, request_plan
 from app.services.portions import (
     PORTION_BOUNDS,
     clamp_portion,
@@ -121,7 +121,7 @@ class PlanTrace:
     """What `create_plan` did, for evals. Filled in even when it raises."""
 
     attempts: int = 0  # LLM calls made
-    usage: list[TokenUsage] = field(default_factory=list)  # per call that reported usage
+    calls: list[LLMCall] = field(default_factory=list)  # one per LLM call, in order
     accepted_attempt: int | None = None  # the attempt whose plan was returned
     used_fallback: bool = False  # an earlier imperfect plan was returned
     dropped_candidates: int = 0  # food left out on a tight budget
@@ -640,7 +640,7 @@ async def create_plan(
                     messages,
                     plan_model,
                     max_tokens_for(request, settings),
-                    trace.usage,
+                    trace.calls,
                 )
                 if request.mode == "menu":
                     draft, problems = menu_draft(

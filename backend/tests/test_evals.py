@@ -4,6 +4,7 @@ import asyncio
 import logging
 from typing import Any, get_args
 
+import httpx
 import pytest
 
 from app.schemas.catalog import DietTag
@@ -12,12 +13,15 @@ from app.services.catalog import load_catalog
 from evals.run import (
     CaseResult,
     EvalCase,
+    attempts_cell,
     cost_usd,
     diet_violations,
     load_cases,
+    max_tokens_cell,
     passed,
     render_report,
     run_case,
+    select_cases,
     summarize,
 )
 from tests.conftest import BODY, FIXTURE_CATALOG, MILK, FakeOpenAI, make_plan, make_settings
@@ -239,3 +243,85 @@ def test_usage_is_logged_at_debug_only(
     with caplog.at_level(logging.DEBUG, logger="app.services.llm"):
         client.post("/generate", json=BODY)
     assert "LLM usage: 1 prompt + 1 completion tokens" in caplog.text
+
+
+# --- per-attempt diagnostics ----------------------------------------------------
+
+
+def test_each_attempt_records_tokens_finish_reason_and_duration(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_raw('{"lines": [', finish_reason="length")
+    fake_llm.queue_plan(make_plan())
+
+    result = run(fake_llm, case())
+
+    assert result.status == "ok"
+    assert [(c["completion_tokens"], c["finish_reason"]) for c in result.calls] == [
+        (1, "length"),
+        (1, "stop"),
+    ]
+    assert all(c["duration_s"] >= 0 for c in result.calls)
+    assert result.max_completion_tokens == 1
+
+
+def test_timed_out_attempt_has_unknown_tokens(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_exception(httpx.ReadTimeout("read timed out"))
+
+    result = run(fake_llm, case())
+
+    assert (result.status, result.error) == ("timeout", "APITimeoutError")
+    assert result.calls == [
+        {
+            "duration_s": result.calls[0]["duration_s"],
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "finish_reason": "timeout",
+        }
+    ]
+    assert result.max_completion_tokens is None
+    assert (max_tokens_cell(result), attempts_cell(result).split(" ")[:2]) == (
+        "?",
+        ["?", "timeout"],
+    )
+
+
+def test_attempt_cut_by_the_request_deadline_is_marked_cancelled(fake_llm: FakeOpenAI) -> None:
+    fake_llm.delay_s = 0.5
+    fake_llm.queue_plan(make_plan())
+
+    result = run(fake_llm, case(), request_deadline_s=0.1)
+
+    assert result.status == "timeout"
+    assert [c["finish_reason"] for c in result.calls] == ["cancelled"]
+    assert result.calls[0]["completion_tokens"] is None
+
+
+def test_report_marks_unknown_tokens_next_to_the_largest_reply() -> None:
+    calls = [
+        {
+            "duration_s": 12.0,
+            "prompt_tokens": 900,
+            "completion_tokens": 1850,
+            "finish_reason": "stop",
+        },
+        {
+            "duration_s": 40.0,
+            "prompt_tokens": None,
+            "completion_tokens": None,
+            "finish_reason": "timeout",
+        },
+    ]
+    r = result(calls=calls, max_completion_tokens=1850)
+
+    assert max_tokens_cell(r) == "1850 + ?"
+    assert attempts_cell(r) == "1850 stop 12.0; ? timeout 40.0"
+
+
+def test_select_cases() -> None:
+    cases = load_cases()
+    first, second, third = (c.id for c in cases[:3])
+
+    assert select_cases(cases, None) == cases
+    assert [c.id for c in select_cases(cases, "2")] == [first, second]
+    assert [c.id for c in select_cases(cases, f"{third}, {first}")] == [third, first]
+    with pytest.raises(ValueError, match="unknown case ids: nope"):
+        select_cases(cases, f"{first},nope")
