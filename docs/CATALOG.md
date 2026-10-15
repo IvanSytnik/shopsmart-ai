@@ -83,7 +83,7 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
 
    ```bash
    cd backend
-   python -m scripts.build_catalog          # writes app/data/catalog.json
+   python scripts/build_catalog.py          # writes app/data/catalog.json
    pytest -q tests/test_catalog_at.py       # coverage rules
    ```
 

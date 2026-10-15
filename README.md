@@ -412,8 +412,8 @@ Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by def
 
 ```bash
 cd backend
-python -m scripts.build_catalog          # validate the CSV and write app/data/catalog.json
-python -m scripts.build_catalog --check  # validate only
+python scripts/build_catalog.py          # validate the CSV and write app/data/catalog.json
+python scripts/build_catalog.py --check  # validate, and fail if catalog.json is out of date (CI)
 ```
 
 The script validates every row with the app's schema, converts nutrition from per 100 g/ml to per pack, fails on any error and prints counts per store, category and diet. Tests use the separate made-up catalog `tests/fixtures/catalog_small.json` (Lidl and Penny in AT and DE), which also works for local development: `CATALOG_PATH=tests/fixtures/catalog_small.json`.

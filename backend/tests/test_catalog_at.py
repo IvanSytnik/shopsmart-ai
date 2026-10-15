@@ -2,6 +2,8 @@
 
 import csv
 import json
+import subprocess
+import sys
 from itertools import combinations
 from pathlib import Path
 from typing import get_args
@@ -11,7 +13,7 @@ import pytest
 
 from app.schemas.catalog import NON_FOOD_CATEGORIES, DietTag
 from app.services.catalog import load_catalog
-from scripts.build_catalog import DEFAULT_SOURCE, BuildError, build, main
+from scripts.build_catalog import BACKEND, DEFAULT_SOURCE, BuildError, build, main
 from tests.test_catalog import PRODUCTION_CATALOG
 
 CATALOG = load_catalog(PRODUCTION_CATALOG)
@@ -130,12 +132,42 @@ def test_build_requires_net_weight_for_food_sold_by_pieces(tmp_path: Path) -> No
         build(source)
 
 
-def test_main_check_mode_writes_nothing(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    output = tmp_path / "catalog.json"
-
-    assert main(["--check", "--output", str(output)]) == 0
-    assert not output.exists()
+def test_check_mode_writes_nothing_and_detects_a_stale_catalog(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    assert main(["--check"]) == 0  # the committed catalog.json is up to date
     assert "Unverified rows:" in capsys.readouterr().out
+
+    output = tmp_path / "catalog.json"
+    assert main(["--check", "--output", str(output)]) == 1  # missing
+    assert not output.exists()
+    assert main(["--output", str(output)]) == 0
+    assert main(["--check", "--output", str(output)]) == 0
+    output.write_text(output.read_text().replace('"1.32"', '"1.33"').replace("1.32", "1.33"))
+    assert main(["--check", "--output", str(output)]) == 1
+    assert "out of date" in capsys.readouterr().err
+
+
+def test_build_failure_writes_nothing(tmp_path: Path) -> None:
+    output = tmp_path / "catalog.json"
     bad = write_csv(tmp_path / "bad.csv", [{**csv_rows()[0], "price_eur": "x"}])
+
     assert main(["--source", str(bad), "--output", str(output)]) == 1
     assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        [sys.executable, "scripts/build_catalog.py", "--check"],
+        [sys.executable, "-m", "scripts.build_catalog", "--check"],
+    ],
+    ids=["as-file", "as-module"],
+)
+def test_script_runs_from_the_backend_directory(command: list[str]) -> None:
+    result = subprocess.run(
+        command, cwd=BACKEND, capture_output=True, text=True, check=False, timeout=60
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "is up to date" in result.stdout

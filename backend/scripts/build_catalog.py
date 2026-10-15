@@ -1,8 +1,10 @@
 """Build app/data/catalog.json from the human-editable CSV source.
 
     cd backend
-    python -m scripts.build_catalog            # data_src/catalog_at.csv -> app/data/catalog.json
-    python -m scripts.build_catalog --check    # validate only, write nothing
+    python scripts/build_catalog.py            # data_src/catalog_at.csv -> app/data/catalog.json
+    python scripts/build_catalog.py --check    # validate, and fail if catalog.json is stale
+
+`python -m scripts.build_catalog` works too.
 
 Nutrition in the CSV is per 100 g or 100 ml; the catalog stores it per pack. Products sold
 by kg or l are converted with their pack size (1 ml counted as 1 g). Products sold by pcs or
@@ -19,11 +21,20 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, get_args
 
-from pydantic import ValidationError
-
-from app.schemas.catalog import NON_FOOD_CATEGORIES, Catalog, DietTag, Product, Unit
-
 BACKEND = Path(__file__).resolve().parents[1]
+if str(BACKEND) not in sys.path:  # run as a file (`python scripts/build_catalog.py`)
+    sys.path.insert(0, str(BACKEND))
+
+from pydantic import ValidationError  # noqa: E402
+
+from app.schemas.catalog import (  # noqa: E402
+    NON_FOOD_CATEGORIES,
+    Catalog,
+    DietTag,
+    Product,
+    Unit,
+)
+
 DEFAULT_SOURCE = BACKEND / "data_src" / "catalog_at.csv"
 DEFAULT_OUTPUT = BACKEND / "app" / "data" / "catalog.json"
 COUNTRY = "AT"
@@ -151,11 +162,22 @@ def report(catalog: Catalog, rows: list[dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
+def render(catalog: Catalog) -> str:
+    data = catalog.model_dump(mode="json")
+    for product in data["products"]:
+        product["price_eur"] = float(product["price_eur"])  # a number, like the fixture
+    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--check", action="store_true", help="validate only, don't write")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="validate, don't write; fail if --output differs from a fresh build",
+    )
     args = parser.parse_args(argv)
     try:
         catalog, rows = build(args.source)
@@ -163,14 +185,19 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Catalog build failed:\n{e}", file=sys.stderr)
         return 1
     print(report(catalog, rows))
-    if not args.check:
-        data = catalog.model_dump(mode="json")
-        for product in data["products"]:
-            product["price_eur"] = float(product["price_eur"])  # a number, like the fixture
-        args.output.write_text(
-            json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-        )
-        print(f"Wrote {args.output}")
+    text = render(catalog)
+    if args.check:
+        current = args.output.read_text(encoding="utf-8") if args.output.exists() else None
+        if current != text:
+            print(
+                f"{args.output} is out of date: run `python scripts/build_catalog.py`",
+                file=sys.stderr,
+            )
+            return 1
+        print(f"{args.output} is up to date")
+        return 0
+    args.output.write_text(text, encoding="utf-8")
+    print(f"Wrote {args.output}")
     return 0
 
 
