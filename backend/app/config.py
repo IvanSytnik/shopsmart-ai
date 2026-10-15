@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     shopping_max_tokens: int = Field(default=1200, gt=0)
     menu_max_tokens_base: int = Field(default=600, gt=0)
     menu_max_tokens_per_day: int = Field(default=450, gt=0)
-    openai_timeout_s: float = Field(default=25, gt=0)  # per OpenAI call
+    # Per OpenAI call. Long menus can take 30 s+; the request deadline still caps the total.
+    openai_timeout_s: float = Field(default=40, gt=0)
     openai_max_retries: int = Field(default=0, ge=0)  # SDK retries; the deadline covers all calls
     # Whole /generate budget (first call + repair); keep below the frontend's 70 s timeout.
     request_deadline_s: float = Field(default=55, gt=0)

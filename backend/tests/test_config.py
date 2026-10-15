@@ -57,7 +57,10 @@ def test_llm_client_uses_timeout_and_retries_from_settings() -> None:
 def test_timeout_and_retry_defaults() -> None:
     settings = Settings(_env_file=None, openai_api_key="sk-test")
 
-    assert (settings.openai_timeout_s, settings.openai_max_retries) == (25, 0)
+    assert (settings.openai_timeout_s, settings.openai_max_retries) == (40, 0)
+    # One full-length call (40 s) leaves 15 s of the 55 s deadline, less than the 20 s a
+    # repair needs, so a slow first attempt is never followed by a repair that can't finish.
+    assert settings.request_deadline_s - settings.openai_timeout_s < settings.repair_min_remaining_s
     assert (settings.request_deadline_s, settings.repair_min_remaining_s) == (55, 20)
     assert (settings.rate_limit, settings.daily_generate_cap) == ("10/minute", 200)
     assert (settings.min_kcal_per_person_day, settings.max_schema_enum_values) == (1600, 500)
