@@ -33,8 +33,14 @@ export const formatDate = (isoDate: string, language: Language): string => {
 export const nameFromId = (productId: string): string =>
   productId.split('-').slice(2).join(' ') || productId;
 
-export const trimmedName = (change: TrimmedItem): string =>
-  change.name || nameFromId(change.product_id);
+/**
+ * A product name in the UI language. Plans saved in history before `names` existed only
+ * have `name` (the language the plan was made in), and older ones may lack even that.
+ */
+export const productName = (
+  entry: Pick<Item | TrimmedItem, 'product_id' | 'name' | 'names'>,
+  language: Language
+): string => entry.names?.[language] || entry.name || nameFromId(entry.product_id);
 
 export const itemsById = (response: GenerateResponse): Map<string, Item> =>
   new Map(response.items.map(item => [item.product_id, item]));

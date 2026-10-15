@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GenerateResponse } from '../types';
 import { CATEGORY_ICONS } from '../constants';
 import { useLanguage } from '../LanguageContext';
-import { formatSize, groupByStore, money } from './results/format';
+import { formatSize, groupByStore, money, productName } from './results/format';
 
 interface ShoppingListProps {
   response: GenerateResponse;
@@ -76,7 +76,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
                       <span
                         className={`block font-medium ${isChecked ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200'}`}
                       >
-                        {item.name}
+                        {productName(item, language)}
                       </span>
                       <span className="block text-sm text-gray-500 dark:text-gray-400">
                         {item.packs} × {formatSize(item.pack_size, item.unit, language, t)} • €

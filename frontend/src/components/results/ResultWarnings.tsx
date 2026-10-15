@@ -1,7 +1,7 @@
 import React from 'react';
 import { GenerateResponse } from '../../types';
 import { useLanguage } from '../../LanguageContext';
-import { trimmedName } from './format';
+import { productName } from './format';
 
 interface ResultWarningsProps {
   response: GenerateResponse;
@@ -11,7 +11,7 @@ const noticeClass =
   'rounded-xl border border-yellow-300 bg-yellow-50 dark:border-yellow-700 dark:bg-yellow-900/20 p-4 text-sm text-yellow-800 dark:text-yellow-200';
 
 export const ResultWarnings: React.FC<ResultWarningsProps> = ({ response }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   if (response.warnings.length === 0) return null;
 
   return (
@@ -27,7 +27,7 @@ export const ResultWarnings: React.FC<ResultWarningsProps> = ({ response }) => {
             <ul className="mt-2 list-disc pl-6 space-y-0.5">
               {response.trimmed.map(change => (
                 <li key={change.product_id}>
-                  {trimmedName(change)}:{' '}
+                  {productName(change, language)}:{' '}
                   {change.to_packs === 0
                     ? t('trimmedRemoved')
                     : t('trimmedReduced', { from: change.from_packs, to: change.to_packs })}

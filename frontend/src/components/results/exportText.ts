@@ -1,6 +1,6 @@
 import type { Language } from '../../translations';
 import type { GenerateResponse } from '../../types';
-import { Translate, formatSize, groupByStore, money } from './format';
+import { Translate, formatSize, groupByStore, money, productName } from './format';
 
 /** Plain-text shopping list for the clipboard, grouped by store. */
 export function shoppingListText(
@@ -13,7 +13,7 @@ export function shoppingListText(
     lines.push(`${store} — €${money(response.subtotals_by_store[store] ?? 0)}`);
     for (const item of items) {
       const amount = `${item.packs} × ${formatSize(item.pack_size, item.unit, language, t)}`;
-      lines.push(`- ${item.name}, ${amount}: €${money(item.line_total)}`);
+      lines.push(`- ${productName(item, language)}, ${amount}: €${money(item.line_total)}`);
     }
     lines.push('');
   }

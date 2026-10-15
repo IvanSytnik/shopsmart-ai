@@ -35,6 +35,8 @@ export interface GenerateRequest {
 }
 
 // Mirrors backend app/schemas/responses.py.
+export type LocalizedNames = Record<Language, string>;
+
 export interface Nutrition {
   kcal: number;
   protein_g: number;
@@ -45,6 +47,7 @@ export interface Nutrition {
 export interface Item {
   product_id: string;
   name: string; // in the request language
+  names: LocalizedNames; // from the catalog; the UI shows the current language
   store: string;
   category: Category;
   packs: number;
@@ -58,6 +61,7 @@ export interface Item {
 export interface TrimmedItem {
   product_id: string;
   name: string; // in the request language; removed lines aren't in `items`
+  names: LocalizedNames;
   from_packs: number;
   to_packs: number; // 0 = removed
 }

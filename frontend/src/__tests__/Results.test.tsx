@@ -1,7 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Results } from '../components';
+import { LanguageSelector, Results } from '../components';
 import { MENU, SHOPPING } from '../test/fixtures';
 import { renderWithLanguage } from '../test/render';
 
@@ -77,10 +77,41 @@ describe('Results', () => {
     expect(screen.getByText('potato chips 175g').tagName).toBe('S');
   });
 
-  it('renders in German', () => {
+  it('renders in German, product names included', () => {
     renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />, 'de');
 
     expect(screen.getByText('entfernt (Budget)')).toBeTruthy();
     expect(screen.getByText(/Gekaufte Lebensmittel ≈ 1455 kcal pro Person\/Tag/)).toBeTruthy();
+    expect(screen.getByText('Kartoffelchips: entfernt')).toBeTruthy();
+    expect(screen.getByText('Kartoffelchips').tagName).toBe('S');
+    expect(screen.getAllByText('Vollmilch 3,5%').length).toBeGreaterThan(0);
+  });
+
+  it('re-labels products when the UI language changes; meals stay as generated', async () => {
+    const user = userEvent.setup();
+    renderWithLanguage(
+      <>
+        <LanguageSelector />
+        <Results response={MENU} onReset={vi.fn()} />
+      </>
+    );
+    const monday = () => screen.getByRole('region', { name: 'Monday' });
+    expect(within(monday()).getByText('Whole milk 3.5%')).toBeTruthy();
+
+    await user.click(screen.getByTitle('Українська'));
+
+    expect(within(monday()).getByText('Молоко 3,5%')).toBeTruthy();
+    expect(within(monday()).getByText('Porridge')).toBeTruthy();
+    expect(screen.getByText('Картопляні чипси: прибрано')).toBeTruthy();
+  });
+
+  it('falls back to `name` for plans saved before `names` existed', () => {
+    const old = {
+      ...SHOPPING,
+      items: SHOPPING.items.map(item => ({ ...item, names: undefined })),
+    } as unknown as typeof SHOPPING;
+    renderWithLanguage(<Results response={old} onReset={vi.fn()} />, 'de');
+
+    expect(screen.getByText('Whole milk 3.5%')).toBeTruthy();
   });
 });

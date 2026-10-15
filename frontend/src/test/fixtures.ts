@@ -10,6 +10,7 @@ export const META: CatalogMeta = {
 };
 
 const item = (overrides: Partial<Item> & Pick<Item, 'product_id' | 'name'>): Item => ({
+  names: { en: overrides.name, uk: overrides.name, de: overrides.name },
   store: 'Lidl',
   category: 'dairy',
   packs: 1,
@@ -26,6 +27,7 @@ export const SHOPPING: GenerateResponse = {
     item({
       product_id: 'at-lidl-milk-1l',
       name: 'Whole milk 3.5%',
+      names: { en: 'Whole milk 3.5%', uk: 'Молоко 3,5%', de: 'Vollmilch 3,5%' },
       packs: 2,
       unit_price: 1.29,
       line_total: 2.58,
@@ -33,6 +35,7 @@ export const SHOPPING: GenerateResponse = {
     item({
       product_id: 'at-lidl-apples-1kg',
       name: 'Apples',
+      names: { en: 'Apples', uk: 'Яблука', de: 'Äpfel' },
       category: 'fruits',
       packs: 2,
       unit: 'kg',
@@ -69,8 +72,20 @@ export const MENU: GenerateResponse = {
   ...SHOPPING,
   kcal_per_person_day: 1455,
   trimmed: [
-    { product_id: 'at-lidl-potato-chips-175g', name: 'Potato chips', from_packs: 2, to_packs: 0 },
-    { product_id: 'at-lidl-apples-1kg', name: 'Apples', from_packs: 3, to_packs: 2 },
+    {
+      product_id: 'at-lidl-potato-chips-175g',
+      name: 'Potato chips',
+      names: { en: 'Potato chips', uk: 'Картопляні чипси', de: 'Kartoffelchips' },
+      from_packs: 2,
+      to_packs: 0,
+    },
+    {
+      product_id: 'at-lidl-apples-1kg',
+      name: 'Apples',
+      names: { en: 'Apples', uk: 'Яблука', de: 'Äpfel' },
+      from_packs: 3,
+      to_packs: 2,
+    },
   ],
   warnings: ['low_kcal', 'budget_trimmed'],
   menu: [

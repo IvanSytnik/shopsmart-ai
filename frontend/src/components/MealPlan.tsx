@@ -1,7 +1,7 @@
 import React from 'react';
 import { DayMenu, GenerateResponse } from '../types';
 import { useLanguage } from '../LanguageContext';
-import { itemsById, nameFromId, trimmedName } from './results/format';
+import { itemsById, nameFromId, productName } from './results/format';
 
 interface MealPlanProps {
   response: GenerateResponse;
@@ -16,12 +16,12 @@ const MEALS = [
 ] as const;
 
 export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const items = itemsById(response);
   const trimmed = new Map(response.trimmed.map(change => [change.product_id, change]));
   const removedName = (id: string) => {
     const change = trimmed.get(id);
-    return change ? trimmedName(change) : nameFromId(id);
+    return change ? productName(change, language) : nameFromId(id);
   };
 
   return (
@@ -62,7 +62,7 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
                               key={id}
                               className="px-2 py-0.5 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300"
                             >
-                              {item.name}
+                              {productName(item, language)}
                             </li>
                           ) : (
                             <li
