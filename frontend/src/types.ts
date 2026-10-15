@@ -57,6 +57,7 @@ export interface Item {
 
 export interface TrimmedItem {
   product_id: string;
+  name: string; // in the request language; removed lines aren't in `items`
   from_packs: number;
   to_packs: number; // 0 = removed
 }

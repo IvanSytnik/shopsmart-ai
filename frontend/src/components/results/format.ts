@@ -1,5 +1,5 @@
 import type { Language } from '../../translations';
-import type { GenerateResponse, Item } from '../../types';
+import type { GenerateResponse, Item, TrimmedItem } from '../../types';
 
 const LOCALES: Record<Language, string> = { en: 'en-GB', uk: 'uk-UA', de: 'de-AT' };
 
@@ -12,11 +12,14 @@ export const formatDate = (isoDate: string, language: Language): string => {
 };
 
 /**
- * A readable name for a product that is no longer in `items` (removed to fit the budget).
- * The response has no name for it, so derive one from the id: "<country>-<store>-<slug>".
+ * Fallback name derived from an id ("<country>-<store>-<slug>"), for plans saved before
+ * `trimmed[].name` existed.
  */
 export const nameFromId = (productId: string): string =>
   productId.split('-').slice(2).join(' ') || productId;
+
+export const trimmedName = (change: TrimmedItem): string =>
+  change.name || nameFromId(change.product_id);
 
 export const itemsById = (response: GenerateResponse): Map<string, Item> =>
   new Map(response.items.map(item => [item.product_id, item]));

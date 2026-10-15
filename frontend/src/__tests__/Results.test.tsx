@@ -47,8 +47,7 @@ describe('Results', () => {
     const changes = within(trimmed)
       .getAllByRole('listitem')
       .map(li => li.textContent);
-    // Removed items aren't in `items`, so their name comes from the id.
-    expect(changes).toEqual(['potato chips 175g: removed', 'Apples: reduced 3→2']);
+    expect(changes).toEqual(['Potato chips: removed', 'Apples: reduced 3→2']);
   });
 
   it('strikes through a menu ingredient that was removed for the budget', async () => {
@@ -58,12 +57,23 @@ describe('Results', () => {
     const monday = screen.getByRole('region', { name: 'Monday' });
     expect(within(monday).getByText('Porridge')).toBeTruthy();
     expect(within(monday).getAllByText('Rice')).toHaveLength(2);
-    const removed = within(monday).getByText('potato chips 175g');
+    const removed = within(monday).getByText('Potato chips');
     expect(removed.tagName).toBe('S');
-    expect(removed.parentElement?.textContent).toBe('potato chips 175g removed (budget)');
+    expect(removed.parentElement?.textContent).toBe('Potato chips removed (budget)');
 
     await user.click(screen.getByRole('tab', { name: /Products for this menu/ }));
     expect(screen.getByRole('region', { name: 'Penny' })).toBeTruthy();
+  });
+
+  it('derives a name from the id for plans saved without trimmed names', () => {
+    const old = {
+      ...MENU,
+      trimmed: [{ product_id: 'at-lidl-potato-chips-175g', from_packs: 2, to_packs: 0 }],
+    } as unknown as typeof MENU;
+    renderWithLanguage(<Results response={old} onReset={vi.fn()} />);
+
+    expect(screen.getByText('potato chips 175g: removed')).toBeTruthy();
+    expect(screen.getByText('potato chips 175g').tagName).toBe('S');
   });
 
   it('renders in German', () => {

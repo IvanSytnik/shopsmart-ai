@@ -6,28 +6,37 @@ import { META, mockFetch } from '../test/fixtures';
 import { renderWithLanguage } from '../test/render';
 
 const storeGroup = () => screen.getByRole('group', { name: 'Select Supermarkets' });
-const storeNames = () =>
-  Array.from(storeGroup().querySelectorAll('button')).map(b => b.textContent);
+const storeChips = () =>
+  Array.from(storeGroup().querySelectorAll('button')).map(
+    b => `${b.textContent}${b.getAttribute('aria-pressed') === 'true' ? ' ✓' : ''}`
+  );
 const submitButton = () => screen.getByRole('button', { name: /Generate Shopping List/ });
 
 describe('ShopForm', () => {
   it('renders store chips from the catalog meta and changes them with the country', async () => {
-    mockFetch();
+    mockFetch({ ...META, countries: { AT: ['Lidl', 'Penny', 'Spar'], DE: ['Lidl', 'Rewe'] } });
     const user = userEvent.setup();
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Penny' });
-    expect(storeNames()).toEqual(['Lidl', 'Penny']);
+    // The first two stores are preselected.
+    expect(storeChips()).toEqual(['Lidl ✓', 'Penny ✓', 'Spar']);
     expect(screen.getByRole('button', { name: /Austria/ }).getAttribute('aria-pressed')).toBe('true');
 
-    await user.click(screen.getByRole('button', { name: 'Lidl' }));
-    await user.click(screen.getByRole('button', { name: 'Penny' }));
+    await user.click(screen.getByRole('button', { name: /Germany/ }));
+    // Lidl exists in DE too and stays selected; Penny doesn't and is dropped.
+    expect(storeChips()).toEqual(['Lidl ✓', 'Rewe']);
+  });
+
+  it('preselects the first two stores when nothing valid is left after a country change', async () => {
+    mockFetch({ ...META, countries: { AT: ['Penny', 'Spar'], DE: ['Edeka', 'Lidl', 'Rewe'] } });
+    const user = userEvent.setup();
+    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+
+    await screen.findByRole('button', { name: 'Penny' });
     await user.click(screen.getByRole('button', { name: /Germany/ }));
 
-    expect(storeNames()).toEqual(['Lidl', 'Rewe']);
-    // Lidl exists in DE too and stays selected; Penny doesn't and is dropped.
-    expect(screen.getByRole('button', { name: 'Lidl' }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('button', { name: 'Rewe' }).getAttribute('aria-pressed')).toBe('false');
+    expect(storeChips()).toEqual(['Edeka ✓', 'Lidl ✓', 'Rewe']);
   });
 
   it('hides a country without stores', async () => {
@@ -52,6 +61,7 @@ describe('ShopForm', () => {
     );
     await user.click(screen.getByRole('button', { name: 'Retry' }));
     expect(await screen.findByRole('button', { name: 'Penny' })).toBeTruthy();
+    expect(storeChips()).toEqual(['Lidl ✓', 'Penny ✓']);
   });
 
   it('submits country, stores, diets, mode and days', async () => {
@@ -60,8 +70,7 @@ describe('ShopForm', () => {
     const user = userEvent.setup();
     renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
 
-    await user.click(await screen.findByRole('button', { name: 'Lidl' }));
-    await user.click(screen.getByRole('button', { name: 'Penny' }));
+    await screen.findByRole('button', { name: 'Lidl' });
     await user.click(screen.getByRole('button', { name: /Vegetarian/ }));
     await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
     await user.click(screen.getByRole('button', { name: '3' }));
@@ -86,11 +95,15 @@ describe('ShopForm', () => {
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Lidl' });
+    expect(submitButton()).toHaveProperty('disabled', false);
+
+    // Deselecting everything doesn't bring the defaults back.
+    await user.click(screen.getByRole('button', { name: 'Lidl' }));
+    await user.click(screen.getByRole('button', { name: 'Penny' }));
+    expect(storeChips()).toEqual(['Lidl', 'Penny']);
     expect(submitButton()).toHaveProperty('disabled', true);
 
     await user.click(screen.getByRole('button', { name: 'Lidl' }));
-    expect(submitButton()).toHaveProperty('disabled', false);
-
     const budget = screen.getByLabelText(/Weekly Budget/);
     await user.clear(budget);
     await user.type(budget, '5');
@@ -106,7 +119,7 @@ describe('ShopForm', () => {
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'F' });
-    for (const store of stores.slice(0, 5)) {
+    for (const store of ['C', 'D', 'E']) {
       await user.click(screen.getByRole('button', { name: store }));
     }
     expect(screen.getByRole('button', { name: 'F' })).toHaveProperty('disabled', true);

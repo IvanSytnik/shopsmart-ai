@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Country, DietTag, GenerateRequest, Mode } from '../types';
 import {
   BUDGET_PRESETS,
@@ -56,14 +56,22 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const countries = meta ? COUNTRIES.filter(c => meta.countries[c.code].length > 0) : [];
   // Fall back to the first country with stores if the default one has none.
   const activeCountry = countries.some(c => c.code === country) ? country : countries[0]?.code;
-  const stores = meta && activeCountry ? meta.countries[activeCountry] : [];
+  // Memoized: a new [] on every render would re-run the preselect effect forever.
+  const stores = useMemo(
+    () => (meta && activeCountry ? meta.countries[activeCountry] : []),
+    [meta, activeCountry]
+  );
   const chosenStores = selectedStores.filter(s => stores.includes(s));
 
-  const changeCountry = (code: Country) => {
-    if (!meta) return;
-    setCountry(code);
-    setSelectedStores(prev => prev.filter(s => meta.countries[code].includes(s)));
-  };
+  // When the store list loads or the country changes: drop stores it doesn't have, and
+  // preselect the first two if nothing valid is left.
+  useEffect(() => {
+    if (stores.length === 0) return;
+    setSelectedStores(prev => {
+      const valid = prev.filter(s => stores.includes(s));
+      return valid.length > 0 ? valid : stores.slice(0, 2);
+    });
+  }, [stores]);
 
   const budgetValid = Number.isFinite(budget) && budget >= BUDGET_MIN && budget <= BUDGET_MAX;
   const storesValid = chosenStores.length >= 1 && chosenStores.length <= MAX_STORES;
@@ -170,7 +178,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
               {countries.map(c => (
                 <button
                   key={c.code}
-                  onClick={() => changeCountry(c.code)}
+                  onClick={() => setCountry(c.code)}
                   aria-pressed={activeCountry === c.code}
                   className={chipClass(activeCountry === c.code)}
                 >

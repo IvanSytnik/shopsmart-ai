@@ -63,8 +63,8 @@ export const MENU: GenerateResponse = {
   ...SHOPPING,
   kcal_per_person_day: 1455,
   trimmed: [
-    { product_id: 'at-lidl-potato-chips-175g', from_packs: 2, to_packs: 0 },
-    { product_id: 'at-lidl-apples-1kg', from_packs: 3, to_packs: 2 },
+    { product_id: 'at-lidl-potato-chips-175g', name: 'Potato chips', from_packs: 2, to_packs: 0 },
+    { product_id: 'at-lidl-apples-1kg', name: 'Apples', from_packs: 3, to_packs: 2 },
   ],
   warnings: ['low_kcal', 'budget_trimmed'],
   menu: [

@@ -5,9 +5,10 @@ import App from '../App';
 import { HISTORY_KEY } from '../history';
 import { SHOPPING, mockFetch } from '../test/fixtures';
 
+// Lidl and Penny are preselected.
 async function submitForm() {
   const user = userEvent.setup();
-  await user.click(await screen.findByRole('button', { name: 'Lidl' }));
+  await screen.findByRole('button', { name: 'Lidl' });
   await user.click(screen.getByRole('button', { name: /Generate Shopping List/ }));
   return user;
 }
@@ -37,7 +38,7 @@ describe('App', () => {
     render(<App />);
 
     const user = userEvent.setup();
-    await user.click(await screen.findByRole('button', { name: 'Lidl' }));
+    await screen.findByRole('button', { name: 'Lidl' });
     await user.click(screen.getByRole('button', { name: /Згенерувати список/ }));
 
     expect((await screen.findByRole('alert')).textContent).toContain('Забагато запитів.');
@@ -61,7 +62,10 @@ describe('App', () => {
 
     expect((await screen.findByTestId('total')).textContent).toBe('€8.85');
     const [, init] = fetchMock.mock.calls[1] as unknown as [string, RequestInit];
-    expect(JSON.parse(String(init.body))).toMatchObject({ country: 'AT', supermarkets: ['Lidl'] });
+    expect(JSON.parse(String(init.body))).toMatchObject({
+      country: 'AT',
+      supermarkets: ['Lidl', 'Penny'],
+    });
     const saved = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]');
     expect(saved).toHaveLength(1);
     expect(saved[0].response.total).toBe(8.85);

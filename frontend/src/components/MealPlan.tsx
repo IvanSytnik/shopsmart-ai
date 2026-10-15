@@ -1,7 +1,7 @@
 import React from 'react';
 import { DayMenu, GenerateResponse } from '../types';
 import { useLanguage } from '../LanguageContext';
-import { itemsById, nameFromId } from './results/format';
+import { itemsById, nameFromId, trimmedName } from './results/format';
 
 interface MealPlanProps {
   response: GenerateResponse;
@@ -18,6 +18,11 @@ const MEALS = [
 export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
   const { t } = useLanguage();
   const items = itemsById(response);
+  const trimmed = new Map(response.trimmed.map(change => [change.product_id, change]));
+  const removedName = (id: string) => {
+    const change = trimmed.get(id);
+    return change ? trimmedName(change) : nameFromId(id);
+  };
 
   return (
     <div className="space-y-4">
@@ -64,7 +69,7 @@ export const MealPlan: React.FC<MealPlanProps> = ({ response, menu }) => {
                               key={id}
                               className="px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500"
                             >
-                              <s>{nameFromId(id)}</s> {t('removedBudget')}
+                              <s>{removedName(id)}</s> {t('removedBudget')}
                             </li>
                           );
                         })}
