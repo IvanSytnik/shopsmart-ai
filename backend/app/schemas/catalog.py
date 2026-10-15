@@ -75,6 +75,9 @@ class Product(BaseModel):
             raise ValueError("nutrition must be all set or all null")
         if "vegan" in self.diet_tags and "vegetarian" not in self.diet_tags:
             raise ValueError("a vegan product must also be tagged vegetarian")
+        # pcs/pack count whole things; a fractional weight belongs in kg or l.
+        if self.unit in ("pcs", "pack") and not self.pack_size.is_integer():
+            raise ValueError(f"pack_size must be a whole number for unit {self.unit!r}")
         return self
 
 

@@ -85,7 +85,7 @@
         "de": "Roggenbrot"
       },
       "category": "bread",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.75,
       "price_eur": 2.19,
       "kcal": 1650,
@@ -162,7 +162,7 @@
         "de": "Kartoffelchips"
       },
       "category": "snacks",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.175,
       "price_eur": 1.79,
       "kcal": 940,
@@ -310,7 +310,7 @@
         "de": "TK-Pizza Margherita"
       },
       "category": "frozen",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.35,
       "price_eur": 2.79,
       "kcal": 840,
@@ -479,7 +479,7 @@
         "de": "Zartbitterschokolade 70%"
       },
       "category": "snacks",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.1,
       "price_eur": 1.19,
       "kcal": 580,
@@ -626,7 +626,7 @@
         "de": "TK-Spinat"
       },
       "category": "frozen",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.45,
       "price_eur": 1.29,
       "kcal": 100,
@@ -678,7 +678,7 @@
         "de": "Erdnussbutter"
       },
       "category": "pantry",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.35,
       "price_eur": 2.49,
       "kcal": 2170,
@@ -729,7 +729,7 @@
         "de": "Kichererbsen"
       },
       "category": "pantry",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.4,
       "price_eur": 0.99,
       "kcal": 290,
@@ -859,7 +859,7 @@
         "de": "Vollkornbrot"
       },
       "category": "bread",
-      "unit": "pack",
+      "unit": "kg",
       "pack_size": 0.5,
       "price_eur": 1.49,
       "kcal": 1100,

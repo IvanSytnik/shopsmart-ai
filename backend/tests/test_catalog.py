@@ -77,6 +77,16 @@ def _break_first_product(**changes: Any) -> dict[str, Any]:
         ("price with 3 decimals", _break_first_product(price_eur=1.299), "decimal places"),
         ("zero price", _break_first_product(price_eur=0), "price_eur"),
         ("zero pack size", _break_first_product(pack_size=0), "pack_size"),
+        (
+            "fractional pack",
+            _break_first_product(unit="pack", pack_size=0.4),
+            "whole number for unit 'pack'",
+        ),
+        (
+            "fractional pcs",
+            _break_first_product(unit="pcs", pack_size=2.5),
+            "whole number for unit 'pcs'",
+        ),
         ("negative kcal", _break_first_product(kcal=-1), "kcal"),
         ("bad slug", _break_first_product(id="Milk 1L"), "id"),
         ("unknown country", _break_first_product(country="CH"), "country"),
@@ -99,6 +109,17 @@ def test_invalid_catalog_fails_fast(
         load_catalog(write_catalog(data))
 
     assert message in str(info.value), case
+
+
+@pytest.mark.parametrize(
+    ("unit", "pack_size"), [("pack", 1), ("pcs", 10), ("kg", 0.4), ("l", 0.33)]
+)
+def test_valid_pack_sizes(
+    write_catalog: Callable[[dict[str, Any]], Path], unit: str, pack_size: float
+) -> None:
+    catalog = load_catalog(write_catalog(_break_first_product(unit=unit, pack_size=pack_size)))
+
+    assert catalog.get("at-lidl-milk-1l") is not None
 
 
 def test_missing_catalog_file_fails_fast(tmp_path: Path) -> None:
