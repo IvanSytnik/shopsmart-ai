@@ -30,6 +30,29 @@ describe('Results', () => {
     expect(screen.queryByRole('status')).toBeNull(); // no warnings
   });
 
+  it('labels kcal by their basis', () => {
+    const { unmount } = renderWithLanguage(<Results response={SHOPPING} onReset={vi.fn()} />);
+    expect(screen.getByText('🔥 Purchased food ≈ 416 kcal per person/day')).toBeTruthy();
+    unmount();
+
+    renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />);
+    expect(screen.getByText('🔥 Menu ≈ 1455 kcal per person/day')).toBeTruthy();
+    expect(screen.queryByText(/Purchased food/)).toBeNull();
+  });
+
+  it('shows saved menus without portions', () => {
+    const old = {
+      ...MENU,
+      menu: MENU.menu?.map(day => ({
+        ...day,
+        breakfast: { name: 'Porridge', description: 'Warm', ingredient_ids: ['x'] },
+      })),
+    } as unknown as typeof MENU;
+    renderWithLanguage(<Results response={old} onReset={vi.fn()} />);
+
+    expect(screen.getByText('Porridge')).toBeTruthy();
+  });
+
   it('keeps the check-off progress', async () => {
     const user = userEvent.setup();
     renderWithLanguage(<Results response={SHOPPING} onReset={vi.fn()} />);

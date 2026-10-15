@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatSize } from '../components/results/format';
+import { formatPortion, formatSize } from '../components/results/format';
 import { translations, Language, TranslationKey } from '../translations';
 
 const fmt = (size: number, unit: 'kg' | 'l' | 'pcs' | 'pack', language: Language = 'en') =>
@@ -25,5 +25,19 @@ describe('formatSize', () => {
     expect(fmt(0.4, 'kg', 'uk')).toBe('400 г');
     expect(fmt(1.5, 'kg', 'de')).toBe('1,5 kg');
     expect(fmt(10, 'pcs', 'de')).toBe('10 Stk.');
+  });
+});
+
+describe('formatPortion', () => {
+  const portion = (amount: number, unit: 'kg' | 'l' | 'pcs' | 'pack', language: Language = 'en') =>
+    formatPortion(amount, unit, language, (key: TranslationKey) => translations[language][key]);
+
+  it('shows grams for kg products, ml for l, pieces otherwise', () => {
+    expect(portion(80, 'kg')).toBe('80 g');
+    expect(portion(200, 'l')).toBe('200 ml');
+    expect(portion(2, 'pcs')).toBe('2 pcs');
+    expect(portion(1, 'pack')).toBe('1 pcs');
+    expect(portion(80, 'kg', 'de')).toBe('80 g');
+    expect(portion(2, 'pcs', 'uk')).toBe('2 шт.');
   });
 });
