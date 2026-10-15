@@ -98,6 +98,9 @@ cp .env.example .env.local
 
 # Run development server
 npm run dev
+
+# Tests (vitest + Testing Library, fetch is mocked)
+npm run test -- --run
 ```
 
 ### 4. Access the Application
