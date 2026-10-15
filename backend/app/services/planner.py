@@ -48,7 +48,9 @@ from app.services.portions import (
     eaten_kcal,
     kcal_per_unit,
     kcal_scale_factor,
+    looks_like_packs,
     packs_needed,
+    packs_to_portion,
     required_quantities,
     scale_portion,
 )
@@ -322,6 +324,26 @@ def shopping_draft(
     return Draft(plan.notes, None, price_plan(lines, catalog, allowed), {}), []
 
 
+def read_tiny_portions_as_packs(ingredients: list[LLMIngredient], catalog: ProductCatalog) -> None:
+    """Turn g/ml portions of 2 or less into packs × pack size, in place.
+
+    Models sometimes give "1" for one pack of a product counted in grams; clamping that to
+    5 g would make the dish nearly empty.
+    """
+    for ingredient in ingredients:
+        product = catalog_product(catalog, ingredient.product_id)
+        raw = ingredient.amount_per_person
+        if looks_like_packs(product, raw):
+            ingredient.amount_per_person = packs_to_portion(product, raw)
+            logger.info(
+                "Read portion of %s as %g packs: %g %s",
+                product.id,
+                raw,
+                ingredient.amount_per_person,
+                product.portion_unit,
+            )
+
+
 def clamp_portions(ingredients: list[LLMIngredient], catalog: ProductCatalog) -> None:
     """Move out-of-range portions to the nearest bound of their unit, in place.
 
@@ -417,6 +439,7 @@ def menu_draft(
     problems += unknown_ids_problem({i.product_id for i in ingredients}, allowed)
     if problems:
         return None, problems
+    read_tiny_portions_as_packs(ingredients, catalog)
     clamp_portions(ingredients, catalog)
     priced, required = price_portions(ingredients, request, catalog, allowed)
     if normalize_kcal(ingredients, priced, required, request, catalog, settings):

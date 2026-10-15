@@ -103,7 +103,7 @@ def test_too_many_pieces_are_clamped_and_used_for_the_packs(
 def test_tiny_portions_are_raised_to_the_minimum(
     client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
 ) -> None:
-    menu = one_day(meal(ing(APPLES, 3), ing(MILK, 2)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
+    menu = one_day(meal(ing(APPLES, 3), ing(MILK, 4)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
     fake_llm.queue_plan(make_plan(days=1, menu=menu))
 
     response = client.post("/generate", json=MENU_1_DAY)
@@ -115,7 +115,44 @@ def test_tiny_portions_are_raised_to_the_minimum(
         {"product_id": MILK, "amount_per_person": 5},
     ]
     assert f"Clamped portion of {APPLES} from 3 to 5 g" in caplog.text
-    assert f"Clamped portion of {MILK} from 2 to 5 ml" in caplog.text
+    assert f"Clamped portion of {MILK} from 4 to 5 ml" in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("product_id", "raw", "grams"),
+    [(CHICKEN, 1, 500), (RICE, 0.5, 500), (CHIPS, 2, 350), (CHICKEN, 0.25, 125)],
+)
+def test_tiny_g_ml_portions_are_read_as_packs(
+    client: TestClient,
+    fake_llm: FakeOpenAI,
+    caplog: pytest.LogCaptureFixture,
+    product_id: str,
+    raw: float,
+    grams: int,
+) -> None:
+    menu = one_day(meal(ing(product_id, raw)), meal(ing(RICE, 100)), meal(ing(MILK, 200)))
+    fake_llm.queue_plan(make_plan(days=1, menu=menu))
+
+    response = client.post("/generate", json=MENU_1_DAY)
+
+    assert response.status_code == 200
+    assert fake_llm.calls == 1
+    breakfast = response.json()["menu"][0]["breakfast"]["ingredients"]
+    assert breakfast == [{"product_id": product_id, "amount_per_person": grams}]
+    assert f"Read portion of {product_id} as {raw:g} packs: {grams} g" in caplog.text
+
+
+def test_milk_read_as_one_pack_is_then_clamped(
+    client: TestClient, fake_llm: FakeOpenAI, caplog: pytest.LogCaptureFixture
+) -> None:
+    menu = one_day(meal(ing(MILK, 1)), meal(ing(RICE, 100)), meal(ing(RICE, 100)))
+    fake_llm.queue_plan(make_plan(days=1, menu=menu))
+
+    response = client.post("/generate", json=MENU_1_DAY)
+
+    # 1 pack = 1000 ml, above the 800 ml limit.
+    assert response.json()["menu"][0]["breakfast"]["ingredients"][0]["amount_per_person"] == 800
+    assert f"Clamped portion of {MILK} from 1000 to 800 ml" in caplog.text
 
 
 def test_meals_without_ingredients_are_repaired(client: TestClient, fake_llm: FakeOpenAI) -> None:

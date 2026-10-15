@@ -46,6 +46,19 @@ def pack_quantity(product: Product) -> Decimal:
     return size * 1000 if product.portion_unit in ("g", "ml") else size
 
 
+# A g/ml portion this small is surely a pack count ("1" = one 500 g pack), not grams.
+PACKS_GUARD_MAX = Decimal(2)
+
+
+def looks_like_packs(product: Product, amount: float) -> bool:
+    return product.portion_unit in ("g", "ml") and decimal(amount) <= PACKS_GUARD_MAX
+
+
+def packs_to_portion(product: Product, packs: float) -> float:
+    """`packs` of the product in its g/ml portion unit, rounded to the unit's step."""
+    return round_portion(product, decimal(packs) * pack_quantity(product))
+
+
 def clamp_portion(product: Product, amount: float) -> float:
     """`amount` moved into the portion unit's PORTION_BOUNDS, to the nearest bound."""
     low, high = PORTION_BOUNDS[product.portion_unit]
