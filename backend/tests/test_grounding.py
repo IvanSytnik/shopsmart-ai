@@ -6,7 +6,9 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
+from openai.lib._pydantic import to_strict_json_schema
 
+from app.schemas.llm import build_plan_model, count_enum_values
 from app.services.catalog import load_catalog
 from tests.conftest import (
     APPLES,
@@ -17,6 +19,8 @@ from tests.conftest import (
     FakeOpenAI,
     day,
     make_plan,
+    make_settings,
+    meal,
 )
 from tests.test_catalog import PLACEHOLDER
 
@@ -81,10 +85,25 @@ def test_milk_is_rejected_by_the_schema_for_a_vegan_request(
     assert MILK not in [i["product_id"] for i in response.json()["items"]]
 
 
-def test_large_candidate_lists_fall_back_to_server_side_id_check(
-    client: TestClient, fake_llm: FakeOpenAI, monkeypatch: pytest.MonkeyPatch
+def sent_enum_values(request: dict[str, Any]) -> int:
+    return count_enum_values(request["response_format"]["json_schema"]["schema"])
+
+
+def test_fixture_sized_candidates_use_the_enum_within_the_cap(
+    client: TestClient, fake_llm: FakeOpenAI
 ) -> None:
-    monkeypatch.setattr("app.schemas.llm.MAX_ENUM_IDS", 5)
+    fake_llm.queue_plan(make_plan(days=1))
+
+    client.post("/generate", json=MENU_1_DAY)
+
+    # 20 ids, in lines and in each of the 4 meals.
+    assert sent_enum_values(fake_llm.requests[0]) == 100 <= make_settings().max_schema_enum_values
+
+
+def test_schema_over_the_enum_cap_falls_back_to_server_side_id_check(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
+) -> None:
+    client = make_client(max_schema_enum_values=99)  # fixture schema has 100
     fake_llm.queue_plan(make_plan({"de-lidl-milk-1l": 1, APPLES: 1}))  # exists, wrong country
     fake_llm.queue_plan(make_plan())
 
@@ -93,8 +112,52 @@ def test_large_candidate_lists_fall_back_to_server_side_id_check(
     assert response.status_code == 200
     schema = fake_llm.requests[0]["response_format"]["json_schema"]["schema"]
     assert "enum" not in schema["$defs"]["LLMLine"]["properties"]["product_id"]
+    assert sent_enum_values(fake_llm.requests[0]) == 0
     problem = fake_llm.messages(1)[-1]["content"]
     assert "These ids are not in the candidate list: de-lidl-milk-1l." in problem
+
+
+def test_200_candidates_in_menu_mode_are_sent_as_plain_strings(
+    make_client: Callable[..., TestClient], fake_llm: FakeOpenAI, tmp_path: Any
+) -> None:
+    data = json.loads(FIXTURE_CATALOG.read_text())
+    template = next(p for p in data["products"] if p["id"] == MILK)
+    ids = [f"at-lidl-synthetic-{n}" for n in range(200)]
+    data["products"] = [{**template, "id": i} for i in ids]
+    path = tmp_path / "large.json"
+    path.write_text(json.dumps(data))
+    client = make_client(catalog_path=path)
+    dish = meal(ids[0], ids[1])
+    menu = [{"day": "Monday", "breakfast": dish, "lunch": dish, "dinner": dish, "snack": None}]
+    fake_llm.queue_plan(make_plan({ids[0]: 1, ids[1]: 1}, menu=menu))
+
+    response = client.post("/generate", json={**MENU_1_DAY, "supermarkets": ["Lidl"]})
+
+    assert response.status_code == 200
+    request = fake_llm.requests[0]
+    assert ids[199] in fake_llm.messages()[1]["content"]
+    assert (
+        "enum"
+        not in request["response_format"]["json_schema"]["schema"]["$defs"]["LLMLine"][
+            "properties"
+        ]["product_id"]
+    )
+    assert sent_enum_values(request) <= make_settings().max_schema_enum_values
+
+
+def test_enum_count_expands_refs() -> None:
+    model = build_plan_model([f"id-{n}" for n in range(3)], max_enum_values=1000)
+    schema = to_strict_json_schema(model)
+
+    assert count_enum_values(schema) == 15  # lines + breakfast, lunch, dinner, snack
+    assert json.dumps(schema).count('"id-0"') == 2  # only two literal copies, in $defs
+
+
+def test_build_plan_model_switches_to_str_exactly_above_the_cap() -> None:
+    ids = [f"id-{n}" for n in range(100)]
+    for cap, enum_values in ((500, 500), (499, 0)):
+        schema = to_strict_json_schema(build_plan_model(ids, max_enum_values=cap))
+        assert count_enum_values(schema) == enum_values
 
 
 # --- request checks against the catalog -----------------------------------------

@@ -174,7 +174,7 @@ Content-Type: application/json
 How a plan is made:
 
 1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
-2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server above 500 candidates). The model returns `lines: [{product_id, packs 1–20}]`, an optional menu whose meals list `ingredient_ids`, and notes. No prices.
+2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 100 candidates). The model returns `lines: [{product_id, packs 1–20}]`, an optional menu whose meals list `ingredient_ids`, and notes. No prices.
 3. **Checks + one repair**: empty list, missing/wrong-length menu, meal ingredients missing from `lines`, or a total over budget (the repair message states the overshoot in €) → one retry telling the model what was wrong. Both attempts share the request deadline.
 4. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first), menu ingredients last. Trimmed lines are listed in `trimmed`.
 
@@ -348,6 +348,7 @@ OPENAI_MAX_RETRIES=0                       # default; SDK retries on connection/
 REQUEST_DEADLINE_S=55                      # default; total time for one POST /generate
 REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if less is left
 CATALOG_PATH=app/data/catalog.json         # default; price catalog, validated at startup
+MAX_SCHEMA_ENUM_VALUES=500                 # default; above it product ids aren't an enum in the LLM schema
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate
 DAILY_GENERATE_CAP=200                     # default; POST /generate calls per UTC day

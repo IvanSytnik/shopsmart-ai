@@ -225,7 +225,7 @@ async def create_plan(
     `LLMOutputError` if no attempt produced a usable plan.
     """
     allowed = {p.id for p in candidates}
-    plan_model = build_plan_model([p.id for p in candidates])
+    plan_model = build_plan_model([p.id for p in candidates], settings.max_schema_enum_values)
     budget = request_budget(request)
     messages: list[ChatCompletionMessageParam] = [
         {"role": "system", "content": build_system_prompt(request)},
