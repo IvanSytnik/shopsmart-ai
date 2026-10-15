@@ -2,6 +2,7 @@
 
 > Intelligent shopping list generator powered by OpenAI GPT-4o-mini
 
+[![CI](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://reactjs.org/)
@@ -433,7 +434,30 @@ VITE_API_URL=http://localhost:8000
 cd backend
 pytest -q                         # OpenAI is mocked; tests never touch the network
 ruff check . && ruff format --check .
+python scripts/build_catalog.py --check   # catalog.json matches data_src/catalog_at.csv
+
+cd frontend
+npm run lint && npm run build && npm run test -- --run
 ```
+
+CI (`.github/workflows/ci.yml`) runs exactly these on every push and pull request to `main`; it needs no secrets.
+
+### Offline evals (real OpenAI calls, not in CI)
+
+```bash
+cd backend
+.venv/bin/python -m evals.run                # 20 scenarios from evals/cases.yaml
+.venv/bin/python -m evals.run --cases 2      # only the first 2
+.venv/bin/python -m evals.run --repeat 3     # every scenario 3 times
+```
+
+The scenarios cover shopping and menu mode, 1/3/7 days, households of 1–5, budgets €15–150, every diet, one and both stores, en/de/uk and two deliberately tight budgets. The runner calls the planner in-process (not via HTTP), one request at a time, with `OPENAI_API_KEY` from the environment or `backend/.env`, and the real catalog. A full run makes 20–40 OpenAI calls.
+
+It writes `evals/results/<timestamp>.json` (every run) and `evals/report.md`:
+- **summary:** valid output rate, first-attempt acceptance and repair rate per mode, budget adherence, diet violations, kcal-in-range rate for menus, p50/p95 latency, average cost per request;
+- **per-case table:** status, attempts, scaling, trimming, total vs budget, kcal, tokens and cost.
+
+The exit code is 1 if any plan is over budget or contains a product that breaks a requested diet. Cost uses the gpt-4o-mini price in `evals/run.py` (`PRICES_PER_M_TOKENS`).
 
 ## 📊 Performance
 

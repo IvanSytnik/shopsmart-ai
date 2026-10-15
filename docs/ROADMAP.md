@@ -49,7 +49,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 1.5 pytest suite with mocked OpenAI: happy path, invalid input, LLM invalid output → retry → 502.
 
 ## Phase 2 — Grounded pricing (2–3 days) — the core of v2
-- ⬜ 2.1 `data/catalog.json`: ~150 common products × chains (AT: Hofer, Billa, Spar, Lidl AT; DE: Aldi, Lidl, Rewe, Edeka, Kaufland) with `id, name_{en,uk,de}, category, unit, price, store, kcal_per_unit, diet_tags, price_date`. Prices are manually collected reference prices, labeled with date.
+- ✅ 2.1 `data/catalog.json` (AT v1: Billa, Hofer; Spar/Lidl in Later; built from `backend/data_src/catalog_at.csv`, see docs/CATALOG.md): ~150 common products × chains (AT: Hofer, Billa, Spar, Lidl AT; DE: Aldi, Lidl, Rewe, Edeka, Kaufland) with `id, name_{en,uk,de}, category, unit, price, store, kcal_per_unit, diet_tags, price_date`. Prices are manually collected reference prices, labeled with date.
 - ✅ 2.2 `pricing.py`: filter catalog by chosen stores + diet → pass compact candidate list to the LLM; LLM returns `[{product_id, quantity}]` + menu.
 - ✅ 2.3 Server computes line totals, list total, nutrition; if over budget → deterministic trimming (drop/reduce lowest-priority items) or one LLM repair call; final total ≤ budget guaranteed.
 - ✅ 2.4 Reject unknown `product_id`s; tests for budget enforcement and diet filtering.
@@ -63,8 +63,8 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
 
 ## Phase 4 — Quality evidence (1 day)
-- ⬜ 4.1 `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
-- ⬜ 4.2 GitHub Actions: backend lint+tests, frontend lint+build+tests on every push/PR.
+- ⬜ 4.1 (harness done; first real report pending) `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
+- ✅ 4.2 GitHub Actions: backend lint+tests, frontend lint+build+tests on every push/PR.
 
 ## Phase 5 — Ship (½–1 day)
 - ⬜ 5.1 Deploy: frontend → Cloudflare Pages, backend → Google Cloud Run (EU Tier 1 region, max-instances=1). Env vars/secrets set, health check green, OpenAI hard spend limit + GCP budget alert configured.
@@ -72,6 +72,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ⬜ 5.3 Tag `v2.0.0` release.
 
 ## Later (not MVP)
+- Catalog: Spar and Lidl AT (their sites gave no machine-readable prices for v1), German chains.
 - Price updates from public sources/scraper with freshness checks.
 - Accounts + saved plans server-side.
 - Streaming partial results.
