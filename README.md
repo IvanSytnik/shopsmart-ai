@@ -209,6 +209,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
     {
       "product_id": "at-lidl-milk-1l",
       "name": "Whole milk 3.5%",
+      "names": {"en": "Whole milk 3.5%", "uk": "Молоко 3,5%", "de": "Vollmilch 3,5%"},
       "store": "Lidl",
       "category": "dairy",
       "packs": 2,
@@ -221,6 +222,7 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
     {
       "product_id": "at-lidl-apples-1kg",
       "name": "Apples",
+      "names": {"en": "Apples", "uk": "Яблука", "de": "Äpfel"},
       "store": "Lidl",
       "category": "fruits",
       "packs": 2,
@@ -238,7 +240,13 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
   "nutrition_totals": {"kcal": 6370.0, "protein_g": 259.0, "fat_g": 89.0, "carbs_g": 1156.0},
   "kcal_per_person_day": 3185.0,
   "trimmed": [
-    {"product_id": "at-lidl-potato-chips-175g", "name": "Potato chips", "from_packs": 2, "to_packs": 0}
+    {
+      "product_id": "at-lidl-potato-chips-175g",
+      "name": "Potato chips",
+      "names": {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
+      "from_packs": 2,
+      "to_packs": 0
+    }
   ],
   "auto_added": ["at-lidl-chicken-breast-500g"],
   "menu": [
@@ -272,13 +280,14 @@ Response to the request above with the test catalog (2 of 4 items shown). The mo
 
 | Field | Meaning |
 |---|---|
+| `items[].name` / `names` | product name in the request language / in all languages (`en`, `uk`, `de`) from the catalog, so a client can switch language without a new plan |
 | `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
 | `items[].nutrition` | for all packs; `null` for non-food |
 | `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
 | `kcal_per_person_day` | `nutrition_totals.kcal / (family_size × days)`; `days` is 7 in shopping mode. Based on the purchased packs, so an upper bound of the food available, not what the menu's meals actually consume |
-| `trimmed` | lines the server cut to fit the budget, with `name` in the request language (a removed line isn't in `items`); `to_packs: 0` = removed |
+| `trimmed` | lines the server cut to fit the budget, with `name` and `names` like `items` (a removed line isn't in `items`); `to_packs: 0` = removed |
 | `auto_added` | meal ingredients the model left out of its list; the server added 1 pack each (before any trimming). Always `[]` in shopping mode |
-| `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed) |
+| `menu` | `null` in shopping mode; `ingredient_ids` refer to `items` (an ingredient may be missing if it was trimmed). Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
 | `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt; `budget_trimmed`: `trimmed` is not empty |
 | `catalog_version`, `price_date` | which reference prices were used |
 

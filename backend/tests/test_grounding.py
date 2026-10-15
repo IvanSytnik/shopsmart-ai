@@ -261,6 +261,10 @@ def test_still_over_budget_after_repair_is_trimmed_keeping_menu_ingredients(
     assert body["total"] == 8.85
     assert body["total"] <= body["budget"] == 10
     assert {i["product_id"]: i["packs"] for i in body["items"]} == {MILK: 2, APPLES: 2, RICE: 1}
+    assert [t.pop("names") for t in body["trimmed"]] == [
+        {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
+        {"en": "Chicken breast", "uk": "Куряче філе", "de": "Hähnchenbrust"},
+    ]
     assert body["trimmed"] == [
         {"product_id": CHIPS, "name": "Potato chips", "from_packs": 3, "to_packs": 0},
         {"product_id": CHICKEN, "name": "Chicken breast", "from_packs": 1, "to_packs": 0},
@@ -298,6 +302,7 @@ def test_menu_ingredients_are_reduced_only_when_nothing_else_is_left(
     assert body["trimmed"][0] == {
         "product_id": MILK,
         "name": "Whole milk 3.5%",
+        "names": {"en": "Whole milk 3.5%", "uk": "Молоко 3,5%", "de": "Vollmilch 3,5%"},
         "from_packs": 4,
         "to_packs": 3,
     }

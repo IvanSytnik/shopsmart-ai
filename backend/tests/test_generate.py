@@ -23,6 +23,7 @@ def test_shopping_happy_path(client: TestClient, fake_llm: FakeOpenAI) -> None:
     assert body["items"][0] == {
         "product_id": MILK,
         "name": "Whole milk 3.5%",
+        "names": {"en": "Whole milk 3.5%", "uk": "Молоко 3,5%", "de": "Vollmilch 3,5%"},
         "store": "Lidl",
         "category": "dairy",
         "packs": 2,

@@ -9,7 +9,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.schemas.catalog import Category, Country, DietTag, Unit
+from app.schemas.catalog import Category, Country, DietTag, LocalizedName, Unit
 
 
 class Nutrition(BaseModel):
@@ -22,6 +22,7 @@ class Nutrition(BaseModel):
 class Item(BaseModel):
     product_id: str
     name: str  # in the request language
+    names: LocalizedName  # all languages, so a client can switch language without a new plan
     store: str
     category: Category
     packs: int
@@ -37,6 +38,7 @@ class TrimmedItem(BaseModel):
 
     product_id: str
     name: str  # in the request language; removed lines aren't in `items`
+    names: LocalizedName
     from_packs: int
     to_packs: int
 

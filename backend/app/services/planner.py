@@ -351,10 +351,11 @@ def response_warnings(
     return warnings
 
 
-def product_name(catalog: ProductCatalog, product_id: str, language: str) -> str:
+def catalog_product(catalog: ProductCatalog, product_id: str) -> Product:
     product = catalog.get(product_id)
-    # Trimmed ids were priced from the catalog, so the product is always there.
-    return getattr(product.name, language) if product is not None else product_id
+    if product is None:  # trimmed ids were priced from the catalog, so this can't happen
+        raise KeyError(product_id)
+    return product
 
 
 def to_response(
@@ -365,6 +366,7 @@ def to_response(
         Item(
             product_id=line.product.id,
             name=getattr(line.product.name, request.language),
+            names=line.product.name,
             store=line.product.store,
             category=line.product.category,
             packs=line.packs,
@@ -403,7 +405,8 @@ def to_response(
         trimmed=[
             TrimmedItem(
                 product_id=c.product_id,
-                name=product_name(catalog, c.product_id, request.language),
+                name=getattr(catalog_product(catalog, c.product_id).name, request.language),
+                names=catalog_product(catalog, c.product_id).name,
                 from_packs=c.packs_before,
                 to_packs=c.packs_after,
             )
