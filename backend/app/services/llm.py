@@ -1,9 +1,13 @@
 """OpenAI access via Structured Outputs (`AsyncOpenAI` + `chat.completions.parse`)."""
 
+import logging
+from dataclasses import dataclass
 from typing import TypeVar
 
+import httpx
 import openai
 from openai import AsyncOpenAI
+from openai.types import CompletionUsage
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ValidationError
 
@@ -29,6 +33,34 @@ SCHEMA_MISMATCH = (
 
 
 M = TypeVar("M", bound=BaseModel)
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class TokenUsage:
+    """Tokens of one completion call (for evals and cost estimates)."""
+
+    prompt_tokens: int
+    completion_tokens: int
+
+
+def _usage_of(response: httpx.Response) -> CompletionUsage | None:
+    try:
+        usage = response.json().get("usage")
+        return CompletionUsage.model_validate(usage) if usage else None
+    except (ValueError, ValidationError):
+        return None
+
+
+def _record_usage(usage: CompletionUsage | None, usage_log: list[TokenUsage] | None) -> None:
+    if usage is None:
+        return
+    logger.debug(
+        "LLM usage: %d prompt + %d completion tokens", usage.prompt_tokens, usage.completion_tokens
+    )
+    if usage_log is not None:
+        usage_log.append(TokenUsage(usage.prompt_tokens, usage.completion_tokens))
 
 
 class LLMOutputError(Exception):
@@ -57,20 +89,26 @@ async def request_plan(
     settings: Settings,
     messages: list[ChatCompletionMessageParam],
     response_model: type[M],
+    usage_log: list[TokenUsage] | None = None,
 ) -> tuple[M, str | None]:
     """One completion call. Returns the reply parsed as `response_model` and its raw text.
 
-    Raises `LLMOutputError` for refusals, truncation, filtered or unparseable replies;
-    `openai.APIError` (incl. `APITimeoutError`) propagates unchanged.
+    Token usage, when the API reports it, is appended to `usage_log` (also for unusable
+    replies). Raises `LLMOutputError` for refusals, truncation, filtered or unparseable
+    replies; `openai.APIError` (incl. `APITimeoutError`) propagates unchanged.
     """
+    # The raw response gives the token usage before parsing, so it is recorded even when
+    # the reply can't be parsed. API errors are raised by this call.
+    raw = await client.chat.completions.with_raw_response.parse(
+        model=settings.openai_model,
+        messages=messages,
+        response_format=response_model,
+        temperature=settings.openai_temperature,
+        max_completion_tokens=settings.openai_max_tokens,
+    )
+    _record_usage(_usage_of(raw.http_response), usage_log)
     try:
-        completion = await client.chat.completions.parse(
-            model=settings.openai_model,
-            messages=messages,
-            response_format=response_model,
-            temperature=settings.openai_temperature,
-            max_completion_tokens=settings.openai_max_tokens,
-        )
+        completion = raw.parse()
     except openai.LengthFinishReasonError as e:
         raise LLMOutputError(TRUNCATED) from e
     except openai.ContentFilterFinishReasonError as e:

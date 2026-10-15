@@ -1,0 +1,46 @@
+# Fixed scenarios for `python -m evals.run`. Each `request` is a POST /generate body.
+# Coverage: shopping and menu; 1, 3 and 7 days; households of 1-5; budgets €15-150; every
+# diet tag; one store and both stores; en, de and uk; two deliberately tight budgets.
+cases:
+  - id: shop-en-both-2p-50
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 50, family_size: 2, language: en, mode: shopping}
+  - id: shop-de-billa-1p-30
+    request: {country: AT, supermarkets: [Billa], budget: 30, family_size: 1, language: de, mode: shopping}
+  - id: shop-uk-hofer-3p-80
+    request: {country: AT, supermarkets: [Hofer], budget: 80, family_size: 3, language: uk, mode: shopping}
+  - id: shop-en-both-4p-120-vegetarian
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 120, family_size: 4, language: en, mode: shopping, diets: [vegetarian]}
+  - id: shop-de-billa-2p-60-vegan
+    request: {country: AT, supermarkets: [Billa], budget: 60, family_size: 2, language: de, mode: shopping, diets: [vegan]}
+  - id: shop-uk-both-5p-150-gluten-free
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 150, family_size: 5, language: uk, mode: shopping, diets: [gluten_free]}
+  - id: shop-en-hofer-2p-40-lactose-free
+    request: {country: AT, supermarkets: [Hofer], budget: 40, family_size: 2, language: en, mode: shopping, diets: [lactose_free]}
+  - id: shop-en-both-3p-100-gf-lf
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 100, family_size: 3, language: en, mode: shopping, diets: [gluten_free, lactose_free]}
+  - id: tight-shop-en-both-1p-15
+    note: a week of food for one person on €15
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 15, family_size: 1, language: en, mode: shopping}
+  - id: menu-en-both-2p-1d-25
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 25, family_size: 2, language: en, mode: menu, days: 1}
+  - id: menu-de-both-2p-3d-50
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 50, family_size: 2, language: de, mode: menu, days: 3}
+  - id: menu-uk-billa-3p-3d-60
+    request: {country: AT, supermarkets: [Billa], budget: 60, family_size: 3, language: uk, mode: menu, days: 3}
+  - id: menu-en-both-4p-7d-150
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 150, family_size: 4, language: en, mode: menu, days: 7}
+  - id: menu-de-hofer-2p-1d-20
+    request: {country: AT, supermarkets: [Hofer], budget: 20, family_size: 2, language: de, mode: menu, days: 1}
+  - id: menu-uk-both-1p-7d-60-vegetarian
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 60, family_size: 1, language: uk, mode: menu, days: 7, diets: [vegetarian]}
+  - id: menu-en-billa-2p-3d-45-vegan
+    request: {country: AT, supermarkets: [Billa], budget: 45, family_size: 2, language: en, mode: menu, days: 3, diets: [vegan]}
+  - id: menu-de-both-3p-3d-70-gluten-free
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 70, family_size: 3, language: de, mode: menu, days: 3, diets: [gluten_free]}
+  - id: menu-uk-both-2p-3d-50-lactose-free
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 50, family_size: 2, language: uk, mode: menu, days: 3, diets: [lactose_free]}
+  - id: menu-de-billa-2p-7d-100-veg-lf
+    request: {country: AT, supermarkets: [Billa], budget: 100, family_size: 2, language: de, mode: menu, days: 7, diets: [vegetarian, lactose_free]}
+  - id: tight-menu-en-both-5p-3d-40
+    note: 3 days for 5 people on €40
+    request: {country: AT, supermarkets: [Billa, Hofer], budget: 40, family_size: 5, language: en, mode: menu, days: 3}

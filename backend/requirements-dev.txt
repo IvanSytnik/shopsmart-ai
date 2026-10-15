@@ -7,3 +7,6 @@ pytest-asyncio==0.23.3
 
 # Lint + format
 ruff==0.17.0
+
+# Offline evals (evals/cases.yaml)
+pyyaml==6.0.3

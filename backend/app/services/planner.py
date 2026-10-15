@@ -11,7 +11,7 @@ Flow: candidates from the catalog -> prompt -> structured reply restricted to ca
 import asyncio
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import cast
@@ -41,7 +41,7 @@ from app.schemas.responses import (
     Warning,
 )
 from app.services.catalog import ProductCatalog
-from app.services.llm import LLMOutputError, request_plan
+from app.services.llm import LLMOutputError, TokenUsage, request_plan
 from app.services.portions import (
     PORTION_BOUNDS,
     clamp_portion,
@@ -102,6 +102,7 @@ class Draft:
     menu: list[LLMDayMenu] | None  # menu mode only
     priced: PricedPlan
     required: dict[str, Decimal]  # menu mode: quantity per product in portion units; else {}
+    scaled: bool = False  # menu portions were scaled to reach the kcal range
 
 
 @dataclass(frozen=True)
@@ -111,6 +112,17 @@ class PlanResult:
     priced: PricedPlan  # after budget enforcement
     trimmed: list[BudgetChange]
     required: dict[str, Decimal]
+    scaled: bool
+
+
+@dataclass
+class PlanTrace:
+    """What `create_plan` did, for evals. Filled in even when it raises."""
+
+    attempts: int = 0  # LLM calls made
+    usage: list[TokenUsage] = field(default_factory=list)  # per call that reported usage
+    accepted_attempt: int | None = None  # the attempt whose plan was returned
+    used_fallback: bool = False  # an earlier imperfect plan was returned
 
 
 def select_candidates(catalog: ProductCatalog, request: GenerateRequest) -> list[Product]:
@@ -448,9 +460,10 @@ def menu_draft(
     read_tiny_portions_as_packs(ingredients, catalog)
     clamp_portions(ingredients, catalog)
     priced, required = price_portions(ingredients, request, catalog, allowed)
-    if normalize_kcal(ingredients, priced, required, request, catalog, settings):
+    scaled = normalize_kcal(ingredients, priced, required, request, catalog, settings)
+    if scaled:
         priced, required = price_portions(ingredients, request, catalog, allowed)
-    return Draft(plan.notes, plan.menu, priced, required), []
+    return Draft(plan.notes, plan.menu, priced, required, scaled), []
 
 
 def eaten_kcal_per_person_day(
@@ -485,7 +498,7 @@ def finish_plan(draft: Draft, request: GenerateRequest) -> PlanResult:
     trimmed, changes = enforce_budget(draft.priced, request_budget(request), set(draft.required))
     if changes:
         logger.info("Trimmed %d lines to fit the budget", len(changes))
-    return PlanResult(draft.notes, draft.menu, trimmed, changes, draft.required)
+    return PlanResult(draft.notes, draft.menu, trimmed, changes, draft.required, draft.scaled)
 
 
 async def create_plan(
@@ -494,6 +507,7 @@ async def create_plan(
     catalog: ProductCatalog,
     request: GenerateRequest,
     candidates: list[Product],
+    trace: PlanTrace | None = None,
 ) -> PlanResult:
     """Ask for a plan; on an unusable reply, retry once with a message saying what was wrong.
 
@@ -503,8 +517,10 @@ async def create_plan(
 
     All attempts share one deadline (`settings.request_deadline_s`). Raises `TimeoutError`
     when it passes, or when too little of it is left for the repair attempt, and
-    `LLMOutputError` if no attempt produced a usable plan.
+    `LLMOutputError` if no attempt produced a usable plan. `trace`, if given, records the
+    attempts and token usage.
     """
+    trace = trace if trace is not None else PlanTrace()
     offered = offered_candidates(candidates, request)
     allowed = {p.id for p in offered}
     plan_model = build_plan_model(
@@ -520,7 +536,10 @@ async def create_plan(
     async with asyncio.timeout_at(deadline):
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
-                parsed, raw_reply = await request_plan(client, settings, messages, plan_model)
+                trace.attempts = attempt
+                parsed, raw_reply = await request_plan(
+                    client, settings, messages, plan_model, trace.usage
+                )
                 if request.mode == "menu":
                     draft, problems = menu_draft(
                         cast(LLMMenuPlan, parsed), request, catalog, allowed, settings
@@ -533,6 +552,7 @@ async def create_plan(
                     problems = draft_problems(draft, request, settings)
                     if not problems:
                         logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
+                        trace.accepted_attempt = attempt
                         return finish_plan(draft, request)
                     fallback = draft
                 raise LLMOutputError(" ".join(problems), assistant_reply=raw_reply)
@@ -542,6 +562,7 @@ async def create_plan(
                 last = attempt == MAX_ATTEMPTS
                 if fallback is not None and (last or remaining < settings.repair_min_remaining_s):
                     logger.info("Using the imperfect plan from an earlier attempt")
+                    trace.used_fallback = True
                     return finish_plan(fallback, request)
                 if last:
                     raise
