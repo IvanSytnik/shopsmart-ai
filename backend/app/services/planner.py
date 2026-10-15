@@ -542,11 +542,18 @@ def draft_problems(draft: Draft, request: GenerateRequest, settings: Settings) -
     """Checks on a priced plan. A plan failing only these is still usable, after trimming."""
     problems = []
     budget = request_budget(request)
+    total = draft.priced.total
+    # A small overshoot is cheaper and more predictable to trim than to repair: repairs
+    # often don't converge and cost another LLM round trip.
+    trim_limit = round_money(budget * (1 + Decimal(str(settings.trim_tolerance))))
+    overshoot = total > trim_limit
+    if budget < total <= trim_limit:
+        logger.info("Plan is €%s over budget, within tolerance: trimming", total - budget)
     if request.mode == "shopping":
-        if draft.priced.total > budget:
-            problems.append(overshoot_problem(draft.priced.total, budget))
+        if overshoot:
+            problems.append(overshoot_problem(total, budget))
         return problems
-    if draft.priced.total > budget:
+    if overshoot:
         problems.append(menu_overshoot_problem(draft.priced, budget, request.language))
     kcal = eaten_kcal_per_person_day(draft.priced, draft.required, request)
     if kcal < settings.min_kcal_per_person_day:
