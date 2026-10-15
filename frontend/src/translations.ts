@@ -3,7 +3,7 @@ export type Language = 'en' | 'uk' | 'de';
 export const translations = {
   en: {
     appName: 'ShopSmart AI',
-    appDescription: 'Your intelligent shopping assistant powered by GPT-4',
+    appDescription: 'AI meal & shopping planner with real store prices',
     selectSupermarkets: 'Select Supermarkets',
     weeklyBudget: 'Weekly Budget',
     familySize: 'Family Size',
@@ -57,7 +57,7 @@ export const translations = {
     errorGenerationFailed: 'Could not generate a plan. Please try again.',
     errorValidation: 'Some of the entered values are invalid. Please check the form.',
     builtWith: 'Built with',
-    using: 'using React, TypeScript, FastAPI & GPT-4',
+    using: 'using React, TypeScript, FastAPI & OpenAI',
     diplomaProject: 'Diploma Project by Ivan Sytnik (KH-M524)',
     supervisor: 'Supervisor: Kharchenko A.O.',
     university: 'NTU "KhPI"',
@@ -135,7 +135,7 @@ export const translations = {
 
   uk: {
     appName: 'ShopSmart AI',
-    appDescription: 'Ваш розумний помічник для покупок на базі GPT-4',
+    appDescription: 'ШІ-планувальник меню та покупок з реальними цінами магазинів',
     selectSupermarkets: 'Оберіть супермаркети',
     weeklyBudget: 'Тижневий бюджет',
     familySize: "Розмір сім'ї",
@@ -188,7 +188,7 @@ export const translations = {
     errorGenerationFailed: 'Не вдалося створити план. Спробуйте ще раз.',
     errorValidation: 'Деякі введені значення некоректні. Перевірте форму.',
     builtWith: 'Створено з',
-    using: 'за допомогою React, TypeScript, FastAPI та GPT-4',
+    using: 'за допомогою React, TypeScript, FastAPI та OpenAI',
     diplomaProject: 'Дипломний проект Івана Ситніка (КН-М524)',
     supervisor: 'Керівник: Харченко А.О.',
     university: 'НТУ "ХПІ"',
@@ -264,7 +264,7 @@ export const translations = {
 
   de: {
     appName: 'ShopSmart AI',
-    appDescription: 'Ihr intelligenter Einkaufsassistent mit GPT-4',
+    appDescription: 'KI-Menü- und Einkaufsplaner mit echten Supermarktpreisen',
     selectSupermarkets: 'Supermärkte auswählen',
     weeklyBudget: 'Wochenbudget',
     familySize: 'Familiengröße',
@@ -320,7 +320,7 @@ export const translations = {
     errorGenerationFailed: 'Der Plan konnte nicht erstellt werden. Bitte versuchen Sie es erneut.',
     errorValidation: 'Einige Eingaben sind ungültig. Bitte überprüfen Sie das Formular.',
     builtWith: 'Erstellt mit',
-    using: 'mit React, TypeScript, FastAPI & GPT-4',
+    using: 'mit React, TypeScript, FastAPI & OpenAI',
     diplomaProject: 'Diplomprojekt von Ivan Sytnik (KH-M524)',
     supervisor: 'Betreuer: Kharchenko A.O.',
     university: 'NTU "KhPI"',

@@ -114,6 +114,17 @@ describe('ShopForm', () => {
     await waitFor(() => expect(submitButton()).toHaveProperty('disabled', false));
   });
 
+  it('labels the budget per mode', async () => {
+    mockFetch();
+    const user = userEvent.setup();
+    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+
+    expect(screen.getByLabelText(/Weekly Budget/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
+    expect(screen.queryByLabelText(/Weekly Budget/)).toBeNull();
+    expect(screen.getByLabelText(/^💰 Budget$/)).toBeTruthy();
+  });
+
   it('allows at most five stores', async () => {
     const stores = ['A', 'B', 'C', 'D', 'E', 'F'];
     mockFetch({ ...META, countries: { AT: stores, DE: [] } });

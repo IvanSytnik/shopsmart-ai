@@ -14,6 +14,18 @@ async function submitForm() {
 }
 
 describe('App', () => {
+  it('shows the subtitle and footer credit without model names', async () => {
+    mockFetch();
+    render(<App />);
+    await screen.findByRole('button', { name: 'Lidl' });
+
+    expect(screen.getByText('AI meal & shopping planner with real store prices')).toBeTruthy();
+    const footer = screen.getByRole('contentinfo').textContent ?? '';
+    expect(footer).toContain('© 2025–2026');
+    expect(footer).toContain('NTU "KhPI"');
+    expect(document.body.textContent).not.toContain('GPT-4');
+  });
+
   it.each([
     ['unknown_store', 422, 'A selected store is not available for this country.'],
     ['not_enough_products', 422, 'Too few products match these stores and diets.'],

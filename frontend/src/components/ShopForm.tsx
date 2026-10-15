@@ -223,7 +223,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
       {/* Budget */}
       <div>
         <label className={labelClass} htmlFor="budget">
-          💰 {t('weeklyBudget')}
+          💰 {mode === 'menu' ? t('budget') : t('weeklyBudget')}
         </label>
         <div className="flex flex-wrap gap-2 mb-3">
           {BUDGET_PRESETS.map(preset => (

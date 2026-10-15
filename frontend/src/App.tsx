@@ -96,7 +96,7 @@ const AppContent: React.FC = () => {
             {t('builtWith')} ❤️ {t('using')}
           </p>
           <p className="mt-1">
-            {t('appName')} © 2025 | {t('diplomaProject')}
+            {t('appName')} © 2025–2026 | {t('diplomaProject')}
           </p>
           <p>
             {t('supervisor')} | {t('university')}
