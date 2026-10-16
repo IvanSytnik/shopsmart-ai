@@ -145,6 +145,18 @@ docker run -p 80:80 shopsmart-frontend
 The backend image listens on `$PORT` (default `8000`; Cloud Run sets it) and runs uvicorn with `--proxy-headers`, e.g. `docker run -p 9000:9000 -e PORT=9000 ...`.
 The frontend image's nginx sends `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY` and a Content-Security-Policy (`frontend/security-headers.conf`) whose `connect-src` allows the origin of the `VITE_API_URL` build arg.
 
+## ☁️ Deployment
+
+Production runs the backend on **Google Cloud Run** (`europe-west1`, max one instance, OpenAI key in Secret Manager) and the frontend on **Cloudflare Pages**, built from GitHub. Step-by-step setup (OpenAI and GCP limits, secrets, Pages, custom domain, CORS, logs, rollback): [deploy/README.md](deploy/README.md).
+
+```bash
+PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik.app ./deploy/deploy_backend.sh
+PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik.app,https://shopsmart-ai.pages.dev ./deploy/update_cors.sh
+./deploy/smoke.sh <api_url> <frontend_url>   # one real /generate call
+```
+
+`npm run build` also writes `frontend/public/_headers` (Cloudflare Pages headers, generated from `security-headers.conf` with the `VITE_API_URL` origin in the CSP; falls back to `http://localhost:8000`).
+
 ## 📖 API Documentation
 
 ### Generate a plan
