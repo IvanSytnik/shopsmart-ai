@@ -8,3 +8,6 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
+
+# Generated at build time by frontend/scripts/gen-headers.mjs
+frontend/public/_headers
