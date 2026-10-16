@@ -59,7 +59,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 3.1 Country switch AT/DE → store list from `/api/catalog/meta`.
 - ✅ 3.2 Show "reference prices as of <date>", per-store subtotals, budget bar (used/remaining).
 - ✅ 3.3 Align `types.ts` with new response; remove dead fields.
-- ⬜ 3.4 Share link: result compressed into URL fragment (`/l#<payload>`) → read-only "snapshot" view; no backend storage. History stays in localStorage.
+- ✅ 3.4 Share via URL: result compressed with lz-string into the URL fragment (`/#/plan/<payload>`, payload `v: 2`) → read-only view with "Create your own"; links over 8000 chars are refused (copy/print instead); no backend storage. History stays in localStorage. Short links with DB in Later.
 - ✅ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
 
 ## Phase 4 — Quality evidence (1 day)
