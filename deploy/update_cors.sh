@@ -2,7 +2,7 @@
 # Changes only CORS_ORIGINS on the running Cloud Run service (creates a new revision;
 # other env vars and the secret are kept).
 #
-#   PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik.app,https://shopsmart-ai.pages.dev \
+#   PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik-studio.com,https://shopsmart-ai.pages.dev \
 #     ./deploy/update_cors.sh
 #
 # Env: PROJECT_ID (required), CORS_ORIGINS (required, comma-separated),

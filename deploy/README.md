@@ -1,6 +1,6 @@
 # Deployment
 
-Backend → **Google Cloud Run** (`europe-west1`, one instance), frontend → **Cloudflare Pages** (built from GitHub), at `https://shopsmart.sytnik.app`.
+Backend → **Google Cloud Run** (`europe-west1`, one instance), frontend → **Cloudflare Pages** (built from GitHub), at `https://shopsmart.sytnik-studio.com`.
 
 | Piece | Where | Config |
 |---|---|---|
@@ -100,7 +100,7 @@ gcloud secrets add-iam-policy-binding openai-api-key \
 The frontend URL doesn't exist yet; start with the planned domain and fix it in step 10.
 
 ```bash
-CORS_ORIGINS=https://shopsmart.sytnik.app ./deploy/deploy_backend.sh
+CORS_ORIGINS=https://shopsmart.sytnik-studio.com ./deploy/deploy_backend.sh
 ```
 
 - The first `--source` deploy asks to create the Artifact Registry repo `cloud-run-source-deploy` in the region: answer **Y**.
@@ -140,17 +140,16 @@ What the script sets: `ENVIRONMENT=production` (no `/docs`), `RATE_LIMIT=10/minu
 
 `public/_redirects` (`/* /index.html 200`) serves the app for any path. Shared plans use the URL fragment (`/#/plan/…`), which never reaches the server, so this is only a fallback for mistyped paths.
 
-## 9. Custom domain `shopsmart.sytnik.app`
+## 9. Custom domain `shopsmart.sytnik-studio.com`
 
-Pages project → **Custom domains → Set up a custom domain** → `shopsmart.sytnik.app`.
+Pages project → **Custom domains → Set up a custom domain** → `shopsmart.sytnik-studio.com`.
 
-- If `sytnik.app` uses Cloudflare DNS, Cloudflare adds the record itself.
-- Otherwise add at your DNS provider: `CNAME shopsmart → <project>.pages.dev`, then wait for the domain to show **Active** (certificate issued; `.app` is HTTPS-only, so it won't load before that).
+DNS for `sytnik-studio.com` is on Cloudflare, so the `CNAME` record is created automatically.
 
 ## 10. Point CORS at the real origins
 
 ```bash
-CORS_ORIGINS=https://shopsmart.sytnik.app,https://<project>.pages.dev ./deploy/update_cors.sh
+CORS_ORIGINS=https://shopsmart.sytnik-studio.com,https://<project>.pages.dev ./deploy/update_cors.sh
 ```
 
 Only exact origins work (no wildcards), so preview deployments (`https://<hash>.<project>.pages.dev`) can't call the API unless you add their origin too.
@@ -159,7 +158,7 @@ Only exact origins work (no wildcards), so preview deployments (`https://<hash>.
 
 ```bash
 API_URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format 'value(status.url)')"
-./deploy/smoke.sh "$API_URL" https://shopsmart.sytnik.app
+./deploy/smoke.sh "$API_URL" https://shopsmart.sytnik-studio.com
 ```
 
 Checks `/health` (status and `catalog_version`), `/api/catalog/meta` lists Billa and Hofer, one real shopping-list `/generate` (Billa + Hofer, €40, 2 people) stays within budget, the CORS preflight from the frontend origin is allowed, `/` and `/#/plan/x` return 200, and the frontend sends `X-Content-Type-Options: nosniff`. Exits non-zero if anything fails. Each run uses one OpenAI call and one unit of the daily cap.

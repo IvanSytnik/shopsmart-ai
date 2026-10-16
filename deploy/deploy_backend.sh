@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds backend/ with Cloud Build and deploys it to Cloud Run. See deploy/README.md.
 #
-#   PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik.app ./deploy/deploy_backend.sh
+#   PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik-studio.com ./deploy/deploy_backend.sh
 #
 # Env: PROJECT_ID (required), CORS_ORIGINS (required, comma-separated),
 #      REGION (default europe-west1), SERVICE (default shopsmart-api).

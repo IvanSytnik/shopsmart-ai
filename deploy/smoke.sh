@@ -2,7 +2,7 @@
 # Smoke test of a deployed stack. Makes one real /generate call (one OpenAI request,
 # counts against RATE_LIMIT and DAILY_GENERATE_CAP).
 #
-#   ./deploy/smoke.sh https://shopsmart-api-xxxx.europe-west1.run.app https://shopsmart.sytnik.app
+#   ./deploy/smoke.sh https://shopsmart-api-xxxx.europe-west1.run.app https://shopsmart.sytnik-studio.com
 #
 # Needs curl and python3. Exits non-zero if any check fails.
 set -euo pipefail
