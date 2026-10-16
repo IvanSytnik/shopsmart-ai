@@ -1,4 +1,9 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from fastapi import APIRouter, Depends
+
+from app.api.deps import get_catalog
+from app.services.catalog import ProductCatalog
 
 router = APIRouter()
 
@@ -9,5 +14,5 @@ def root() -> dict[str, str]:
 
 
 @router.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "healthy"}
+def health(catalog: Annotated[ProductCatalog, Depends(get_catalog)]) -> dict[str, str]:
+    return {"status": "healthy", "catalog_version": catalog.catalog.version}

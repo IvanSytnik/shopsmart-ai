@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import catalog, generate, health
 from app.config import Settings
 from app.errors import register_error_handlers
+from app.security import SecurityHeadersMiddleware
 from app.services.catalog import load_catalog
 from app.services.limits import DailyCap, configure_rate_limit, limiter
 from app.services.llm import create_llm_client
@@ -22,7 +23,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
-    app = FastAPI(title="ShopSmart AI API", version="1.0.0", lifespan=lifespan)
+    # No interactive docs or schema in production: less surface for a public endpoint.
+    docs = settings.environment != "production"
+    app = FastAPI(
+        title="ShopSmart AI API",
+        version="1.0.0",
+        lifespan=lifespan,
+        docs_url="/docs" if docs else None,
+        redoc_url="/redoc" if docs else None,
+        openapi_url="/openapi.json" if docs else None,
+    )
     app.state.settings = settings
     app.state.catalog = load_catalog(settings.catalog_path)  # fails fast on a bad file
     app.state.llm_client = create_llm_client(settings)
@@ -38,6 +48,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # Added last = outermost, so CORS preflights and error responses get the headers too.
+    app.add_middleware(SecurityHeadersMiddleware)
 
     app.include_router(health.router)
     app.include_router(generate.router)

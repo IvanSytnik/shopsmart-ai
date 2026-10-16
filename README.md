@@ -109,7 +109,7 @@ npm run test -- --run
 
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+- API Documentation: http://localhost:8000/docs (only when `ENVIRONMENT=development`)
 
 ## 🐳 Docker Deployment
 
@@ -336,7 +336,7 @@ GET /api/catalog/meta
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | API information |
-| GET | `/health` | Health check |
+| GET | `/health` | Health check: `{"status": "healthy", "catalog_version": "..."}` |
 | GET | `/api/catalog/meta` | Stores per country, diet tags, categories, price date |
 | POST | `/generate` | Generate a shopping list or menu |
 
@@ -408,7 +408,7 @@ MAX_SCHEMA_ENUM_VALUES=500                 # default; above it product ids aren'
 CORS_ORIGINS=http://localhost:3000         # comma-separated; "*" is rejected
 RATE_LIMIT=10/minute                       # default; per client IP on POST /generate
 DAILY_GENERATE_CAP=200                     # default; POST /generate calls per UTC day
-ENVIRONMENT=development                    # development | production
+ENVIRONMENT=development                    # development | production (production disables /docs, /redoc, /openapi.json)
 FORWARDED_ALLOW_IPS=127.0.0.1              # read by uvicorn; proxies trusted for X-Forwarded-For
 ```
 
