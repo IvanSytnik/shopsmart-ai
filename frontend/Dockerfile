@@ -25,6 +25,12 @@ FROM nginx:alpine
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Security headers; the CSP lets the app call the backend at VITE_API_URL's origin.
+ARG VITE_API_URL
+COPY security-headers.conf /etc/nginx/security-headers.conf
+RUN api_origin=$(printf '%s' "$VITE_API_URL" | sed -E 's#^([a-zA-Z]+://[^/]+).*#\1#') && \
+    sed -i "s#__API_ORIGIN__#${api_origin}#" /etc/nginx/security-headers.conf
+
 # Copy built files
 COPY --from=builder /app/dist /usr/share/nginx/html
 

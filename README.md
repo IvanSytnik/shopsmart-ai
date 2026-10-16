@@ -143,6 +143,7 @@ docker run -p 80:80 shopsmart-frontend
 ```
 
 The backend image listens on `$PORT` (default `8000`; Cloud Run sets it) and runs uvicorn with `--proxy-headers`, e.g. `docker run -p 9000:9000 -e PORT=9000 ...`.
+The frontend image's nginx sends `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY` and a Content-Security-Policy (`frontend/security-headers.conf`) whose `connect-src` allows the origin of the `VITE_API_URL` build arg.
 
 ## 📖 API Documentation
 
