@@ -26,6 +26,7 @@ ShopSmart AI is a web application that generates optimized weekly shopping lists
 - ⚠️ **Honest results** - Notices when products were trimmed to fit the budget or a menu is short on food
 - ✅ **Progress tracking** - Check off items as you shop
 - 📋 **Export options** - Copy to clipboard or print
+- 🔗 **Share via link** - The whole plan is compressed into the URL fragment (`/#/plan/<data>`) and opens read-only; nothing is stored on the server
 
 ## 🛠 Tech Stack
 
@@ -370,6 +371,7 @@ shopsmart-ai/
 │   │   ├── App.tsx         # Main component
 │   │   ├── api.ts          # API client (typed ApiError with `code`)
 │   │   ├── history.ts      # localStorage history ("shopsmart-history-v2")
+│   │   ├── share.ts        # share links: plan ↔ lz-string URL fragment
 │   │   ├── types.ts        # mirrors backend schemas
 │   │   ├── constants.ts    # Constants
 │   │   └── index.css       # Global styles

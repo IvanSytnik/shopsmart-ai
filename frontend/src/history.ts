@@ -15,23 +15,22 @@ export interface SavedPlan {
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
 
-// A light shape check: enough to render a saved plan without crashing.
-const isSavedPlan = (value: unknown): value is SavedPlan => {
-  if (!isObject(value) || typeof value.id !== 'string' || typeof value.savedAt !== 'string') {
-    return false;
-  }
-  const response = value.response;
-  return (
-    isObject(response) &&
-    Array.isArray(response.items) &&
-    Array.isArray(response.trimmed) &&
-    Array.isArray(response.warnings) &&
-    isObject(response.subtotals_by_store) &&
-    typeof response.total === 'number' &&
-    typeof response.budget === 'number' &&
-    (response.menu === null || Array.isArray(response.menu))
-  );
-};
+// A light shape check: enough to render a stored or shared plan without crashing.
+export const isGenerateResponse = (response: unknown): response is GenerateResponse =>
+  isObject(response) &&
+  Array.isArray(response.items) &&
+  Array.isArray(response.trimmed) &&
+  Array.isArray(response.warnings) &&
+  isObject(response.subtotals_by_store) &&
+  typeof response.total === 'number' &&
+  typeof response.budget === 'number' &&
+  (response.menu === null || Array.isArray(response.menu));
+
+const isSavedPlan = (value: unknown): value is SavedPlan =>
+  isObject(value) &&
+  typeof value.id === 'string' &&
+  typeof value.savedAt === 'string' &&
+  isGenerateResponse(value.response);
 
 // Storage can throw (private mode, quota, disabled); history is a convenience, so ignore it.
 function readStorage(key: string): string | null {

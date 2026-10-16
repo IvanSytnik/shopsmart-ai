@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import App from '../App';
 import { HISTORY_KEY } from '../history';
+import { SHARE_HASH_PREFIX, encodePlan } from '../share';
 import { SHOPPING, mockFetch } from '../test/fixtures';
 
 // Lidl and Penny are preselected.
@@ -14,6 +15,10 @@ async function submitForm() {
 }
 
 describe('App', () => {
+  afterEach(() => {
+    window.history.replaceState(null, '', '/');
+  });
+
   it('shows the subtitle and footer credit without model names', async () => {
     mockFetch();
     render(<App />);
@@ -102,5 +107,36 @@ describe('App', () => {
 
     expect(screen.getByText('No saved lists yet')).toBeTruthy();
     expect(localStorage.getItem('shopsmart-history')).toBeNull();
+  });
+
+  it('opens a shared plan read-only and leaves it with "Create your own"', async () => {
+    window.history.replaceState(null, '', `/${SHARE_HASH_PREFIX}${encodePlan(SHOPPING)}`);
+    mockFetch();
+    render(<App />);
+
+    expect(screen.getByText(/Shared plan \(read-only\)/)).toBeTruthy();
+    expect(screen.getByTestId('total').textContent).toBe('€8.85');
+    expect(screen.queryByRole('button', { name: /Generate Shopping List/ })).toBeNull();
+    expect(localStorage.getItem(HISTORY_KEY)).toBeNull(); // not saved to the viewer's history
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /Create your own/ }));
+
+    expect(await screen.findByRole('button', { name: /Generate Shopping List/ })).toBeTruthy();
+    expect(screen.queryByTestId('total')).toBeNull();
+    expect(window.location.hash).toBe('');
+  });
+
+  it('explains an invalid share link and offers the form', async () => {
+    window.history.replaceState(null, '', `/${SHARE_HASH_PREFIX}broken`);
+    mockFetch();
+    render(<App />);
+
+    expect(screen.getByRole('alert').textContent).toContain('This share link is invalid');
+    expect(screen.queryByRole('button', { name: /Generate Shopping List/ })).toBeNull();
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /Create your own/ }));
+    expect(await screen.findByRole('button', { name: /Generate Shopping List/ })).toBeTruthy();
   });
 });

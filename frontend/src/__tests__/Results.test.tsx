@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { LanguageSelector, Results } from '../components';
+import { MAX_SHARE_URL_LENGTH, parseShareHash } from '../share';
 import { MENU, SHOPPING } from '../test/fixtures';
 import { renderWithLanguage } from '../test/render';
 
@@ -159,5 +160,40 @@ describe('Results', () => {
     renderWithLanguage(<Results response={old} onReset={vi.fn()} />, 'de');
 
     expect(screen.getByText('Whole milk 3.5%')).toBeTruthy();
+  });
+
+  it('copies a share link that opens the same plan', async () => {
+    const user = userEvent.setup(); // installs a clipboard stub
+    renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />);
+
+    await user.click(screen.getByRole('button', { name: /Share/ }));
+
+    expect(await screen.findByText('Link copied to clipboard.')).toBeTruthy();
+    const url = new URL(await navigator.clipboard.readText());
+    expect(parseShareHash(url.hash)).toEqual({ kind: 'plan', plan: MENU });
+  });
+
+  it('suggests copy or print when the plan is too large to share', async () => {
+    const user = userEvent.setup();
+    const notes = Array.from({ length: MAX_SHARE_URL_LENGTH }, (_, i) =>
+      String.fromCharCode(0x4e00 + ((i * 7919) % 20000))
+    ).join('');
+    renderWithLanguage(<Results response={{ ...SHOPPING, notes }} onReset={vi.fn()} />);
+    const writeText = vi.spyOn(navigator.clipboard, 'writeText');
+
+    await user.click(screen.getByRole('button', { name: /Share/ }));
+
+    expect((await screen.findByRole('status')).textContent).toContain('too large to share');
+    expect(writeText).not.toHaveBeenCalled();
+  });
+
+  it('has no Share button for a shared plan and offers to create your own', async () => {
+    const user = userEvent.setup();
+    const onReset = vi.fn();
+    renderWithLanguage(<Results response={SHOPPING} onReset={onReset} shared />);
+
+    expect(screen.queryByRole('button', { name: /Share/ })).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Create your own/ }));
+    expect(onReset).toHaveBeenCalledOnce();
   });
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ShopForm,
   Results,
@@ -12,6 +12,7 @@ import { LanguageProvider, useLanguage } from './LanguageContext';
 import { ThemeProvider } from './ThemeContext';
 import { ApiError, ErrorCode, generate } from './api';
 import { saveToHistory } from './history';
+import { SharedPlan, parseShareHash } from './share';
 import { GenerateRequest, GenerateResponse } from './types';
 
 const AppContent: React.FC = () => {
@@ -20,7 +21,20 @@ const AppContent: React.FC = () => {
   const [error, setError] = useState<ErrorCode | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isMenuMode, setIsMenuMode] = useState(false);
+  const [shared, setShared] = useState<SharedPlan>(() => parseShareHash(window.location.hash));
   const { t } = useLanguage();
+
+  // A share link pasted into an open tab only changes the hash.
+  useEffect(() => {
+    const onHashChange = () => setShared(parseShareHash(window.location.hash));
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  const leaveShared = () => {
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    setShared({ kind: 'none' });
+  };
 
   const handleGenerate = async (input: GenerateRequest) => {
     setLoading(true);
@@ -43,6 +57,7 @@ const AppContent: React.FC = () => {
   };
 
   const handleLoadFromHistory = (savedResponse: GenerateResponse) => {
+    leaveShared();
     setError(null);
     setResponse(savedResponse);
   };
@@ -78,14 +93,39 @@ const AppContent: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400">{t('appDescription')}</p>
         </header>
 
-        {error && (
+        {shared.kind === 'plan' && (
+          <>
+            <p className="mb-4 text-center text-sm font-medium text-gray-600 dark:text-gray-400">
+              🔗 {t('sharedPlan')}
+            </p>
+            <Results response={shared.plan} onReset={leaveShared} shared />
+          </>
+        )}
+        {shared.kind === 'invalid' && (
+          <div
+            role="alert"
+            className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 text-center animate-fade-in"
+          >
+            <p className="text-amber-800 dark:text-amber-300 mb-4">{t('sharedInvalid')}</p>
+            <button
+              onClick={leaveShared}
+              className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all"
+            >
+              ✨ {t('createYourOwn')}
+            </button>
+          </div>
+        )}
+
+        {shared.kind === 'none' && error && (
           <ErrorBanner code={error} onDismiss={() => setError(null)} onRetry={handleReset} />
         )}
 
-        {loading && <LoadingSpinner isMenu={isMenuMode} />}
-        {!loading && response && <Results response={response} onReset={handleReset} />}
+        {shared.kind === 'none' && loading && <LoadingSpinner isMenu={isMenuMode} />}
+        {shared.kind === 'none' && !loading && response && (
+          <Results response={response} onReset={handleReset} />
+        )}
         {/* Kept mounted while loading so the user's choices survive an error. */}
-        {!response && (
+        {shared.kind === 'none' && !response && (
           <div className={loading ? 'hidden' : undefined}>
             <ShopForm onSubmit={handleGenerate} />
           </div>

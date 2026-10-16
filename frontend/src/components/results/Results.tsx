@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { GenerateResponse } from '../../types';
 import { useLanguage } from '../../LanguageContext';
+import { buildShareLink } from '../../share';
+import type { TranslationKey } from '../../translations';
 import { MealPlan } from '../MealPlan';
 import { ShoppingList } from '../ShoppingList';
 import { ResultSummary } from './ResultSummary';
@@ -10,15 +12,33 @@ import { shoppingListText } from './exportText';
 interface ResultsProps {
   response: GenerateResponse;
   onReset: () => void;
+  // A plan opened from a share link: no Share button, reset becomes "Create your own".
+  shared?: boolean;
 }
 
-export const Results: React.FC<ResultsProps> = ({ response, onReset }) => {
+export const Results: React.FC<ResultsProps> = ({ response, onReset, shared = false }) => {
   const { t, language } = useLanguage();
   const [tab, setTab] = useState<'menu' | 'products'>('menu');
+  const [shareStatus, setShareStatus] = useState<TranslationKey | null>(null);
   const menu = response.menu;
 
   const copyToClipboard = () => {
     navigator.clipboard?.writeText(shoppingListText(response, language, t)).catch(() => undefined);
+  };
+
+  const share = async () => {
+    const link = buildShareLink(response);
+    if (!link.ok) {
+      setShareStatus('shareTooLarge');
+      return;
+    }
+    try {
+      if (!navigator.clipboard) throw new Error('clipboard unavailable');
+      await navigator.clipboard.writeText(link.url);
+      setShareStatus('shareCopied');
+    } catch {
+      setShareStatus('shareFailed');
+    }
   };
 
   const tabClass = (active: boolean) =>
@@ -84,13 +104,30 @@ export const Results: React.FC<ResultsProps> = ({ response, onReset }) => {
         <button onClick={() => window.print()} className={actionClass}>
           🖨️ {t('print')}
         </button>
+        {!shared && (
+          <button onClick={share} className={actionClass}>
+            🔗 {t('share')}
+          </button>
+        )}
         <button
           onClick={onReset}
           className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all"
         >
-          ✨ {t('newList')}
+          ✨ {t(shared ? 'createYourOwn' : 'newList')}
         </button>
       </div>
+      {shareStatus && (
+        <p
+          role="status"
+          className={`text-sm text-center no-print ${
+            shareStatus === 'shareCopied'
+              ? 'text-green-700 dark:text-green-400'
+              : 'text-amber-700 dark:text-amber-400'
+          }`}
+        >
+          {t(shareStatus)}
+        </p>
+      )}
     </div>
   );
 };

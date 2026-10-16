@@ -134,6 +134,15 @@ export const translations = {
     errorNotEnoughProducts:
       'Too few products match these stores and diets. Add another store, or remove a diet.',
     errorNetwork: 'Cannot reach the server. Check your connection and try again.',
+    // Share link
+    share: 'Share',
+    shareCopied: 'Link copied to clipboard.',
+    shareTooLarge:
+      'This plan is too large to share as a link. Use Copy to Clipboard or Print instead.',
+    shareFailed: 'Could not copy the link.',
+    sharedPlan: 'Shared plan (read-only)',
+    createYourOwn: 'Create your own',
+    sharedInvalid: 'This share link is invalid or was made by an older version of the app.',
   },
 
   uk: {
@@ -266,6 +275,15 @@ export const translations = {
     errorNotEnoughProducts:
       'Замало продуктів для цих магазинів і дієт. Додайте ще один магазин або приберіть дієту.',
     errorNetwork: 'Не вдалося зʼєднатися з сервером. Перевірте зʼєднання та спробуйте ще раз.',
+    // Share link
+    share: 'Поділитися',
+    shareCopied: 'Посилання скопійовано.',
+    shareTooLarge:
+      'Цей план завеликий для посилання. Скористайтеся кнопкою «Копіювати» або «Друк».',
+    shareFailed: 'Не вдалося скопіювати посилання.',
+    sharedPlan: 'Спільний план (лише перегляд)',
+    createYourOwn: 'Створити власний',
+    sharedInvalid: 'Це посилання недійсне або створене старішою версією застосунку.',
   },
 
   de: {
@@ -404,6 +422,15 @@ export const translations = {
       'Zu wenige Produkte für diese Geschäfte und Ernährungsformen. Fügen Sie ein weiteres Geschäft hinzu oder entfernen Sie eine Ernährungsform.',
     errorNetwork:
       'Der Server ist nicht erreichbar. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    // Share link
+    share: 'Teilen',
+    shareCopied: 'Link in die Zwischenablage kopiert.',
+    shareTooLarge:
+      'Dieser Plan ist zu groß für einen Link. Bitte stattdessen kopieren oder drucken.',
+    shareFailed: 'Der Link konnte nicht kopiert werden.',
+    sharedPlan: 'Geteilter Plan (nur lesen)',
+    createYourOwn: 'Eigenen erstellen',
+    sharedInvalid: 'Dieser Link ist ungültig oder stammt von einer älteren App-Version.',
   },
 };
 
