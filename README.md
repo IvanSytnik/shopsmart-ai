@@ -142,6 +142,8 @@ docker build --build-arg VITE_API_URL=http://localhost:8000 -t shopsmart-fronten
 docker run -p 80:80 shopsmart-frontend
 ```
 
+The backend image listens on `$PORT` (default `8000`; Cloud Run sets it) and runs uvicorn with `--proxy-headers`, e.g. `docker run -p 9000:9000 -e PORT=9000 ...`.
+
 ## 📖 API Documentation
 
 ### Generate a plan
