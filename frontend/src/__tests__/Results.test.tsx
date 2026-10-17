@@ -75,6 +75,20 @@ describe('Results', () => {
     expect(changes).toEqual(['Potato chips: removed', 'Apples: reduced 3→2']);
   });
 
+  it('shows shopping-mode low_kcal and kcal_topped_up notices', () => {
+    renderWithLanguage(
+      <Results
+        response={{ ...SHOPPING, warnings: ['low_kcal', 'kcal_topped_up'] }}
+        onReset={vi.fn()}
+      />
+    );
+
+    const [lowKcal, toppedUp] = screen.getAllByRole('status');
+    expect(lowKcal.textContent).toContain('This list buys less food');
+    expect(lowKcal.textContent).toContain('≈ 416 kcal per person/day');
+    expect(toppedUp.textContent).toContain('We added filling staples');
+  });
+
   it('strikes through a menu ingredient that was removed for the budget', async () => {
     const user = userEvent.setup();
     renderWithLanguage(<Results response={MENU} onReset={vi.fn()} />);

@@ -89,7 +89,7 @@ export interface DayMenu {
   snack: Meal | null;
 }
 
-export type ResponseWarning = 'low_kcal' | 'budget_trimmed';
+export type ResponseWarning = 'low_kcal' | 'budget_trimmed' | 'kcal_topped_up';
 // menu: what the menu's portions provide; purchased: all purchased packs (an upper bound).
 export type KcalBasis = 'menu' | 'purchased';
 

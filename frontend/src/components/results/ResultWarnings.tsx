@@ -19,7 +19,14 @@ export const ResultWarnings: React.FC<ResultWarningsProps> = ({ response }) => {
       {response.warnings.map(warning =>
         warning === 'low_kcal' ? (
           <div key={warning} role="status" className={noticeClass}>
-            ⚠️ {t('warningLowKcal', { kcal: Math.round(response.kcal_per_person_day) })}
+            ⚠️{' '}
+            {t(response.kcal_basis === 'menu' ? 'warningLowKcal' : 'warningLowKcalShopping', {
+              kcal: Math.round(response.kcal_per_person_day),
+            })}
+          </div>
+        ) : warning === 'kcal_topped_up' ? (
+          <div key={warning} role="status" className={noticeClass}>
+            ℹ️ {t('warningKcalToppedUp')}
           </div>
         ) : (
           <div key={warning} role="status" className={noticeClass}>

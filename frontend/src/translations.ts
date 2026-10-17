@@ -116,6 +116,10 @@ export const translations = {
     pricesAsOf: 'Reference prices as of {date}',
     warningLowKcal:
       'This menu provides less food than recommended (≈ {kcal} kcal per person/day). Try a larger budget or fewer days.',
+    warningLowKcalShopping:
+      'This list buys less food than recommended for a week (≈ {kcal} kcal per person/day). Try a larger budget.',
+    warningKcalToppedUp:
+      'We added filling staples from the leftover budget so the list covers more of the week.',
     warningBudgetTrimmed: 'Some products were reduced or removed to stay within your budget:',
     trimmedReduced: 'reduced {from}→{to}',
     trimmedRemoved: 'removed',
@@ -258,6 +262,10 @@ export const translations = {
     pricesAsOf: 'Довідкові ціни станом на {date}',
     warningLowKcal:
       'Це меню дає менше їжі, ніж рекомендовано (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет або менше днів.',
+    warningLowKcalShopping:
+      'Цей список містить менше їжі, ніж рекомендовано на тиждень (≈ {kcal} ккал на людину в день). Спробуйте більший бюджет.',
+    warningKcalToppedUp:
+      'Ми додали ситні базові продукти із залишку бюджету, щоб список покривав більше тижня.',
     warningBudgetTrimmed: 'Щоб вкластися в бюджет, деякі продукти зменшено або прибрано:',
     trimmedReduced: 'зменшено {from}→{to}',
     trimmedRemoved: 'прибрано',
@@ -402,6 +410,10 @@ export const translations = {
     pricesAsOf: 'Referenzpreise vom {date}',
     warningLowKcal:
       'Dieses Menü liefert weniger Essen als empfohlen (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget oder weniger Tage.',
+    warningLowKcalShopping:
+      'Diese Liste enthält weniger Essen als für eine Woche empfohlen (≈ {kcal} kcal pro Person/Tag). Versuchen Sie ein größeres Budget.',
+    warningKcalToppedUp:
+      'Wir haben vom restlichen Budget sättigende Grundnahrungsmittel ergänzt, damit die Liste mehr von der Woche abdeckt.',
     warningBudgetTrimmed:
       'Einige Produkte wurden reduziert oder entfernt, um im Budget zu bleiben:',
     trimmedReduced: 'reduziert {from}→{to}',
