@@ -82,7 +82,8 @@ class CaseResult:
     diet_violations: list[str] = field(default_factory=list)
     kcal_per_person_day: float | None = None
     kcal_basis: str | None = None
-    kcal_in_range: bool | None = None  # menu mode only
+    # MIN_/MAX_KCAL_PER_PERSON_DAY; shopping mode compares the purchased kcal
+    kcal_in_range: bool | None = None
     cost_per_1000_kcal: float | None = None  # final plan: total / purchased kcal x 1000
     dropped_candidates: int = 0  # food left out on a tight budget
     warnings: list[str] = field(default_factory=list)
@@ -169,10 +170,8 @@ async def run_case(
         result.diet_violations = diet_violations(response.items, request, catalog)
         result.kcal_per_person_day = response.kcal_per_person_day
         result.kcal_basis = response.kcal_basis
-        if request.mode == "menu":
-            kcal = response.kcal_per_person_day
-            low, high = settings.min_kcal_per_person_day, settings.max_kcal_per_person_day
-            result.kcal_in_range = low <= kcal <= high
+        low, high = settings.min_kcal_per_person_day, settings.max_kcal_per_person_day
+        result.kcal_in_range = low <= response.kcal_per_person_day <= high
         result.warnings = list(response.warnings)
         kcal_bought = response.nutrition_totals.kcal
         if kcal_bought > 0:
@@ -235,6 +234,7 @@ def summarize(results: list[CaseResult]) -> dict[str, Any]:
     planned = [r for r in results if r.status not in REJECTED]  # the LLM was asked
     ok = [r for r in results if r.status == "ok"]
     menus = [r for r in ok if r.mode == "menu"]
+    shopping_lists = [r for r in ok if r.mode == "shopping"]
     per_mode = {}
     for mode in ("shopping", "menu"):
         mode_runs = [r for r in planned if r.mode == mode]
@@ -255,6 +255,10 @@ def summarize(results: list[CaseResult]) -> dict[str, Any]:
         "budget_adherence": rate(sum(bool(r.within_budget) for r in ok), len(ok)),
         "diet_violations": sum(len(r.diet_violations) for r in ok),
         "kcal_in_range_rate_menu": rate(sum(bool(r.kcal_in_range) for r in menus), len(menus)),
+        "shopping_kcal_in_range": rate(
+            sum(bool(r.kcal_in_range) for r in shopping_lists), len(shopping_lists)
+        ),
+        "topped_up_runs": sum("kcal_topped_up" in r.warnings for r in shopping_lists),
         "trimmed_runs": sum(r.trimmed_count > 0 for r in ok),
         "scaled_menu_runs": sum(r.scaled for r in menus),
         "latency_p50_s": percentile(latencies, 50),
@@ -313,6 +317,8 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
         f"| Budget adherence (must be 100%) | {pct(summary['budget_adherence'])} |",
         f"| Diet violations (must be 0) | {summary['diet_violations']} |",
         f"| kcal in range (menu) | {pct(summary['kcal_in_range_rate_menu'])} |",
+        f"| kcal in range (shopping, purchased) | {pct(summary['shopping_kcal_in_range'])} |",
+        f"| Shopping lists topped up for kcal | {summary['topped_up_runs']} |",
         f"| Runs trimmed to budget | {summary['trimmed_runs']} |",
         f"| Menus with scaled portions | {summary['scaled_menu_runs']} |",
         f"| Latency p50 / p95 | {num(summary['latency_p50_s'], 1)} s / "

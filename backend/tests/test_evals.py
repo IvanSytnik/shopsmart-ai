@@ -77,7 +77,7 @@ def test_successful_case(fake_llm: FakeOpenAI) -> None:
     assert (result.status, result.attempts, result.first_attempt_accepted) == ("ok", 1, True)
     assert (result.repaired, result.used_fallback, result.scaled) == (False, False, False)
     assert (result.total, result.within_budget, result.diet_violations) == (8.85, True, [])
-    assert (result.kcal_basis, result.kcal_in_range) == ("purchased", None)
+    assert (result.kcal_basis, result.kcal_in_range) == ("purchased", True)  # floor is 0 here
     assert result.cost_per_1000_kcal == 1.52  # 8.85 / 5820 kcal
     assert result.dropped_candidates == 0
     assert (result.prompt_tokens, result.completion_tokens) == (1, 1)  # from the fake usage
@@ -148,9 +148,23 @@ def result(**fields: Any) -> CaseResult:
 def test_summary_rates_and_verdict() -> None:
     results = [
         result(
-            attempts=1, first_attempt_accepted=True, within_budget=True, latency_s=2, cost_usd=0.001
+            attempts=1,
+            first_attempt_accepted=True,
+            within_budget=True,
+            kcal_in_range=True,
+            warnings=["kcal_topped_up"],
+            latency_s=2,
+            cost_usd=0.001,
         ),
-        result(attempts=2, repaired=True, within_budget=True, latency_s=4, cost_usd=0.003),
+        result(
+            attempts=2,
+            repaired=True,
+            within_budget=True,
+            kcal_in_range=False,
+            warnings=["low_kcal", "kcal_topped_up"],
+            latency_s=4,
+            cost_usd=0.003,
+        ),
         result(
             mode="menu",
             attempts=1,
@@ -177,6 +191,7 @@ def test_summary_rates_and_verdict() -> None:
     assert summary["per_mode"]["menu"]["repair_rate"] == 0.5
     assert (summary["budget_adherence"], summary["diet_violations"]) == (1, 0)
     assert (summary["kcal_in_range_rate_menu"], summary["scaled_menu_runs"]) == (1, 1)
+    assert (summary["shopping_kcal_in_range"], summary["topped_up_runs"]) == (0.5, 2)
     assert (summary["latency_p50_s"], summary["avg_cost_usd"]) == (5, 0.002)
     assert passed(summary)
 
@@ -226,6 +241,7 @@ def test_report_has_the_summary_and_one_row_per_run() -> None:
     assert "| a | 1 | ok | 1 |  |  |  | 9.50 / 10.00 | 1.20 | 400 (purchased) |" in report
     assert "| b | 1 | ok | 2 | 3 |" in report
     assert "1200 (menu) ⚠" in report
+    assert "| kcal in range (shopping, purchased) | 0% |" in report  # a: 400 kcal
 
 
 # --- token usage from the LLM service -------------------------------------------
