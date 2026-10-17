@@ -134,7 +134,7 @@ describe('ShopForm', () => {
     expect(submitButton()).toHaveProperty('disabled', true);
 
     await user.click(screen.getByRole('button', { name: 'Lidl' }));
-    const budget = screen.getByLabelText(/^💰 Budget$/);
+    const budget = screen.getByLabelText(/^💰 Weekly budget$/);
     await user.clear(budget);
     await user.type(budget, '5');
     expect(submitButton()).toHaveProperty('disabled', true);
@@ -143,7 +143,7 @@ describe('ShopForm', () => {
   });
 
   describe('budget field', () => {
-    const budgetInput = () => screen.getByLabelText<HTMLInputElement>(/^💰 Budget$/);
+    const budgetInput = () => screen.getByLabelText<HTMLInputElement>(/^💰 Weekly budget$/);
     const budgetError = () => screen.queryByText('Enter a budget between €10 and €1000.');
 
     it('can be cleared to empty and retyped', async () => {
@@ -169,7 +169,7 @@ describe('ShopForm', () => {
       const user = userEvent.setup();
       renderWithLanguage(<ShopForm onSubmit={onSubmit} />, 'de');
       await screen.findByRole('button', { name: 'Lidl' });
-      const input = screen.getByLabelText<HTMLInputElement>(/^💰 Budget$/);
+      const input = screen.getByLabelText<HTMLInputElement>(/^💰 Wochenbudget$/);
 
       await user.clear(input);
       await user.type(input, '040');
@@ -249,7 +249,7 @@ describe('ShopForm', () => {
     const user = userEvent.setup();
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
 
-    expect(screen.getByLabelText(/^💰 Budget$/)).toBeTruthy();
+    expect(screen.getByLabelText(/^💰 Weekly budget$/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
     expect(screen.getByLabelText(/^💰 Budget for 7 days$/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: '1' }));
@@ -276,6 +276,7 @@ describe('budget label in Ukrainian', () => {
     const user = userEvent.setup();
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />, 'uk');
 
+    expect(screen.getByLabelText(/^💰 Бюджет на тиждень$/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /Планування меню/ }));
     await user.click(screen.getByRole('button', { name: '3' }));
     expect(screen.getByLabelText(/^💰 Бюджет на 3 дні$/)).toBeTruthy();
