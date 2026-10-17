@@ -484,7 +484,7 @@ def test_trimming_can_cause_low_kcal_and_both_warnings_are_reported(
     assert body["warnings"] == ["low_kcal", "budget_trimmed"]
 
 
-def test_kcal_floor_does_not_apply_in_shopping_mode(
+def test_kcal_floor_warns_but_does_not_repair_in_shopping_mode(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
     client = make_client(min_kcal_per_person_day=1600)
@@ -495,7 +495,7 @@ def test_kcal_floor_does_not_apply_in_shopping_mode(
     assert response.status_code == 200
     assert response.json()["kcal_per_person_day"] == 83  # 5820 / 70
     assert response.json()["kcal_basis"] == "purchased"
-    assert response.json()["warnings"] == []
+    assert response.json()["warnings"] == ["low_kcal"]
     assert fake_llm.calls == 1
 
 

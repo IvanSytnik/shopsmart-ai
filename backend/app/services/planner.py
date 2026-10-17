@@ -695,7 +695,8 @@ def response_warnings(
     result: PlanResult, request: GenerateRequest, kcal: int, settings: Settings
 ) -> list[Warning]:
     warnings: list[Warning] = []
-    if request.mode == "menu" and kcal < settings.min_kcal_per_person_day:
+    # Both kcal bases: menu (eaten) and shopping (purchased, over SHOPPING_DAYS).
+    if kcal < settings.min_kcal_per_person_day:
         warnings.append("low_kcal")
     if result.trimmed:
         warnings.append("budget_trimmed")
