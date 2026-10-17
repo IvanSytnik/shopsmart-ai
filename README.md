@@ -1,409 +1,147 @@
-# 🛒 ShopSmart AI
+# ShopSmart AI
 
-> Intelligent shopping list generator powered by OpenAI GPT-4o-mini
+Budget-safe shopping lists and meal plans for Austrian supermarkets: an LLM picks the products, the server prices them from a dated catalog and guarantees the total fits your budget.
+
+**[Live demo → shopsmart.sytnik-studio.com](https://shopsmart.sytnik-studio.com)**
 
 [![CI](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![React 18](https://img.shields.io/badge/react-18-61dafb.svg)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/typescript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
 
-## 📋 About
+<p align="center"><img src="docs/demo.gif" width="300" alt="ShopSmart AI demo: filling in the form, generating a shopping list, sharing it, switching language and theme"></p>
 
-ShopSmart AI is a web application that generates optimized weekly shopping lists using artificial intelligence. The application analyzes your budget, dietary preferences, and selected supermarkets to create personalized shopping lists with price estimates.
+## The problem with v1
 
-**Author:** Ivan Sytnik (КН-М524)  
-**Supervisor:** Kharchenko A.O.  
-**Institution:** NTU "KhPI" - 2025
+The first version (2025) asked the model for a complete shopping list as free text and parsed the JSON out of it. The model **invented prices and calorie values**, the total was whatever the model wrote, and **the budget was never checked**: a "€50" list could cost €70 in a real store, or feed a family for two days instead of seven. Nothing in the response could be traced back to a real price.
 
-## ✨ Features
+## How it works: the LLM chooses, the server computes
 
-- 🏪 **Multi-store support** - Austria or Germany; stores come from the price catalog (`GET /api/catalog/meta`)
-- 💰 **Budget optimization** - AI stays within your budget
-- 🥗 **Dietary preferences** - Vegetarian, vegan, gluten-free, etc.
-- 👨‍👩‍👧‍👦 **Family size scaling** - Portions adjusted for 1-5+ people
-- 📊 **Smart categorization** - Items organized by store and category, with per-store subtotals and a budget bar
-- ⚠️ **Honest results** - Notices when products were trimmed to fit the budget or a menu is short on food
-- ✅ **Progress tracking** - Check off items as you shop
-- 📋 **Export options** - Copy to clipboard or print
-- 🔗 **Share via link** - The whole plan is compressed into the URL fragment (`/#/plan/<data>`) and opens read-only; nothing is stored on the server
+The model never writes a price, a total or a calorie number. It only picks product ids from a candidate list and says how much of each; everything numeric is done in Python from the catalog.
 
-## 🛠 Tech Stack
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as User
+    participant UI as React UI
+    participant API as FastAPI
+    participant C as Catalog
+    participant LLM as OpenAI
 
-### Backend
-- **Python 3.11+**
-- **FastAPI** - High-performance web framework
-- **Pydantic** - Data validation
-- **OpenAI API** - GPT-4o-mini integration
-- **Uvicorn** - ASGI server
-
-### Frontend
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Vite** - Build tool
-- **Tailwind CSS** - Styling
-- **Lucide React** - Icons
-
-### DevOps
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-- **Nginx** - Reverse proxy
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+
-- Python 3.11+
-- OpenAI API key
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/IvanSytnik/shopsmart-ai.git
-cd shopsmart-ai
+    U->>UI: stores, budget, family size, diets, mode, days
+    UI->>API: POST /generate
+    API->>C: candidates for country, stores and diets
+    C-->>API: food and non-food products with price and kcal
+    API->>LLM: prompt + JSON schema with a per-request enum of candidate ids
+    LLM-->>API: structured output: product ids + packs (shopping) or meals with portions (menu)
+    Note over API: portions to packs (menu)
+    Note over API: kcal normalization (menu) or deterministic kcal top-up (shopping)
+    Note over API: pricing from the catalog, budget trimming
+    opt plan invalid, far over budget or kcal out of range
+        API->>LLM: one repair request stating what was wrong
+        LLM-->>API: corrected structured output
+    end
+    API-->>UI: items, totals, menu, warnings, price date
+    UI-->>U: list grouped by store, budget bar, menu
 ```
 
-### 2. Backend Setup
+Deterministic guarantees (enforced by the server and covered by tests, independent of what the model returns):
+
+- **Total ≤ budget.** If the priced plan is over budget, the server trims packs, then whole lines (snacks, drinks, frozen and non-food first). Every cut is listed in `trimmed`.
+- **Diet filter.** Only products carrying every chosen diet tag (vegetarian, vegan, gluten-free, lactose-free) are offered to the model, and the id enum means nothing else can come back (non-food such as cleaning products is always allowed).
+- **Only catalog products.** Product ids are a JSON-schema enum built per request from the candidates; unknown ids are rejected.
+- **kcal floor of 1600 per person and day.** In menu mode, portions are scaled up (or down above 3500) to land in range. In shopping mode, the server tops the list up one pack at a time with the food that gives the most kcal per € while the budget allows (`kcal_topped_up`). If the floor can't be reached within the budget, the response carries a `low_kcal` warning instead of breaking the budget.
+
+The full pipeline (candidate selection on tight budgets, portion rules, repair conditions, trimming order, top-up limits), request and response fields and error codes are in [docs/API.md](docs/API.md).
+
+## Measured quality
+
+20 fixed scenarios (shopping and menu mode, 1–7 days, 1–5 people, €15–150, every diet, en/de/uk, two deliberately tight budgets), real OpenAI calls, real catalog. Baseline = first run of the v2 pipeline; final = the release.
+
+| Metric | Baseline [`20261015T141547Z`](backend/evals/results/20261015T141547Z.json) | Final [`20261017T151510Z`](backend/evals/results/20261017T151510Z.json) |
+|---|---|---|
+| Valid output rate | 100% | 100% |
+| Budget adherence | 100% | 100% |
+| Diet violations | 0 | 0 |
+| Menu kcal in range | 54.5% | 90.9% |
+| Shopping kcal in range (purchased) | n/a | 88.9% |
+| First-attempt acceptance, shopping | 66.7% | 100% |
+| First-attempt acceptance, menu | 54.5% | 81.8% |
+| Latency p50 / p95 | 7.45 s / 21.21 s | 4.48 s / 14.18 s |
+| Cost per request (avg) | $0.00143 | $0.00108 |
+
+Budget and diet were already guaranteed in the baseline, because the server enforces them. Between the two runs the work went into plan quality: on tight budgets the most expensive calories are no longer offered to the model (vegetables and fruit exempt); small overshoots (≤ 10%) are trimmed instead of triggering a repair round trip; the menu output got shorter with `max_tokens` sized per request; menus are kcal-normalized by scaling portions; and shopping lists get a deterministic kcal top-up (6 of 9 lists were topped up). Runs that needed trimming went from 7 to 1, and fewer repairs mean lower latency and cost.
+
+The remaining misses are honest ones. The shopping miss is `shop-en-hofer-2p-40-lactose-free` (2 people, €40/week, lactose-free, Hofer only): the top-up spent the budget down to €39.74 and reached 1200 kcal per person and day, so the API returns `low_kcal` rather than going over budget. The menu miss is the deliberately tight `tight-menu-en-both-5p-3d-40` (5 people, 3 days, €40): 1389 kcal, `low_kcal` + `budget_trimmed`. The tightest shopping case, €15/week for one person, reached 1671 kcal after the top-up.
+
+Reports: [backend/evals/report.md](backend/evals/report.md) (latest run, per-case table) and [backend/evals/results/](backend/evals/results/) (raw JSON for every run).
+
+## Features
+
+- **Two modes**: a 7-day shopping list, or a 1–7 day menu (breakfast, lunch, dinner, snack) with the shopping list derived from its portions.
+- **Grounded prices**: per-store subtotals, a budget bar (used / remaining) and the catalog's price date on every plan.
+- **Honest warnings**: trimmed products, kcal top-up and low-kcal notices.
+- **Share links**: the whole plan is compressed into the URL fragment (`/#/plan/<data>`) and opens read-only; nothing is stored on the server.
+- **History** of recent plans in `localStorage`; check off items while shopping; copy or print.
+- **i18n**: English, Ukrainian and German, product names in all three, plurals via `Intl.PluralRules` (e.g. uk: 1 день, 3 дні, 5 днів).
+- **Dark mode**, **mobile layout**, **accessibility**: labelled form controls and groups, `aria-pressed` toggle chips, `aria-invalid` fields with linked error text.
+
+## Tech stack
+
+- **Backend**: Python 3.11+, FastAPI, Pydantic v2 + pydantic-settings, OpenAI Python SDK (`AsyncOpenAI`, Structured Outputs), slowapi, pytest, ruff.
+- **Frontend**: React 18, TypeScript (strict), Vite, Tailwind CSS, lz-string (share links), Vitest + Testing Library, ESLint.
+- **Infra**: Docker, nginx, GitHub Actions, Google Cloud Run, Cloudflare Pages.
+
+## Folder overview
+
+```
+backend/
+  app/
+    main.py, config.py     # app factory, middleware; env-driven Settings
+    api/                   # routers: health, generate, catalog
+    schemas/               # request/response and LLM output models
+    services/              # llm, planner (prompt + repair), pricing, portions, catalog, limits
+    data/catalog.json      # generated price catalog (do not edit by hand)
+  data_src/catalog_at.csv  # human-editable catalog source
+  scripts/build_catalog.py # CSV -> catalog.json, with validation
+  tests/                   # pytest, OpenAI always mocked
+  evals/                   # offline eval runner, cases, reports
+frontend/
+  src/                     # components/, hooks/, api.ts, share.ts, history.ts, translations.ts, types.ts
+deploy/                    # Cloud Run scripts and deployment guide
+docs/                      # API reference, catalog notes, roadmap, media
+```
+
+## Run locally
+
+### Docker Compose
 
 ```bash
+export OPENAI_API_KEY=sk-...
+docker compose up --build
+```
+
+Frontend at http://localhost, API at http://localhost:8000.
+
+### Manual
+
+```bash
+# backend
 cd backend
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies (runtime + dev tooling)
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
+cp .env.example .env               # set OPENAI_API_KEY
+uvicorn app.main:app --reload --port 8000
 
-# Lint
-ruff check .
-
-# Configure environment
-cp .env.example .env
-# Edit .env and add your OPENAI_API_KEY
-
-# Run the server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### 3. Frontend Setup
-
-```bash
+# frontend (second terminal)
 cd frontend
-
-# Install dependencies
-npm install
-
-# Configure environment (optional)
-cp .env.example .env.local
-
-# Run development server
-npm run dev
-
-# Tests (vitest + Testing Library, fetch is mocked)
-npm run test -- --run
+npm ci
+cp .env.example .env.local         # VITE_API_URL=http://localhost:8000
+npm run dev                        # http://localhost:3000
 ```
 
-### 4. Access the Application
+API docs at http://localhost:8000/docs when `ENVIRONMENT=development`. For development without the real catalog, `CATALOG_PATH=tests/fixtures/catalog_small.json` uses the made-up test catalog.
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs (only when `ENVIRONMENT=development`)
+<details>
+<summary>Backend environment variables</summary>
 
-## 🐳 Docker Deployment
-
-### Using Docker Compose
-
-```bash
-# Set your OpenAI API key
-export OPENAI_API_KEY=sk-your-key-here
-
-# Build and start containers
-docker-compose up --build
-
-# Or run in detached mode
-docker-compose up -d --build
-```
-
-Access the application at http://localhost
-
-### Individual Containers
-
-```bash
-# Backend
-cd backend
-docker build -t shopsmart-backend .
-docker run -p 8000:8000 -e OPENAI_API_KEY=sk-xxx shopsmart-backend
-
-# Frontend
-cd frontend
-docker build --build-arg VITE_API_URL=http://localhost:8000 -t shopsmart-frontend .
-docker run -p 80:80 shopsmart-frontend
-```
-
-The backend image listens on `$PORT` (default `8000`; Cloud Run sets it) and runs uvicorn with `--proxy-headers`, e.g. `docker run -p 9000:9000 -e PORT=9000 ...`.
-The frontend image's nginx sends `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY` and a Content-Security-Policy (`frontend/security-headers.conf`) whose `connect-src` allows the origin of the `VITE_API_URL` build arg.
-
-## ☁️ Deployment
-
-Production runs the backend on **Google Cloud Run** (`europe-west1`, max one instance, OpenAI key in Secret Manager) and the frontend on **Cloudflare Pages**, built from GitHub. Step-by-step setup (OpenAI and GCP limits, secrets, Pages, custom domain, CORS, logs, rollback): [deploy/README.md](deploy/README.md).
-
-```bash
-PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik-studio.com ./deploy/deploy_backend.sh
-PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik-studio.com,https://shopsmart-ai.pages.dev ./deploy/update_cors.sh
-./deploy/smoke.sh <api_url> <frontend_url>   # one real /generate call
-```
-
-`npm run build` also writes `frontend/public/_headers` (Cloudflare Pages headers, generated from `security-headers.conf` with the `VITE_API_URL` origin in the CSP; falls back to `http://localhost:8000`).
-
-## 📖 API Documentation
-
-### Generate a plan
-
-The model only **chooses** products from the price catalog (by id) and how many packs of each; every price, total and nutrition value is **computed by the server** from the catalog, and the total never exceeds the budget.
-
-```http
-POST /generate
-Content-Type: application/json
-
-{
-  "country": "AT",
-  "supermarkets": ["Lidl", "Penny"],
-  "budget": 15,
-  "family_size": 2,
-  "diets": [],
-  "preferences": "no pork",
-  "language": "en",
-  "mode": "menu",
-  "days": 1
-}
-```
-
-| Field | Rules |
-|---|---|
-| `country` | `AT` or `DE` (default `AT`) |
-| `supermarkets` | 1–5 unique store names; each must exist in the catalog for `country` (else `422 unknown_store`; see `GET /api/catalog/meta`) |
-| `budget` | 10–1000 (EUR) |
-| `family_size` | 1–10 (default 2) |
-| `diets` | unique values of `vegetarian`, `vegan`, `gluten_free`, `lactose_free` (default `[]`); food must carry every chosen tag, non-food (cleaning, hygiene) is always allowed |
-| `preferences` | ≤ 300 chars after trimming; passed to the model as quoted data, never as instructions |
-| `language` | `en`, `uk`, `de` (default `en`): product names, meals and notes |
-| `mode` | `shopping` or `menu` (default `shopping`) |
-| `days` | 1–7 (default 7), used only for `menu`; shopping lists cover 7 days |
-
-How a plan is made:
-
-1. **Candidates**: catalog products for `country`, `supermarkets` and `diets`. Fewer than 12 food products → `422 not_enough_products`.
-   **Tight budgets**: below `TIGHT_BUDGET_PER_PERSON_DAY` (default €7) per person and day (budget / (family_size × days), 7 days in shopping mode), food with a cost per 1000 kcal above the 80th percentile is not offered, keeping at least 12 food products (the cheapest). Vegetables and fruit are exempt (they are chosen for nutrition, not calories) and the percentile is computed over the other food only. Every candidate line in the prompt shows its €/1000 kcal, and the prompt states the budget per person and day.
-2. **LLM choice** via OpenAI Structured Outputs: a per-request JSON schema whose product ids are an enum of exactly those candidates (plain strings checked by the server when the enum values in the schema, counted once per place they are used, would exceed `MAX_SCHEMA_ENUM_VALUES`; with the default 500 that is above 500 candidates in shopping mode and above 125 in menu mode, where the ids appear in each of the 4 meals). No prices, no totals from the model.
-   - `shopping`: `lines: [{product_id, packs 1–20}]` and notes.
-   - `menu`: only dishes (food candidates only). Each meal lists `ingredients: [{product_id, amount_per_person}]`, the amount one person eats in that meal in the product's `portion_unit`: `g`, `ml`, `pcs`, or `pack` = a fraction of one whole pack in steps of 0.25 (e.g. 0.5 of a frozen pizza). Allowed: 5–800 g or ml, 1–6 pcs, 0.25–2 packs; a g/ml portion of 2 or less is read as packs (× pack size, e.g. 1 → 500 g of chicken); the server then clamps a portion outside this range to the nearest bound instead of asking for a repair. The catalog's optional `portion_unit` defaults from `unit` (kg → g, l → ml, pcs → pcs, pack → pack); `pack` is allowed for any unit. The prompt gives typical portions and each candidate's energy per portion unit.
-3. **Quantities (menu mode)**: per product, required = Σ `amount_per_person` × `family_size` over all meals; packs = ⌈required / pack size⌉ (at least 1). The model never chooses pack counts in menu mode.
-   **kcal normalization**: if the portions give less than `MIN_KCAL_PER_PERSON_DAY` per person and day, all portions are scaled up by min / kcal × 1.05 (at most × 1.6); above `MAX_KCAL_PER_PERSON_DAY` they are scaled down by max / kcal × 0.95. Scaled portions are rounded (g/ml to 5, pcs to 1) and clamped to their range, then the packs are recomputed. Only a menu still outside the range after this goes to the repair step. The prompt also asks for about 450/650/650/250 kcal per person for breakfast/lunch/dinner/snack.
-4. **Checks + one repair**: empty list, a menu with fewer days than requested (extra days are dropped without a repair), meals without ingredients, a total more than `TRIM_TOLERANCE` (default 10%) over budget (the repair message states the overshoot in €; in menu mode it also names the 3 most expensive ingredients; a smaller overshoot is not repaired but trimmed in step 5), or, in menu mode, eaten kcal per person and day below `MIN_KCAL_PER_PERSON_DAY` or above `MAX_KCAL_PER_PERSON_DAY` (the message states current vs limit) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal range, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and nothing is bought besides what the menu uses.
-5. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first); in menu mode every line is a menu ingredient, so packs are reduced before any ingredient is removed. Trimmed lines are listed in `trimmed`.
-6. **kcal top-up (shopping mode)**: if the purchased food is below `MIN_KCAL_PER_PERSON_DAY` per person over 7 days, the server adds one pack at a time while the budget allows: the food with the most kcal per € among the list's products and the other candidates (same stores and diets); a product already in the list wins instead if it has at least `TOP_UP_IN_LIST_MIN_RATIO` (default 0.7) of that kcal per €. Beverages, snacks, `other` and non-food are never added, nor are trimmed products; at most `TOP_UP_MAX_PACKS_PER_PRODUCT` (default 3) packs are added per product, and no product may exceed `TOP_UP_MAX_KCAL_SHARE` (default 35%) of the target kcal (`MIN_KCAL_PER_PERSON_DAY` × people × 7). Deterministic, no LLM call; reported as the `kcal_topped_up` warning.
-
-Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `validation_error` also has `errors: [{loc, msg}]`.
-
-| Status | `code` | `detail` | When |
-|---|---|---|---|
-| `422` | `validation_error` | `Invalid request` | invalid input |
-| `422` | `unknown_store` | `Unknown store for the selected country` | a store isn't in the catalog for `country` |
-| `422` | `not_enough_products` | `Not enough products for these stores and diets` | fewer than 12 food candidates |
-| `429` | `rate_limited` | `Too many requests, please try again later` | over `RATE_LIMIT` for this client IP |
-| `502` | `generation_failed` | `Failed to generate plan` | model output still unusable after the repair retry |
-| `503` | `ai_unavailable` | `AI service unavailable` | OpenAI API error |
-| `503` | `daily_limit` | `Daily limit reached, try tomorrow` | `DAILY_GENERATE_CAP` reached for the current UTC day |
-| `504` | `ai_timeout` | `AI service timed out` | OpenAI request timed out, or `REQUEST_DEADLINE_S` passed (the repair retry is skipped when less than `REPAIR_MIN_REMAINING_S` is left; an over-budget plan is then trimmed instead) |
-| `500` | `generation_failed` | `Failed to generate plan` | anything else |
-
-The `422 unknown_store` / `not_enough_products` checks run before the daily cap, so they don't use it up.
-
-### Response
-
-Response to the request above with the test catalog (2 of 5 items shown). The menu needs 200 g of chips for 2 people, so the server bought 2 × 175 g; that was over the €15 budget, so it was trimmed to 1 pack. `kcal_per_person_day` is what the menu's portions provide.
-
-```json
-{
-  "items": [
-    {
-      "product_id": "at-lidl-milk-1l",
-      "name": "Whole milk 3.5%",
-      "names": {"en": "Whole milk 3.5%", "uk": "Молоко 3,5%", "de": "Vollmilch 3,5%"},
-      "store": "Lidl",
-      "category": "dairy",
-      "packs": 1,
-      "pack_size": 1.0,
-      "unit": "l",
-      "portion_unit": "ml",
-      "unit_price": 1.29,
-      "line_total": 1.29,
-      "nutrition": {"kcal": 640.0, "protein_g": 34.0, "fat_g": 35.0, "carbs_g": 48.0}
-    },
-    {
-      "product_id": "at-lidl-potato-chips-175g",
-      "name": "Potato chips",
-      "names": {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
-      "store": "Lidl",
-      "category": "snacks",
-      "packs": 1,
-      "pack_size": 0.175,
-      "unit": "kg",
-      "portion_unit": "g",
-      "unit_price": 1.79,
-      "line_total": 1.79,
-      "nutrition": {"kcal": 940.0, "protein_g": 11.0, "fat_g": 60.0, "carbs_g": 90.0}
-    }
-  ],
-  "subtotals_by_store": {"Lidl": 11.06, "Penny": 2.29},
-  "total": 13.35,
-  "budget": 15.0,
-  "budget_remaining": 1.65,
-  "nutrition_totals": {"kcal": 6150.0, "protein_g": 233.0, "fat_g": 112.0, "carbs_g": 1058.0},
-  "kcal_per_person_day": 1601.0,
-  "kcal_basis": "menu",
-  "trimmed": [
-    {
-      "product_id": "at-lidl-potato-chips-175g",
-      "name": "Potato chips",
-      "names": {"en": "Potato chips", "uk": "Картопляні чипси", "de": "Kartoffelchips"},
-      "from_packs": 2,
-      "to_packs": 1
-    }
-  ],
-  "menu": [
-    {
-      "day": "Monday",
-      "breakfast": {
-        "name": "Milk porridge with apple",
-        "description": "Rice cooked in milk, topped with grated apple",
-        "ingredients": [
-          {"product_id": "at-lidl-milk-1l", "amount_per_person": 250},
-          {"product_id": "at-penny-rice-1kg", "amount_per_person": 60},
-          {"product_id": "at-lidl-apples-1kg", "amount_per_person": 100}
-        ]
-      },
-      "lunch": {
-        "name": "Chicken rice bowl",
-        "description": "Pan-fried chicken over rice",
-        "ingredients": [
-          {"product_id": "at-lidl-chicken-breast-500g", "amount_per_person": 150},
-          {"product_id": "at-penny-rice-1kg", "amount_per_person": 100}
-        ]
-      },
-      "dinner": {
-        "name": "Baked apples",
-        "description": "Apples baked with a splash of milk",
-        "ingredients": [
-          {"product_id": "at-lidl-apples-1kg", "amount_per_person": 250},
-          {"product_id": "at-lidl-milk-1l", "amount_per_person": 100}
-        ]
-      },
-      "snack": {
-        "name": "Chips",
-        "description": "A small bowl",
-        "ingredients": [
-          {"product_id": "at-lidl-potato-chips-175g", "amount_per_person": 100}
-        ]
-      }
-    }
-  ],
-  "notes": "Rice and apples are the cheapest calories here.",
-  "warnings": ["budget_trimmed"],
-  "catalog_version": "test-small-2",
-  "price_date": "2026-10-01",
-  "generated_at": "2026-10-15T10:30:00Z"
-}
-```
-
-| Field | Meaning |
-|---|---|
-| `items[].name` / `names` | product name in the request language / in all languages (`en`, `uk`, `de`) from the catalog, so a client can switch language without a new plan |
-| `items[].portion_unit` | what menu portions of this product are counted in: `g`, `ml`, `pcs` or `pack` (a fraction of one pack) |
-| `items[].unit_price` / `line_total` | price per pack / for all packs, from the catalog |
-| `items[].nutrition` | for all packs; `null` for non-food |
-| `subtotals_by_store`, `total`, `budget_remaining` | EUR, 2 decimals; `total` ≤ `budget` always |
-| `kcal_per_person_day`, `kcal_basis` | kcal / (`family_size` × days). `kcal_basis: "menu"` (menu mode): what the menu's portions provide, counting only what is bought after trimming. `kcal_basis: "purchased"` (shopping mode, 7 days): `nutrition_totals.kcal` of the purchased packs, an upper bound |
-| `trimmed` | lines the server cut to fit the budget, with `name` and `names` like `items` (a removed line isn't in `items`); `to_packs: 0` = removed |
-| `menu` | `null` in shopping mode. `ingredients[].product_id` refers to `items` (an ingredient may be missing if it was trimmed); `amount_per_person` is in the item's `portion_unit`. Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
-| `warnings` | `low_kcal`: `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` (menu: after the final attempt and any trimming; shopping: after the kcal top-up); `budget_trimmed`: `trimmed` is not empty; `kcal_topped_up`: shopping mode, the server added packs to reach the kcal floor (included in `items` and totals) |
-| `catalog_version`, `price_date` | which reference prices were used |
-
-### Catalog metadata
-
-```http
-GET /api/catalog/meta
-```
-
-```json
-{
-  "catalog_version": "test-small-2",
-  "price_date": "2026-10-01",
-  "countries": {"AT": ["Lidl", "Penny"], "DE": ["Lidl", "Penny"]},
-  "diet_tags": ["vegetarian", "vegan", "gluten_free", "lactose_free"],
-  "categories": ["vegetables", "fruits", "meat", "fish", "dairy", "bread", "beverages", "snacks", "frozen", "pantry", "cleaning", "hygiene", "other"]
-}
-```
-
-### Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | API information |
-| GET | `/health` | Health check: `{"status": "healthy", "catalog_version": "..."}` |
-| GET | `/api/catalog/meta` | Stores per country, diet tags, categories, price date |
-| POST | `/generate` | Generate a shopping list or menu |
-
-## 📁 Project Structure
-
-```
-shopsmart-ai/
-├── backend/
-│   ├── app/
-│   │   ├── main.py          # App factory (create_app), middleware, routers
-│   │   ├── config.py        # Settings (env-driven, pydantic-settings)
-│   │   ├── api/             # Routers: health, generate; dependencies
-│   │   ├── schemas/         # Request, response and LLM output models
-│   │   └── services/        # OpenAI client, prompts + repair loop, rate limit/daily cap
-│   ├── requirements.txt     # Python runtime dependencies
-│   ├── requirements-dev.txt # Test + lint tooling
-│   ├── tests/               # pytest suite (mocked OpenAI)
-│   ├── pyproject.toml       # ruff + pytest config
-│   ├── Dockerfile          # Backend container
-│   └── .env.example        # Environment template
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   │   ├── ShopForm.tsx      # catalog-driven form (country, stores, diets)
-│   │   │   ├── results/          # summary, warnings, export, results container
-│   │   │   ├── ShoppingList.tsx  # items grouped by store
-│   │   │   ├── MealPlan.tsx      # menu with ingredients resolved from items
-│   │   │   ├── History.tsx
-│   │   │   ├── LoadingSpinner.tsx
-│   │   │   └── ErrorBanner.tsx   # error code -> translated message
-│   │   ├── hooks/          # useCatalogMeta
-│   │   ├── App.tsx         # Main component
-│   │   ├── api.ts          # API client (typed ApiError with `code`)
-│   │   ├── history.ts      # localStorage history ("shopsmart-history-v2")
-│   │   ├── share.ts        # share links: plan ↔ lz-string URL fragment
-│   │   ├── types.ts        # mirrors backend schemas
-│   │   ├── constants.ts    # Constants
-│   │   └── index.css       # Global styles
-│   ├── package.json
-│   ├── vite.config.ts
-│   ├── tailwind.config.js
-│   └── Dockerfile          # Frontend container
-├── docker-compose.yml      # Container orchestration
-└── README.md
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-#### Backend (.env)
 ```env
 OPENAI_API_KEY=sk-your-api-key            # required
 OPENAI_MODEL=gpt-4o-mini                   # default
@@ -431,100 +169,95 @@ ENVIRONMENT=development                    # development | production (productio
 FORWARDED_ALLOW_IPS=127.0.0.1              # read by uvicorn; proxies trusted for X-Forwarded-For
 ```
 
-Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default.
+Docker Compose sets `CORS_ORIGINS=http://localhost,http://localhost:3000` by default. Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address so the rate limit sees the real client IP.
 
-#### Price catalog
+Frontend: `VITE_API_URL` is read at build time; `npm run dev` falls back to `http://localhost:8000`, production builds must set it.
 
-`app/data/catalog.json` is generated from the human-editable source `backend/data_src/catalog_at.csv` (Austria; currently Billa and Hofer, see [docs/CATALOG.md](docs/CATALOG.md) for sources and the disclaimer). Don't edit the JSON by hand:
+</details>
+
+### Price catalog
+
+`backend/app/data/catalog.json` is generated from `backend/data_src/catalog_at.csv`; sources and disclaimer in [docs/CATALOG.md](docs/CATALOG.md).
 
 ```bash
 cd backend
 python scripts/build_catalog.py          # validate the CSV and write app/data/catalog.json
-python scripts/build_catalog.py --check  # validate, and fail if catalog.json is out of date (CI)
+python scripts/build_catalog.py --check  # fail if catalog.json is out of date (CI)
 ```
 
-The script validates every row with the app's schema, converts nutrition from per 100 g/ml to per pack, fails on any error and prints counts per store, category and diet. Tests use the separate made-up catalog `tests/fixtures/catalog_small.json` (Lidl and Penny in AT and DE), which also works for local development: `CATALOG_PATH=tests/fixtures/catalog_small.json`.
-
-`RATE_LIMIT` and `DAILY_GENERATE_CAP` are kept in memory and are **per process**: with several workers or instances the effective limits multiply, and counters reset on restart. That is fine for the single-instance deployment. Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address (or `*` if the container is reachable only through the proxy) so the rate limit uses the real client IP; otherwise all clients share the proxy's limit.
-
-#### Frontend (.env.local)
-```env
-VITE_API_URL=http://localhost:8000
-```
-
-`VITE_API_URL` is read at build time. `npm run dev` falls back to `http://localhost:8000` when it is unset; production builds (including the Docker image, via the `VITE_API_URL` build arg, default `http://localhost:8000` in Compose) must set it.
-
-## 🧪 Testing
+## Tests
 
 ```bash
 cd backend
-pytest -q                         # OpenAI is mocked; tests never touch the network
+pytest -q                                 # 359 tests, OpenAI mocked, no network
 ruff check . && ruff format --check .
-python scripts/build_catalog.py --check   # catalog.json matches data_src/catalog_at.csv
+python scripts/build_catalog.py --check
 
 cd frontend
-npm run lint && npm run build && npm run test -- --run
+npm run lint && npm run build && npm run test -- --run   # 92 tests in 10 files
 ```
 
-CI (`.github/workflows/ci.yml`) runs exactly these on every push and pull request to `main`; it needs no secrets.
+CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs all of these on every push and pull request to `main`; it needs no secrets.
 
-### Offline evals (real OpenAI calls, not in CI)
+## Evals
+
+Offline, real OpenAI calls, not part of CI:
 
 ```bash
 cd backend
-.venv/bin/python -m evals.run                # 20 scenarios from evals/cases.yaml
+.venv/bin/python -m evals.run                # all 20 scenarios from evals/cases.yaml
 .venv/bin/python -m evals.run --cases 2      # only the first 2
 .venv/bin/python -m evals.run --cases menu-de-hofer-2p-1d-20,menu-en-both-2p-1d-25   # by id
 .venv/bin/python -m evals.run --repeat 3     # every scenario 3 times
 ```
 
-The scenarios cover shopping and menu mode, 1/3/7 days, households of 1–5, budgets €15–150, every diet, one and both stores, en/de/uk and two deliberately tight budgets. The runner calls the planner in-process (not via HTTP), one request at a time, with `OPENAI_API_KEY` from the environment or `backend/.env`, and the real catalog. A full run makes 20–40 OpenAI calls.
+The runner calls the planner in-process with `OPENAI_API_KEY` from the environment or `backend/.env`. A full run makes 20–40 OpenAI calls and costs about $0.02 with the default model (the last one: $0.0216; prices in `PRICES_PER_M_TOKENS` in `evals/run.py`). It writes `evals/results/<timestamp>.json` and `evals/report.md`, and exits with 1 if any plan is over budget or breaks a requested diet.
 
-It writes `evals/results/<timestamp>.json` (every run) and `evals/report.md`:
-- **summary:** valid output rate, first-attempt acceptance and repair rate per mode, budget adherence, diet violations, kcal-in-range rate for menus, p50/p95 latency, average cost per request;
-- **per-case table:** status, attempts, candidates dropped on a tight budget, scaling, trimming, total vs budget, €/1000 kcal of the final plan, kcal, tokens, the largest reply (out tokens) and cost, plus every attempt's output tokens, finish reason and duration (`?` = no tokens reported, e.g. timed out).
+## Deployment
 
-The exit code is 1 if any plan is over budget or contains a product that breaks a requested diet. Cost uses the gpt-4o-mini price in `evals/run.py` (`PRICES_PER_M_TOKENS`).
+- **API**: Google Cloud Run, `europe-west1`, scale 0–1 instances, OpenAI key from Secret Manager — https://shopsmart-api-326244330515.europe-west1.run.app
+- **Frontend**: Cloudflare Pages, built from GitHub — https://shopsmart.sytnik-studio.com (also https://shopsmart-ai.pages.dev)
 
-## 📊 Performance
+```bash
+PROJECT_ID=my-project CORS_ORIGINS=https://shopsmart.sytnik-studio.com ./deploy/deploy_backend.sh
+./deploy/smoke.sh <api_url> <frontend_url>   # one real /generate call
+```
 
-- **API Response Time:** 3-8 seconds (GPT-4o-mini)
-- **Typical Request Size:** ~2KB
-- **Typical Response Size:** ~5KB
-- **Concurrent Users:** 100+ (with proper scaling)
+Step-by-step setup (OpenAI and GCP limits, secrets, Pages, custom domain, CORS, logs, rollback): [deploy/README.md](deploy/README.md).
 
-## 🔒 Security
+## Security
 
-- Input validation with Pydantic (enums, bounds, length limits)
-- CORS restricted to `CORS_ORIGINS`
-- Per-IP rate limit and a daily call cap on `POST /generate`
-- Generic error messages to clients; details are logged server-side only
-- No sensitive data stored
+- **Strict CSP** without `unsafe-eval` or `unsafe-inline` scripts (`script-src 'self'`, `frame-ancestors 'none'`, `connect-src` limited to the API origin), plus `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY` ([frontend/security-headers.conf](frontend/security-headers.conf)).
+- **Rate limit** per client IP on `POST /generate` (`RATE_LIMIT`, default 10/minute) and a **daily generation cap** (`DAILY_GENERATE_CAP`, default 200 per UTC day).
+- **OpenAI key in Secret Manager**, never in the image or the repo; a **separate OpenAI project** with its own spend limit.
+- **Generic error responses** (`{"detail", "code"}`); the real exception is only logged server-side.
+- Input validation with Pydantic (enums, bounds, length limits); user preferences are passed to the model as quoted data; CORS restricted to `CORS_ORIGINS`; `/docs` disabled in production.
 
-## 🤝 Contributing
+## Limitations
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **Reference prices**, collected on 2026-10-15, for **Billa and Hofer only** (Austria). Real shelf prices and promotions differ. Spar and Lidl Austria had no machine-readable prices (see [docs/CATALOG.md](docs/CATALOG.md)); the API supports a `DE` country, but the catalog has no German stores yet.
+- **Nutrition from standard tables**, not from each product's label.
+- **In-memory rate limit and daily cap**: correct only for a single instance (hence `max-instances=1`); counters reset on restart.
+- **Share links can get long** for large plans; links over 8000 characters are refused (copy or print instead).
 
-## 📄 License
+## Screenshots
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+<table><tr>
+<td><img src="docs/mobile-form.png" width="250" alt="Mobile form in the light theme: country, stores, budget, family size and diets"></td>
+<td><img src="docs/mobile-result.png" width="250" alt="Mobile shopping list result in the light theme with budget bar and per-store items"></td>
+<td><img src="docs/mobile-dark.png" width="250" alt="Mobile shopping list result in the dark theme"></td>
+</tr></table>
 
-## 🙏 Acknowledgments
+<img src="docs/desktop-menu.png" alt="Menu mode result on desktop in the dark theme: daily meals with ingredients and the shopping list">
 
-- OpenAI for GPT-4 API
-- German supermarket pricing research
-- NTU "KhPI" Department of Project Management in IT
+## Roadmap / Later
 
-## 📞 Contact
+v2 is complete except the release tag. Next ideas: more chains (Spar, Lidl AT, German stores), price updates with freshness checks, short share links with server-side storage, a least-privilege runtime service account and a custom API domain. Full list: [docs/ROADMAP.md](docs/ROADMAP.md). Changes per version: [CHANGELOG.md](CHANGELOG.md).
 
-**Ivan Sytnik**
-- Email: ivan.sytnik02@gmail.com
-- GitHub: [@IvanSytnik](https://github.com/IvanSytnik)
+## Academic note
 
----
+ShopSmart AI started as an MSc diploma project at NTU "KhPI" (Department of Project Management in IT), 2025, by Ivan Sytnik (КН-М524), supervised by Kharchenko A.O. In 2026 it was reworked as v2 around grounded pricing, server-side budget enforcement and measured quality.
 
-Made with ❤️ at NTU "KhPI" | 2025
+## License
+
+MIT, see [LICENSE](LICENSE). Contact: [@IvanSytnik](https://github.com/IvanSytnik).
