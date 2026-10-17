@@ -63,12 +63,12 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 3.5 vitest + Testing Library: form validation, list rendering, budget bar.
 
 ## Phase 4 — Quality evidence (1 day)
-- ⬜ 4.1 (harness done; first real report pending) `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
+- ✅ 4.1 `evals/run.py`: 20 fixed scenarios → metrics: valid output rate, first-attempt acceptance rate and repair rate (per mode), budget adherence, diet violations, avg latency, avg cost. Writes `evals/report.md`.
 - ✅ 4.2 GitHub Actions: backend lint+tests, frontend lint+build+tests on every push/PR.
 
 ## Phase 5 — Ship (½–1 day)
-- ⬜ 5.1 Deploy: frontend → Cloudflare Pages, backend → Google Cloud Run (EU Tier 1 region, max-instances=1). Env vars/secrets set, health check green, OpenAI hard spend limit + GCP budget alert configured.
-- ⬜ 5.2 README rewrite: problem → demo link + GIF → architecture diagram → "LLM chooses, server computes" → eval results → run locally.
+- ✅ 5.1 Deploy: frontend → Cloudflare Pages, backend → Google Cloud Run (EU Tier 1 region, max-instances=1). Env vars/secrets set, health check green, OpenAI hard spend limit + GCP budget alert configured.
+- ✅ 5.2 README rewrite: problem → demo link + GIF → architecture diagram → "LLM chooses, server computes" → eval results → run locally.
 - ⬜ 5.3 Tag `v2.0.0` release.
 
 ## Later (not MVP)
@@ -79,3 +79,6 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - Recipe steps per meal.
 - Short share links with server-side storage (Neon Postgres) — URL-encoded snapshots are enough for v2.
 - ESLint 9 upgrade (with typescript-eslint 8, react-hooks plugin 5+); Phase 0 kept ESLint 8.57 with flat config.
+- Dedicated least-privilege runtime service account for Cloud Run (drop `roles/editor` from the default compute SA).
+- Custom API domain.
+- Shared rate-limit store (e.g. Redis) if scaled beyond one instance.
