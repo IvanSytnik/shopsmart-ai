@@ -64,7 +64,8 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+      {/* In flow above the logo below md (at sm a pinned toolbar still covers it). */}
+      <div className="flex items-center justify-end gap-2 px-4 pt-4 md:fixed md:top-4 md:right-4 md:z-50 md:p-0">
         <button
           onClick={() => setHistoryOpen(true)}
           className="p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all"
@@ -82,7 +83,7 @@ const AppContent: React.FC = () => {
         onLoad={handleLoadFromHistory}
       />
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 pt-4 pb-8 md:pt-8 max-w-4xl">
         <header className="text-center mb-8">
           <div className="inline-block p-4 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl shadow-lg mb-4">
             <span className="text-4xl">🛒</span>
