@@ -203,6 +203,7 @@ How a plan is made:
    **kcal normalization**: if the portions give less than `MIN_KCAL_PER_PERSON_DAY` per person and day, all portions are scaled up by min / kcal × 1.05 (at most × 1.6); above `MAX_KCAL_PER_PERSON_DAY` they are scaled down by max / kcal × 0.95. Scaled portions are rounded (g/ml to 5, pcs to 1) and clamped to their range, then the packs are recomputed. Only a menu still outside the range after this goes to the repair step. The prompt also asks for about 450/650/650/250 kcal per person for breakfast/lunch/dinner/snack.
 4. **Checks + one repair**: empty list, a menu with fewer days than requested (extra days are dropped without a repair), meals without ingredients, a total more than `TRIM_TOLERANCE` (default 10%) over budget (the repair message states the overshoot in €; in menu mode it also names the 3 most expensive ingredients; a smaller overshoot is not repaired but trimmed in step 5), or, in menu mode, eaten kcal per person and day below `MIN_KCAL_PER_PERSON_DAY` or above `MAX_KCAL_PER_PERSON_DAY` (the message states current vs limit) → one retry telling the model what was wrong. Both attempts share the request deadline. If the retry still misses the budget or kcal range, the earlier valid plan is used. Budget per mode: in `shopping` mode the model is asked to spend 85–98% of the budget; in `menu` mode the budget is only a ceiling and nothing is bought besides what the menu uses.
 5. **Pricing**: totals from catalog prices (`Decimal`, rounded half-up to cents). If the plan is still over budget, the server trims it: packs first, then whole lines (snacks, beverages, frozen, cleaning, hygiene, then the rest, most expensive first); in menu mode every line is a menu ingredient, so packs are reduced before any ingredient is removed. Trimmed lines are listed in `trimmed`.
+6. **kcal top-up (shopping mode)**: if the purchased food is below `MIN_KCAL_PER_PERSON_DAY` per person over 7 days, the server adds one pack at a time while the budget allows: the food with the most kcal per € among the list's products first, then the other candidates (same stores and diets). Beverages, snacks, `other` and non-food are never added, nor are trimmed products; at most `TOP_UP_MAX_PACKS_PER_PRODUCT` (default 3) packs are added per product, and no product may exceed `TOP_UP_MAX_KCAL_SHARE` (default 35%) of the purchased kcal. Deterministic, no LLM call; reported as the `kcal_topped_up` warning.
 
 Errors are JSON `{"detail": "<generic text>", "code": "<machine code>"}`; clients should branch on `code`. A `validation_error` also has `errors: [{loc, msg}]`.
 
@@ -327,7 +328,7 @@ Response to the request above with the test catalog (2 of 5 items shown). The me
 | `kcal_per_person_day`, `kcal_basis` | kcal / (`family_size` × days). `kcal_basis: "menu"` (menu mode): what the menu's portions provide, counting only what is bought after trimming. `kcal_basis: "purchased"` (shopping mode, 7 days): `nutrition_totals.kcal` of the purchased packs, an upper bound |
 | `trimmed` | lines the server cut to fit the budget, with `name` and `names` like `items` (a removed line isn't in `items`); `to_packs: 0` = removed |
 | `menu` | `null` in shopping mode. `ingredients[].product_id` refers to `items` (an ingredient may be missing if it was trimmed); `amount_per_person` is in the item's `portion_unit`. Meal names and descriptions are written by the model in the request language only; they don't change when a client switches language |
-| `warnings` | `low_kcal`: menu mode and `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` after the final attempt and any trimming; `budget_trimmed`: `trimmed` is not empty |
+| `warnings` | `low_kcal`: `kcal_per_person_day` still below `MIN_KCAL_PER_PERSON_DAY` (menu: after the final attempt and any trimming; shopping: after the kcal top-up); `budget_trimmed`: `trimmed` is not empty; `kcal_topped_up`: shopping mode, the server added packs to reach the kcal floor (included in `items` and totals) |
 | `catalog_version`, `price_date` | which reference prices were used |
 
 ### Catalog metadata
@@ -415,7 +416,9 @@ OPENAI_MAX_RETRIES=0                       # default; SDK retries on connection/
 REQUEST_DEADLINE_S=55                      # default; total time for one POST /generate
 REPAIR_MIN_REMAINING_S=20                  # default; skip the repair retry if less is left
 CATALOG_PATH=app/data/catalog.json         # default; price catalog, validated at startup
-MIN_KCAL_PER_PERSON_DAY=1600               # default; menu mode repairs plans below this
+MIN_KCAL_PER_PERSON_DAY=1600               # default; menu mode repairs plans below this, shopping mode tops up
+TOP_UP_MAX_PACKS_PER_PRODUCT=3             # default; shopping kcal top-up: packs added per product
+TOP_UP_MAX_KCAL_SHARE=0.35                 # default; shopping kcal top-up: max share of one product in the kcal
 MAX_KCAL_PER_PERSON_DAY=3500               # default; menu mode repairs portions above this
 TIGHT_BUDGET_PER_PERSON_DAY=7.0            # default; below it costly calories aren't offered (0 = off)
 TRIM_TOLERANCE=0.10                        # default; up to 10% over budget is trimmed, not repaired

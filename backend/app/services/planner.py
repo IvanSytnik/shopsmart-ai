@@ -62,6 +62,7 @@ from app.services.pricing import (
     enforce_budget,
     price_plan,
     round_money,
+    top_up_kcal,
 )
 
 logger = logging.getLogger(__name__)
@@ -114,6 +115,7 @@ class PlanResult:
     trimmed: list[BudgetChange]
     required: dict[str, Decimal]
     scaled: bool
+    topped_up: dict[str, int] = field(default_factory=dict)  # shopping: packs added for kcal
 
 
 @dataclass
@@ -580,13 +582,35 @@ def draft_problems(draft: Draft, request: GenerateRequest, settings: Settings) -
     return problems
 
 
-def finish_plan(draft: Draft, request: GenerateRequest) -> PlanResult:
+def finish_plan(
+    draft: Draft, request: GenerateRequest, candidates: list[Product], settings: Settings
+) -> PlanResult:
     """Trim to the budget. In menu mode every line is a menu ingredient, so all are
-    protected alike: packs are reduced before any ingredient is removed."""
-    trimmed, changes = enforce_budget(draft.priced, request_budget(request), set(draft.required))
+    protected alike: packs are reduced before any ingredient is removed.
+
+    Shopping mode, below the kcal floor: top up with filling packs from `candidates` while
+    the budget allows (see `top_up_kcal`). Trimmed products aren't added back.
+    """
+    budget = request_budget(request)
+    trimmed, changes = enforce_budget(draft.priced, budget, set(draft.required))
     if changes:
         logger.info("Trimmed %d lines to fit the budget", len(changes))
-    return PlanResult(draft.notes, draft.menu, trimmed, changes, draft.required, draft.scaled)
+    topped_up: dict[str, int] = {}
+    if request.mode == "shopping":
+        trimmed, topped_up = top_up_kcal(
+            trimmed,
+            candidates,
+            budget,
+            target_kcal=settings.min_kcal_per_person_day * request.family_size * SHOPPING_DAYS,
+            max_packs_per_product=settings.top_up_max_packs_per_product,
+            max_kcal_share=settings.top_up_max_kcal_share,
+            skip_ids={c.product_id for c in changes},
+        )
+        if topped_up:
+            logger.info("Topped up %d packs for kcal", sum(topped_up.values()))
+    return PlanResult(
+        draft.notes, draft.menu, trimmed, changes, draft.required, draft.scaled, topped_up
+    )
 
 
 async def create_plan(
@@ -655,7 +679,7 @@ async def create_plan(
                     if not problems:
                         logger.info("LLM plan accepted on attempt %d/%d", attempt, MAX_ATTEMPTS)
                         trace.accepted_attempt = attempt
-                        return finish_plan(draft, request)
+                        return finish_plan(draft, request, offered, settings)
                     fallback = draft
                 raise LLMOutputError(" ".join(problems), assistant_reply=raw_reply)
             except LLMOutputError as e:
@@ -665,7 +689,7 @@ async def create_plan(
                 if fallback is not None and (last or remaining < settings.repair_min_remaining_s):
                     logger.info("Using the imperfect plan from an earlier attempt")
                     trace.used_fallback = True
-                    return finish_plan(fallback, request)
+                    return finish_plan(fallback, request, offered, settings)
                 if last:
                     raise
                 if remaining < settings.repair_min_remaining_s:
@@ -700,6 +724,8 @@ def response_warnings(
         warnings.append("low_kcal")
     if result.trimmed:
         warnings.append("budget_trimmed")
+    if result.topped_up:
+        warnings.append("kcal_topped_up")
     return warnings
 
 

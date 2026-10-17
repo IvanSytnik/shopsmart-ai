@@ -487,7 +487,8 @@ def test_trimming_can_cause_low_kcal_and_both_warnings_are_reported(
 def test_kcal_floor_warns_but_does_not_repair_in_shopping_mode(
     make_client: Callable[..., TestClient], fake_llm: FakeOpenAI
 ) -> None:
-    client = make_client(min_kcal_per_person_day=1600)
+    # Top-up off: this is about the warning and the missing repair (see test_top_up.py).
+    client = make_client(min_kcal_per_person_day=1600, top_up_max_packs_per_product=0)
     fake_llm.queue_plan(make_plan())
 
     response = client.post("/generate", json={**BODY, "family_size": 10})

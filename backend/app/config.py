@@ -27,9 +27,15 @@ class Settings(BaseSettings):
     # Skip the repair call if less than this is left of the deadline.
     repair_min_remaining_s: float = Field(default=20, ge=0)
     # Menu mode: a plan below this many kcal per person and day is sent back for repair.
+    # Shopping mode: the kcal top-up's target. Both: below it the response warns low_kcal.
     min_kcal_per_person_day: int = Field(default=1600, ge=0)
     # Menu mode: portions above this many kcal per person and day are sent back for repair.
     max_kcal_per_person_day: int = Field(default=3500, ge=1)
+    # Shopping mode: below min_kcal_per_person_day, packs are added while the budget allows
+    # (app.services.pricing.top_up_kcal). At most this many added packs per product ...
+    top_up_max_packs_per_product: int = Field(default=3, ge=0)
+    # ... and no product above this share of the list's purchased kcal.
+    top_up_max_kcal_share: float = Field(default=0.35, gt=0, le=1)
     # Below this budget per person and day (EUR), food candidates with the highest cost per
     # 1000 kcal are not offered to the LLM (0 turns the filter off).
     tight_budget_per_person_day: float = Field(default=7.0, ge=0)

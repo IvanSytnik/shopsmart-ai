@@ -4,7 +4,7 @@ The LLM only says which products and how many packs; every number here comes fro
 catalog. Money is `Decimal`, rounded half-up to cents.
 """
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Collection, Iterable, Sequence
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Literal
@@ -16,6 +16,10 @@ CENT = Decimal("0.01")
 
 # Dropped first when over budget; categories not listed come after, as one group.
 DROP_PRIORITY: tuple[Category, ...] = ("snacks", "beverages", "frozen", "cleaning", "hygiene")
+# Never added by the kcal top-up: not a meal staple, or not food.
+TOP_UP_EXCLUDED: frozenset[Category] = frozenset(
+    {"beverages", "snacks", "cleaning", "hygiene", "other"}
+)
 
 
 class PricingError(Exception):
@@ -206,3 +210,66 @@ def enforce_budget(
     if trimmed.total > budget:  # can't happen: the loop stops at <= budget
         raise BudgetUnreachableError(f"trimmed total {trimmed.total} exceeds budget {budget}")
     return trimmed, changes
+
+
+def _kcal_per_euro(product: Product) -> float:
+    return (product.kcal or 0) / float(product.price_eur)
+
+
+def top_up_kcal(
+    plan: PricedPlan,
+    candidates: Iterable[Product],
+    budget: Decimal | float,
+    target_kcal: float,
+    max_packs_per_product: int,
+    max_kcal_share: float,
+    skip_ids: Collection[str] = (),
+) -> tuple[PricedPlan, dict[str, int]]:
+    """Add single packs until the plan has `target_kcal` or nothing more fits the budget.
+
+    Each step adds one pack of the product with the most kcal per euro: products already in
+    the plan first, then the other `candidates`. A product qualifies when it is food with
+    energy outside TOP_UP_EXCLUDED and not in `skip_ids`, has had fewer than
+    `max_packs_per_product` packs added, its pack fits the remaining budget, and with it the
+    product stays at most `max_kcal_share` of the plan's kcal. Returns the new plan and the
+    packs added per product (empty, with `plan` itself, if none).
+    """
+    budget = round_money(Decimal(str(budget)))
+    products = {line.product.id: line.product for line in plan.lines}
+    packs = {line.product.id: line.packs for line in plan.lines}
+    in_plan = list(products.values())
+    others = [p for p in candidates if p.id not in products]
+    added: dict[str, int] = {}
+    total = plan.total
+    kcal = sum((p.kcal or 0) * packs[p.id] for p in in_plan)
+
+    def fits(product: Product) -> bool:
+        if product.category in TOP_UP_EXCLUDED or not product.kcal or product.id in skip_ids:
+            return False
+        if added.get(product.id, 0) >= max_packs_per_product:
+            return False
+        if product.price_eur > budget - total:
+            return False
+        product_kcal = product.kcal * (packs.get(product.id, 0) + 1)
+        return product_kcal <= max_kcal_share * (kcal + product.kcal)
+
+    def best(pool: list[Product]) -> Product | None:
+        eligible = [p for p in pool if fits(p)]
+        # Most kcal per euro; product id breaks ties so the result is deterministic.
+        return min(eligible, key=lambda p: (-_kcal_per_euro(p), p.id), default=None)
+
+    while kcal < target_kcal:
+        product = best(in_plan) or best(others)
+        if product is None:
+            break
+        if product.id not in products:
+            products[product.id] = product
+            in_plan.append(product)
+        packs[product.id] = packs.get(product.id, 0) + 1
+        added[product.id] = added.get(product.id, 0) + 1
+        total += product.price_eur
+        kcal += product.kcal or 0
+
+    if not added:
+        return plan, {}
+    return _build((p, packs[p.id]) for p in products.values()), added

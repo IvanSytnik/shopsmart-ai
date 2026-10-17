@@ -68,7 +68,9 @@ class DayMenu(BaseModel):
 # low_kcal: kcal_per_person_day is below Settings.min_kcal_per_person_day: a menu's eaten
 # kcal after the final attempt (and any trimming), or a shopping list's purchased kcal.
 # budget_trimmed: the server cut lines to fit the budget (see `trimmed`).
-Warning = Literal["low_kcal", "budget_trimmed"]
+# kcal_topped_up: shopping mode, the server added filling packs to approach the kcal floor
+# (Settings.min_kcal_per_person_day); `items` and totals include them.
+Warning = Literal["low_kcal", "budget_trimmed", "kcal_topped_up"]
 KcalBasis = Literal["menu", "purchased"]
 
 
