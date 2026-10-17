@@ -1,3 +1,5 @@
+import type { PluralForms } from './plural';
+
 export type Language = 'en' | 'uk' | 'de';
 
 export const translations = {
@@ -7,8 +9,6 @@ export const translations = {
     selectSupermarkets: 'Select Supermarkets',
     weeklyBudget: 'Weekly Budget',
     familySize: 'Family Size',
-    person: 'person',
-    people: 'people',
     dietaryPreferences: 'Dietary Preferences',
     additionalPreferences: 'Additional Preferences',
     preferencesPlaceholder: 'E.g., no pork, prefer organic vegetables, need baby food...',
@@ -24,9 +24,7 @@ export const translations = {
     organic: 'Organic',
     budgetSaver: 'Budget Saver',
     yourShoppingList: 'Your Shopping List',
-    items: 'items',
     estimatedCost: 'Estimated Cost',
-    stores: 'stores',
     budgetUsed: 'Budget Used',
     copyToClipboard: 'Copy to Clipboard',
     print: 'Print',
@@ -155,8 +153,6 @@ export const translations = {
     selectSupermarkets: 'Оберіть супермаркети',
     weeklyBudget: 'Тижневий бюджет',
     familySize: "Розмір сім'ї",
-    person: 'особа',
-    people: 'осіб',
     dietaryPreferences: 'Дієтичні переваги',
     additionalPreferences: 'Додаткові побажання',
     preferencesPlaceholder: 'Напр., без свинини, перевага органічним овочам...',
@@ -172,9 +168,7 @@ export const translations = {
     organic: 'Органічне',
     budgetSaver: 'Економне',
     yourShoppingList: 'Ваш список покупок',
-    items: 'товарів',
     estimatedCost: 'Орієнтовна вартість',
-    stores: 'магазинів',
     budgetUsed: 'Використано бюджету',
     copyToClipboard: 'Копіювати',
     print: 'Друк',
@@ -300,8 +294,6 @@ export const translations = {
     selectSupermarkets: 'Supermärkte auswählen',
     weeklyBudget: 'Wochenbudget',
     familySize: 'Familiengröße',
-    person: 'Person',
-    people: 'Personen',
     dietaryPreferences: 'Ernährungspräferenzen',
     additionalPreferences: 'Zusätzliche Wünsche',
     preferencesPlaceholder: 'Z.B. kein Schweinefleisch, Bio-Gemüse bevorzugt...',
@@ -317,9 +309,7 @@ export const translations = {
     organic: 'Bio',
     budgetSaver: 'Sparpreis',
     yourShoppingList: 'Ihre Einkaufsliste',
-    items: 'Artikel',
     estimatedCost: 'Geschätzte Kosten',
-    stores: 'Geschäfte',
     budgetUsed: 'Budget verwendet',
     copyToClipboard: 'Kopieren',
     print: 'Drucken',
@@ -447,3 +437,25 @@ export const translations = {
 };
 
 export type TranslationKey = keyof typeof translations.en;
+
+// Counted nouns, chosen with Intl.PluralRules (see plural.ts). uk: 1 товар, 2 товари,
+// 5 товарів, 1,5 товару.
+export type PluralNoun = 'item' | 'store' | 'person';
+
+export const pluralNouns: Record<Language, Record<PluralNoun, PluralForms>> = {
+  en: {
+    item: { one: 'item', other: 'items' },
+    store: { one: 'store', other: 'stores' },
+    person: { one: 'person', other: 'people' },
+  },
+  uk: {
+    item: { one: 'товар', few: 'товари', many: 'товарів', other: 'товару' },
+    store: { one: 'магазин', few: 'магазини', many: 'магазинів', other: 'магазину' },
+    person: { one: 'особа', few: 'особи', many: 'осіб', other: 'особи' },
+  },
+  de: {
+    item: { one: 'Artikel', other: 'Artikel' },
+    store: { one: 'Geschäft', other: 'Geschäfte' },
+    person: { one: 'Person', other: 'Personen' },
+  },
+};

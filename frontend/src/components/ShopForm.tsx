@@ -41,7 +41,7 @@ const toggle = <T,>(list: T[], value: T): T[] =>
   list.includes(value) ? list.filter(v => v !== value) : [...list, value];
 
 export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
-  const { t, language } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const catalog = useCatalogMeta();
   const [country, setCountry] = useState<Country>('AT');
   const [selectedStores, setSelectedStores] = useState<string[]>([]);
@@ -101,14 +101,17 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
     });
   };
 
+  // Group captions are <p>s named by aria-labelledby: a <label> must point at one field.
   const labelClass = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 space-y-6 animate-fade-in transition-colors">
       {/* Mode Selector */}
       <div>
-        <label className={labelClass}>🎯 {t('mode')}</label>
-        <div className="grid grid-cols-2 gap-3">
+        <p className={labelClass}>
+          <span aria-hidden="true">🎯</span> <span id="mode-label">{t('mode')}</span>
+        </p>
+        <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="mode-label">
           {(
             [
               ['shopping', '🛒', 'shoppingList'],
@@ -139,8 +142,10 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
       {/* Days Selector (only for menu mode) */}
       {mode === 'menu' && (
         <div>
-          <label className={labelClass}>📆 {t('days')}</label>
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t('days')}>
+          <p className={labelClass}>
+            <span aria-hidden="true">📆</span> <span id="days-label">{t('days')}</span>
+          </p>
+          <div className="flex flex-wrap gap-2" role="group" aria-labelledby="days-label">
             {DAY_OPTIONS.map(d => (
               <button
                 key={d}
@@ -179,8 +184,10 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
       {meta && activeCountry && (
         <>
           <div>
-            <label className={labelClass}>🌍 {t('country')}</label>
-            <div className="flex flex-wrap gap-2" role="group" aria-label={t('country')}>
+            <p className={labelClass}>
+              <span aria-hidden="true">🌍</span> <span id="country-label">{t('country')}</span>
+            </p>
+            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="country-label">
               {countries.map(c => (
                 <button
                   key={c.code}
@@ -196,16 +203,18 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
           </div>
 
           <div>
-            <label className={labelClass}>
-              🏪 {t('selectSupermarkets')}{' '}
-              <span className="font-normal text-gray-500 dark:text-gray-400">
+            <p className={labelClass}>
+              <span aria-hidden="true">🏪</span>{' '}
+              <span id="stores-label">{t('selectSupermarkets')}</span>{' '}
+              <span id="stores-hint" className="font-normal text-gray-500 dark:text-gray-400">
                 ({t('storesHint', { max: MAX_STORES })})
               </span>
-            </label>
+            </p>
             <div
               className="grid grid-cols-2 sm:grid-cols-3 gap-3"
               role="group"
-              aria-label={t('selectSupermarkets')}
+              aria-labelledby="stores-label"
+              aria-describedby="stores-hint"
             >
               {stores.map(store => {
                 const selected = chosenStores.includes(store);
@@ -280,8 +289,10 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
 
       {/* Family Size */}
       <div>
-        <label className={labelClass}>👨‍👩‍👧‍👦 {t('familySize')}</label>
-        <div className="flex flex-wrap gap-2">
+        <p className={labelClass}>
+          <span aria-hidden="true">👨‍👩‍👧‍👦</span> <span id="family-size-label">{t('familySize')}</span>
+        </p>
+        <div className="flex flex-wrap gap-2" role="group" aria-labelledby="family-size-label">
           {FAMILY_SIZE_OPTIONS.map(size => (
             <button
               key={size}
@@ -293,7 +304,7 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
                   : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
               }`}
             >
-              {size} {size === 1 ? t('person') : t('people')}
+              {tn('person', size)}
             </button>
           ))}
         </div>
@@ -301,8 +312,10 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
 
       {/* Diets (filter catalog products) and wishes (sent as text) */}
       <div>
-        <label className={labelClass}>🥗 {t('dietaryPreferences')}</label>
-        <div className="flex flex-wrap gap-2">
+        <p className={labelClass}>
+          <span aria-hidden="true">🥗</span> <span id="diets-label">{t('dietaryPreferences')}</span>
+        </p>
+        <div className="flex flex-wrap gap-2" role="group" aria-labelledby="diets-label">
           {(meta?.diet_tags ?? []).map(tag => (
             <button
               key={tag}

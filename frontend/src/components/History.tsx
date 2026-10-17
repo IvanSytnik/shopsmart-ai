@@ -10,7 +10,7 @@ interface HistoryProps {
 }
 
 export const History: React.FC<HistoryProps> = ({ isOpen, onClose, onLoad }) => {
-  const { t } = useLanguage();
+  const { t, tn } = useLanguage();
   const [plans, setPlans] = React.useState<SavedPlan[]>([]);
 
   React.useEffect(() => {
@@ -67,7 +67,7 @@ export const History: React.FC<HistoryProps> = ({ isOpen, onClose, onLoad }) => 
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 dark:text-gray-300">
-                      {plan.response.items.length} {t('items')} •{' '}
+                      {tn('item', plan.response.items.length)} •{' '}
                       {Object.keys(plan.response.subtotals_by_store).join(', ')}
                     </span>
                     <div className="flex gap-2">

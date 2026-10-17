@@ -47,6 +47,28 @@ describe('ShopForm', () => {
     });
   });
 
+  it('labels every form field and names every option group', async () => {
+    mockFetch(META);
+    const user = userEvent.setup();
+    const { container } = renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    await screen.findByRole('button', { name: 'Penny' });
+    await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
+
+    for (const label of container.querySelectorAll('label')) {
+      expect(label.control, label.textContent ?? '').not.toBeNull();
+    }
+    for (const field of container.querySelectorAll('input, select, textarea')) {
+      expect((field as HTMLInputElement).labels?.length, field.id).toBeGreaterThan(0);
+    }
+    const groups = screen.getAllByRole('group').map(g => g.getAttribute('aria-labelledby'));
+    expect(groups).toHaveLength(6);
+    for (const id of groups) {
+      expect(document.getElementById(id ?? '')?.textContent).toBeTruthy();
+    }
+    expect(screen.getByRole('group', { name: 'Mode' })).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'Family Size' })).toBeTruthy();
+  });
+
   it('hides a country without stores', async () => {
     mockFetch({ ...META, countries: { AT: ['Lidl', 'Penny'], DE: [] } });
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);

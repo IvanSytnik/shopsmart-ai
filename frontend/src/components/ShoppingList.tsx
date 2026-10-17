@@ -9,7 +9,7 @@ interface ShoppingListProps {
 }
 
 export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
-  const { t, language } = useLanguage();
+  const { t, tn, language } = useLanguage();
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   const toggleItem = (productId: string) => {
@@ -30,8 +30,8 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
     <div className="space-y-4">
       <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 px-1">
         <span>
-          {response.items.length} {t('items')} • {Object.keys(response.subtotals_by_store).length}{' '}
-          {t('stores')}
+          {tn('item', response.items.length)} •{' '}
+          {tn('store', Object.keys(response.subtotals_by_store).length)}
         </span>
         <span>
           {progress.toFixed(0)}% {t('completed').toLowerCase()}
@@ -47,7 +47,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
           <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-6 py-4 flex items-baseline justify-between">
             <h3 className="text-lg font-semibold text-white">{store}</h3>
             <p className="text-primary-100 text-sm">
-              {items.length} {t('items')} •{' '}
+              {tn('item', items.length)} •{' '}
               <span data-testid={`subtotal-${store}`}>
                 €{money(response.subtotals_by_store[store] ?? 0)}
               </span>
