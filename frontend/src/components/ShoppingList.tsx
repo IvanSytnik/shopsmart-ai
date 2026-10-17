@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GenerateResponse } from '../types';
-import { CATEGORY_ICONS } from '../constants';
+import { productIcon } from '../constants';
 import { useLanguage } from '../LanguageContext';
 import { formatSize, groupByStore, money, productName } from './results/format';
 
@@ -70,7 +70,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ response }) => {
                       {isChecked && <span className="text-white text-sm">✓</span>}
                     </span>
                     <span className="text-2xl" title={t(item.category)}>
-                      {CATEGORY_ICONS[item.category]}
+                      {productIcon(item)}
                     </span>
                     <span className="flex-1 min-w-0">
                       <span

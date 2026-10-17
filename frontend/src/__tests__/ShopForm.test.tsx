@@ -134,7 +134,7 @@ describe('ShopForm', () => {
     expect(submitButton()).toHaveProperty('disabled', true);
 
     await user.click(screen.getByRole('button', { name: 'Lidl' }));
-    const budget = screen.getByLabelText(/Weekly Budget/);
+    const budget = screen.getByLabelText(/^💰 Budget$/);
     await user.clear(budget);
     await user.type(budget, '5');
     expect(submitButton()).toHaveProperty('disabled', true);
@@ -143,7 +143,7 @@ describe('ShopForm', () => {
   });
 
   describe('budget field', () => {
-    const budgetInput = () => screen.getByLabelText<HTMLInputElement>(/Weekly Budget/);
+    const budgetInput = () => screen.getByLabelText<HTMLInputElement>(/^💰 Budget$/);
     const budgetError = () => screen.queryByText('Enter a budget between €10 and €1000.');
 
     it('can be cleared to empty and retyped', async () => {
@@ -169,7 +169,7 @@ describe('ShopForm', () => {
       const user = userEvent.setup();
       renderWithLanguage(<ShopForm onSubmit={onSubmit} />, 'de');
       await screen.findByRole('button', { name: 'Lidl' });
-      const input = screen.getByLabelText<HTMLInputElement>(/Wochenbudget/);
+      const input = screen.getByLabelText<HTMLInputElement>(/^💰 Budget$/);
 
       await user.clear(input);
       await user.type(input, '040');
@@ -249,10 +249,11 @@ describe('ShopForm', () => {
     const user = userEvent.setup();
     renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
 
-    expect(screen.getByLabelText(/Weekly Budget/)).toBeTruthy();
-    await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
-    expect(screen.queryByLabelText(/Weekly Budget/)).toBeNull();
     expect(screen.getByLabelText(/^💰 Budget$/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
+    expect(screen.getByLabelText(/^💰 Budget for 7 days$/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: '1' }));
+    expect(screen.getByLabelText(/^💰 Budget for 1 day$/)).toBeTruthy();
   });
 
   it('allows at most five stores', async () => {
@@ -266,5 +267,19 @@ describe('ShopForm', () => {
       await user.click(screen.getByRole('button', { name: store }));
     }
     expect(screen.getByRole('button', { name: 'F' })).toHaveProperty('disabled', true);
+  });
+});
+
+describe('budget label in Ukrainian', () => {
+  it('uses the plural form of the day count', async () => {
+    mockFetch();
+    const user = userEvent.setup();
+    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />, 'uk');
+
+    await user.click(screen.getByRole('button', { name: /Планування меню/ }));
+    await user.click(screen.getByRole('button', { name: '3' }));
+    expect(screen.getByLabelText(/^💰 Бюджет на 3 дні$/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: '5' }));
+    expect(screen.getByLabelText(/^💰 Бюджет на 5 днів$/)).toBeTruthy();
   });
 });

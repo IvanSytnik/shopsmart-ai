@@ -3,6 +3,13 @@ import { useLanguage } from '../LanguageContext';
 import type { ErrorCode } from '../api';
 import { ERROR_MESSAGE_KEYS } from '../errorMessages';
 
+// Trying again can't help: the request itself has to change.
+const NOT_RETRYABLE: ReadonlySet<ErrorCode> = new Set([
+  'not_enough_products',
+  'validation_error',
+  'unknown_store',
+]);
+
 interface ErrorBannerProps {
   code: ErrorCode;
   onDismiss: () => void;
@@ -29,12 +36,14 @@ export const ErrorBanner: React.FC<ErrorBannerProps> = ({ code, onDismiss, onRet
             >
               {t('dismiss')}
             </button>
-            <button
-              onClick={onRetry}
-              className="text-sm text-red-600 dark:text-red-400 hover:text-red-800 underline"
-            >
-              {t('refreshPage')}
-            </button>
+            {!NOT_RETRYABLE.has(code) && (
+              <button
+                onClick={onRetry}
+                className="text-sm text-red-600 dark:text-red-400 hover:text-red-800 underline"
+              >
+                {t('refreshPage')}
+              </button>
+            )}
           </div>
         </div>
         <button

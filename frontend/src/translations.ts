@@ -7,7 +7,6 @@ export const translations = {
     appName: 'ShopSmart AI',
     appDescription: 'AI meal & shopping planner with real store prices',
     selectSupermarkets: 'Select Supermarkets',
-    weeklyBudget: 'Weekly Budget',
     familySize: 'Family Size',
     dietaryPreferences: 'Dietary Preferences',
     additionalPreferences: 'Additional Preferences',
@@ -108,6 +107,7 @@ export const translations = {
     // v2: results
     total: 'Total',
     budget: 'Budget',
+    budgetForDays: 'Budget for {days}',
     budgetLeft: '€{amount} left',
     purchasedKcal: 'Purchased food ≈ {kcal} kcal per person/day',
     menuKcal: 'Menu ≈ {kcal} kcal per person/day',
@@ -151,7 +151,6 @@ export const translations = {
     appName: 'ShopSmart AI',
     appDescription: 'ШІ-планувальник меню та покупок з реальними цінами магазинів',
     selectSupermarkets: 'Оберіть супермаркети',
-    weeklyBudget: 'Тижневий бюджет',
     familySize: "Розмір сім'ї",
     dietaryPreferences: 'Дієтичні переваги',
     additionalPreferences: 'Додаткові побажання',
@@ -250,6 +249,7 @@ export const translations = {
     // v2: results
     total: 'Разом',
     budget: 'Бюджет',
+    budgetForDays: 'Бюджет на {days}',
     budgetLeft: 'Залишок €{amount}',
     purchasedKcal: 'Куплені продукти ≈ {kcal} ккал на людину в день',
     menuKcal: 'Меню ≈ {kcal} ккал на людину в день',
@@ -292,7 +292,6 @@ export const translations = {
     appName: 'ShopSmart AI',
     appDescription: 'KI-Menü- und Einkaufsplaner mit echten Supermarktpreisen',
     selectSupermarkets: 'Supermärkte auswählen',
-    weeklyBudget: 'Wochenbudget',
     familySize: 'Familiengröße',
     dietaryPreferences: 'Ernährungspräferenzen',
     additionalPreferences: 'Zusätzliche Wünsche',
@@ -394,6 +393,7 @@ export const translations = {
     // v2: results
     total: 'Summe',
     budget: 'Budget',
+    budgetForDays: 'Budget für {days}',
     budgetLeft: '€{amount} übrig',
     purchasedKcal: 'Gekaufte Lebensmittel ≈ {kcal} kcal pro Person/Tag',
     menuKcal: 'Menü ≈ {kcal} kcal pro Person/Tag',
@@ -440,22 +440,25 @@ export type TranslationKey = keyof typeof translations.en;
 
 // Counted nouns, chosen with Intl.PluralRules (see plural.ts). uk: 1 товар, 2 товари,
 // 5 товарів, 1,5 товару.
-export type PluralNoun = 'item' | 'store' | 'person';
+export type PluralNoun = 'item' | 'store' | 'person' | 'day';
 
 export const pluralNouns: Record<Language, Record<PluralNoun, PluralForms>> = {
   en: {
     item: { one: 'item', other: 'items' },
     store: { one: 'store', other: 'stores' },
     person: { one: 'person', other: 'people' },
+    day: { one: 'day', other: 'days' },
   },
   uk: {
     item: { one: 'товар', few: 'товари', many: 'товарів', other: 'товару' },
     store: { one: 'магазин', few: 'магазини', many: 'магазинів', other: 'магазину' },
     person: { one: 'особа', few: 'особи', many: 'осіб', other: 'особи' },
+    day: { one: 'день', few: 'дні', many: 'днів', other: 'дня' },
   },
   de: {
     item: { one: 'Artikel', other: 'Artikel' },
     store: { one: 'Geschäft', other: 'Geschäfte' },
     person: { one: 'Person', other: 'Personen' },
+    day: { one: 'Tag', other: 'Tage' },
   },
 };

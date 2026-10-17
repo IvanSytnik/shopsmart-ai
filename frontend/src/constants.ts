@@ -49,3 +49,15 @@ export const CATEGORY_ICONS: Record<Category, string> = {
   hygiene: '🧴',
   other: '📦',
 };
+
+// Checked before CATEGORY_ICONS: a keyword that is one segment of the product id
+// ("at-billa-eggs-m-10" has "eggs"). Eggs are in dairy, but a milk glass is wrong for them.
+export const PRODUCT_ICON_OVERRIDES: readonly { keyword: string; icon: string }[] = [
+  { keyword: 'eggs', icon: '🥚' },
+];
+
+export const productIcon = (item: { product_id: string; category: Category }): string => {
+  const segments = item.product_id.split('-');
+  const override = PRODUCT_ICON_OVERRIDES.find(o => segments.includes(o.keyword));
+  return override?.icon ?? CATEGORY_ICONS[item.category];
+};

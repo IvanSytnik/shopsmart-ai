@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatPortion, formatSize, portionUnitOf } from '../components/results/format';
+import { productIcon } from '../constants';
 import type { Item } from '../types';
 import { translations, Language, TranslationKey } from '../translations';
 
@@ -46,5 +47,14 @@ describe('formatPortion', () => {
     expect(portionUnitOf({ unit: 'kg', portion_unit: 'pack' })).toBe('pack');
     const legacy = { unit: 'kg' } as unknown as Pick<Item, 'unit' | 'portion_unit'>;
     expect(portionUnitOf(legacy)).toBe('g');
+  });
+});
+
+describe('productIcon', () => {
+  it('uses a product override before the category icon', () => {
+    expect(productIcon({ product_id: 'at-billa-eggs-m-10', category: 'dairy' })).toBe('🥚');
+    expect(productIcon({ product_id: 'at-billa-uht-whole-milk-1l', category: 'dairy' })).toBe('🥛');
+    // Whole id segments only: egg noodles keep their category icon.
+    expect(productIcon({ product_id: 'at-x-egg-noodles-500g', category: 'pantry' })).toBe('🥫');
   });
 });
