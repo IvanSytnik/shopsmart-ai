@@ -34,8 +34,11 @@ class Settings(BaseSettings):
     # Shopping mode: below min_kcal_per_person_day, packs are added while the budget allows
     # (app.services.pricing.top_up_kcal). At most this many added packs per product ...
     top_up_max_packs_per_product: int = Field(default=3, ge=0)
-    # ... and no product above this share of the list's purchased kcal.
+    # ... and no product above this share of the target kcal (floor x people x 7 days).
     top_up_max_kcal_share: float = Field(default=0.35, gt=0, le=1)
+    # A product already in the list is added before the best candidate if it has at least
+    # this fraction of that candidate's kcal per euro.
+    top_up_in_list_min_ratio: float = Field(default=0.7, ge=0, le=1)
     # Below this budget per person and day (EUR), food candidates with the highest cost per
     # 1000 kcal are not offered to the LLM (0 turns the filter off).
     tight_budget_per_person_day: float = Field(default=7.0, ge=0)

@@ -223,16 +223,19 @@ def top_up_kcal(
     target_kcal: float,
     max_packs_per_product: int,
     max_kcal_share: float,
+    in_list_min_ratio: float,
     skip_ids: Collection[str] = (),
 ) -> tuple[PricedPlan, dict[str, int]]:
     """Add single packs until the plan has `target_kcal` or nothing more fits the budget.
 
-    Each step adds one pack of the product with the most kcal per euro: products already in
-    the plan first, then the other `candidates`. A product qualifies when it is food with
-    energy outside TOP_UP_EXCLUDED and not in `skip_ids`, has had fewer than
-    `max_packs_per_product` packs added, its pack fits the remaining budget, and with it the
-    product stays at most `max_kcal_share` of the plan's kcal. Returns the new plan and the
-    packs added per product (empty, with `plan` itself, if none).
+    A product qualifies when it is food with energy outside TOP_UP_EXCLUDED and not in
+    `skip_ids`, has had fewer than `max_packs_per_product` packs added, its pack fits the
+    remaining budget, and with it the product stays at most `max_kcal_share` of
+    `target_kcal`. Each step adds one pack of the qualifying product with the most kcal per
+    euro, among the plan's products and the other `candidates`; the best product already in
+    the plan wins instead if it has at least `in_list_min_ratio` of that kcal per euro.
+    Returns the new plan and the packs added per product (empty, with `plan` itself, if
+    none).
     """
     budget = round_money(Decimal(str(budget)))
     products = {line.product.id: line.product for line in plan.lines}
@@ -250,8 +253,7 @@ def top_up_kcal(
             return False
         if product.price_eur > budget - total:
             return False
-        product_kcal = product.kcal * (packs.get(product.id, 0) + 1)
-        return product_kcal <= max_kcal_share * (kcal + product.kcal)
+        return product.kcal * (packs.get(product.id, 0) + 1) <= max_kcal_share * target_kcal
 
     def best(pool: list[Product]) -> Product | None:
         eligible = [p for p in pool if fits(p)]
@@ -259,12 +261,18 @@ def top_up_kcal(
         return min(eligible, key=lambda p: (-_kcal_per_euro(p), p.id), default=None)
 
     while kcal < target_kcal:
-        product = best(in_plan) or best(others)
+        product = best(in_plan + others)
         if product is None:
             break
+        listed = best(in_plan)
+        if listed is not None and (
+            _kcal_per_euro(listed) >= in_list_min_ratio * _kcal_per_euro(product)
+        ):
+            product = listed
         if product.id not in products:
             products[product.id] = product
             in_plan.append(product)
+            others.remove(product)
         packs[product.id] = packs.get(product.id, 0) + 1
         added[product.id] = added.get(product.id, 0) + 1
         total += product.price_eur

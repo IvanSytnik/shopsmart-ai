@@ -604,6 +604,7 @@ def finish_plan(
             target_kcal=settings.min_kcal_per_person_day * request.family_size * SHOPPING_DAYS,
             max_packs_per_product=settings.top_up_max_packs_per_product,
             max_kcal_share=settings.top_up_max_kcal_share,
+            in_list_min_ratio=settings.top_up_in_list_min_ratio,
             skip_ids={c.product_id for c in changes},
         )
         if topped_up:

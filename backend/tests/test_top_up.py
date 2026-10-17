@@ -19,6 +19,7 @@ CHIPS = "at-lidl-potato-chips-175g"  # snacks, never added
 CHICKEN = "at-lidl-chicken-breast-500g"  # €5.99
 
 FLOOR = 1600
+WEEK_FOR_TWO = FLOOR * 2 * 7  # target kcal for 2 people
 
 
 @pytest.fixture(scope="module")
@@ -47,6 +48,7 @@ def top_up(
         target,
         max_packs_per_product=limits.get("max_packs", 3),
         max_kcal_share=limits.get("max_share", 0.35),
+        in_list_min_ratio=limits.get("min_ratio", 0.7),
         skip_ids=limits.get("skip_ids", ()),
     )
 
@@ -68,30 +70,35 @@ def test_adds_packs_until_the_target_is_reached(catalog: ProductCatalog) -> None
         assert packs_after[product_id] == packs_before.get(product_id, 0) + n
 
 
-def test_prefers_products_already_in_the_list(catalog: ProductCatalog) -> None:
-    # Rice (1528 kcal/€) is in the list; oats (2090 kcal/€) is only a candidate.
-    # 11_700 kcal; another pack of pasta or rice would exceed 35% of the kcal, milk wouldn't.
-    lines = {MILK: 4, APPLES: 4, PASTA: 2, RICE: 1}
+def test_low_kcal_per_euro_list_item_loses_to_the_best_candidate(
+    catalog: ProductCatalog,
+) -> None:
+    # Apples (261 kcal/€) and chicken (92) are far below oats (2090): oats, pasta, rice first.
+    _, added = top_up(catalog, {APPLES: 2, CHICKEN: 1}, 50, WEEK_FOR_TWO)
 
-    _, added = top_up(catalog, lines, 50, 12_000)
-
-    assert added == {MILK: 1}
-
-
-def test_then_uses_the_candidates_with_the_most_kcal_per_euro(catalog: ProductCatalog) -> None:
-    lines = {MILK: 4, APPLES: 4, PASTA: 2, RICE: 1}
-
-    _, added = top_up(catalog, lines, 50, 20_000, max_packs=1)
-
-    # Milk and apples reach their pack cap; oats is the candidate with the most kcal per euro.
-    assert list(added)[:3] == [MILK, APPLES, OATS]
-    assert all(n == 1 for n in added.values())
+    assert list(added)[:3] == [OATS, PASTA, RICE]
+    assert APPLES not in added and CHICKEN not in added
 
 
-def test_a_single_pack_above_the_kcal_share_is_not_added(catalog: ProductCatalog) -> None:
-    after, added = top_up(catalog, {APPLES: 1}, 50, 5000)  # any pack is > 35% of 520 + it
+def test_list_item_within_the_ratio_wins_over_the_best_candidate(
+    catalog: ProductCatalog,
+) -> None:
+    # Rice (1528 kcal/€) is in the list and >= 0.7 x oats (2090): rice before oats.
+    _, added = top_up(catalog, {MILK: 1, RICE: 1}, 50, WEEK_FOR_TWO)
 
-    assert (after.total, added) == (Decimal("1.99"), {})
+    assert list(added)[:2] == [RICE, OATS]
+
+    _, added = top_up(catalog, {MILK: 1, RICE: 1}, 50, WEEK_FOR_TWO, min_ratio=0.8)
+
+    assert list(added)[0] == OATS  # 1528 < 0.8 x 2090
+
+
+def test_a_very_short_list_is_topped_up_to_the_target(catalog: ProductCatalog) -> None:
+    after, added = top_up(catalog, {APPLES: 1}, 50, WEEK_FOR_TWO)  # 520 kcal
+
+    assert after.nutrition.kcal >= WEEK_FOR_TWO
+    assert after.total <= Decimal(50)
+    assert len(added) >= 3
 
 
 def test_does_nothing_at_or_above_the_target(catalog: ProductCatalog) -> None:
@@ -121,14 +128,14 @@ def test_skips_packs_that_do_not_fit_the_remaining_budget(catalog: ProductCatalo
     assert after.total == Decimal("8.85")
 
 
-def test_caps_packs_per_product_and_kcal_share(catalog: ProductCatalog) -> None:
-    after, added = top_up(catalog, {MILK: 2, APPLES: 2, RICE: 1}, 1000, 1_000_000)
+def test_caps_packs_per_product_and_kcal_share_of_the_target(catalog: ProductCatalog) -> None:
+    after, added = top_up(catalog, {MILK: 2, APPLES: 2, RICE: 1}, 1000, WEEK_FOR_TWO)
 
     assert added and max(added.values()) == 3
-    kcal = after.nutrition.kcal
+    assert added[RICE] == 1  # a second added pack: 10_500 kcal > 0.35 x 22_400
     for line in after.lines:
         if line.product.id in added and line.nutrition is not None:
-            assert line.nutrition.kcal <= 0.35 * kcal
+            assert line.nutrition.kcal <= 0.35 * WEEK_FOR_TWO
 
 
 def test_never_adds_excluded_categories_or_skipped_ids(catalog: ProductCatalog) -> None:
