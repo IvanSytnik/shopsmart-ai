@@ -72,7 +72,8 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 5.3 Tag `v2.0.0` release.
 
 ## Later (not MVP)
-- Budget rebalancing: swap low kcal-per-€ items before top-up when the budget is exhausted (fixes the one shopping kcal eval miss, `shop-en-hofer-2p-40-lactose-free`).
+- Budget rebalancing before top-up: prototyped (branch `experiment/budget-rebalancing`), +0.3–3 % kcal at most; not merged. The Hofer lactose-free miss was a catalog tagging bug, fixed in v2.0.1.
+- Stricter candidate pre-filter for very tight budgets (< €3/person/day, e.g. drop food above the median €/1000 kcal): tight-shop-en-both-1p-15 misses the kcal floor in ~1 of 5 runs.
 - Catalog: Spar and Lidl AT (their sites gave no machine-readable prices for v1), German chains.
 - Price updates from public sources/scraper with freshness checks.
 - Accounts + saved plans server-side.

@@ -55,7 +55,7 @@ The full pipeline (candidate selection on tight budgets, portion rules, repair c
 
 20 fixed scenarios (shopping and menu mode, 1–7 days, 1–5 people, €15–150, every diet, en/de/uk, two deliberately tight budgets), real OpenAI calls, real catalog. Baseline = first run of the v2 pipeline; final = the release.
 
-| Metric | Baseline [`20261015T141547Z`](backend/evals/results/20261015T141547Z.json) | Final [`20261017T151510Z`](backend/evals/results/20261017T151510Z.json) |
+| Metric | Baseline [`20261015T141547Z`](backend/evals/results/20261015T141547Z.json) | Final [`20261018T221443Z`](backend/evals/results/20261018T221443Z.json) |
 |---|---|---|
 | Valid output rate | 100% | 100% |
 | Budget adherence | 100% | 100% |
@@ -64,14 +64,16 @@ The full pipeline (candidate selection on tight budgets, portion rules, repair c
 | Shopping kcal in range (purchased) | n/a | 88.9% |
 | First-attempt acceptance, shopping | 66.7% | 100% |
 | First-attempt acceptance, menu | 54.5% | 81.8% |
-| Latency p50 / p95 | 7.45 s / 21.21 s | 4.48 s / 14.18 s |
+| Latency p50 / p95 | 7.45 s / 21.21 s | 4.09 s / 15.40 s |
 | Cost per request (avg) | $0.00143 | $0.00108 |
 
-Budget and diet were already guaranteed in the baseline, because the server enforces them. Between the two runs the work went into plan quality: on tight budgets the most expensive calories are no longer offered to the model (vegetables and fruit exempt); small overshoots (≤ 10%) are trimmed instead of triggering a repair round trip; the menu output got shorter with `max_tokens` sized per request; menus are kcal-normalized by scaling portions; and shopping lists get a deterministic kcal top-up (6 of 9 lists were topped up). Runs that needed trimming went from 7 to 1, and fewer repairs mean lower latency and cost.
+Budget and diet were already guaranteed in the baseline, because the server enforces them. Between the two runs the work went into plan quality: on tight budgets the most expensive calories are no longer offered to the model (vegetables and fruit exempt); small overshoots (≤ 10%) are trimmed instead of triggering a repair round trip; the menu output got shorter with `max_tokens` sized per request; menus are kcal-normalized by scaling portions; and shopping lists get a deterministic kcal top-up (5 of 9 lists were topped up). Runs that needed trimming went from 7 to 3, and fewer repairs mean lower latency and cost.
 
-The remaining misses are honest ones. The shopping miss is `shop-en-hofer-2p-40-lactose-free` (2 people, €40/week, lactose-free, Hofer only): the top-up spent the budget down to €39.74 and reached 1200 kcal per person and day, so the API returns `low_kcal` rather than going over budget. The menu miss is the deliberately tight `tight-menu-en-both-5p-3d-40` (5 people, 3 days, €40): 1389 kcal, `low_kcal` + `budget_trimmed`. The tightest shopping case, €15/week for one person, reached 1671 kcal after the top-up.
+The Hofer lactose-free miss of v2.0.0 (`shop-en-hofer-2p-40-lactose-free`, 1200 kcal) was a catalog tagging bug, not a pipeline problem: 9 vegan products (breads and bakery) lacked the `lactose_free` tag, so lactose-free users never saw them. Fixed in v2.0.1 and enforced by the catalog build; the case now reaches 1601 kcal, and 3 of 3 repeats are in range ([`20261018T221227Z`](backend/evals/results/20261018T221227Z.json)).
 
-Reports: [backend/evals/report.md](backend/evals/report.md) (latest run, per-case table) and [backend/evals/results/](backend/evals/results/) (raw JSON for every run).
+The remaining misses are honest ones. The shopping miss is the deliberately tight `tight-shop-en-both-1p-15` (1 person, €15/week): 1427 kcal per person and day in the full run, where the LLM spent a third of the budget on mince, so the API returns `low_kcal` rather than going over budget; on repeat 4 of 5 runs are in range ([`20261018T221951Z`](backend/evals/results/20261018T221951Z.json)). The menu miss is the deliberately tight `tight-menu-en-both-5p-3d-40` (5 people, 3 days, €40): 1468 kcal, `low_kcal` + `budget_trimmed`.
+
+Reports: [backend/evals/report.md](backend/evals/report.md) (the full run above, per-case table) and [backend/evals/results/](backend/evals/results/) (raw JSON for every run).
 
 ## Features
 

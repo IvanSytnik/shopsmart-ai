@@ -2,10 +2,13 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.1] - 2026-10-19
+
+### Added
+- Eval results record the LLM's lines per attempt and the final basket per case (`llm_attempts`, `items`, `trimmed`).
 
 ### Fixed
-- Vegan products missing the lactose-free tag.
+- Vegan products missing the lactose-free tag (9 breads and bakery products were hidden from lactose-free plans); the catalog build now rejects a `vegan` row without `vegetarian` and `lactose_free`.
 
 ## [2.0.0] - 2026-10-17
 
