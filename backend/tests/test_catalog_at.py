@@ -129,6 +129,33 @@ def test_nutrition_is_converted_to_per_pack() -> None:
     assert eggs is not None and eggs.kcal == 742
 
 
+# Vegan breads and bakery: lactose-free users lost them while the tag was missing.
+VEGAN_BREADS = {
+    "at-hofer-organic-rye-bread-500g",
+    "at-hofer-crust-bread-750g",
+    "at-hofer-kaiser-rolls-420g",
+    "at-hofer-rye-crispbread-250g",
+    "at-hofer-mini-baguettes-300g",
+    "at-hofer-vegan-wholegrain-toast-500g",
+    "at-hofer-rye-farmhouse-slices-500g",
+    "at-billa-bake-off-rolls-300g",
+    "at-billa-pretzel-sticks-250g",
+}
+
+
+def test_every_vegan_product_is_vegetarian_and_lactose_free() -> None:
+    for product in CATALOG.catalog.products:
+        if "vegan" in product.diet_tags:
+            assert {"vegetarian", "lactose_free"} <= set(product.diet_tags), product.id
+
+
+def test_lactose_free_hofer_includes_the_vegan_breads() -> None:
+    candidates = {p.id for p in CATALOG.candidates("AT", ["Hofer"], ["lactose_free"])}
+
+    assert {i for i in VEGAN_BREADS if i.startswith("at-hofer-")} <= candidates
+    assert len(candidates) == 20
+
+
 # --- the build script -----------------------------------------------------------
 
 
@@ -158,6 +185,44 @@ def test_build_fails_on_a_bad_row(tmp_path: Path, change: dict[str, str], messag
     with pytest.raises(BuildError, match=r"bad\.csv:3") as info:
         build(source)
     assert message in str(info.value)
+
+
+@pytest.mark.parametrize(
+    ("tags", "missing"),
+    [
+        ("vegan;vegetarian", "lactose_free"),
+        ("vegan;lactose_free", "vegetarian"),
+        ("vegan", "vegetarian, lactose_free"),
+    ],
+)
+def test_build_fails_on_a_vegan_row_without_the_implied_tags(
+    tmp_path: Path, tags: str, missing: str
+) -> None:
+    rows = [row for row in csv_rows() if row["id"] in VEGAN_BREADS][:2]
+    rows = [{**row, "diet_tags": tags} for row in rows]
+    source = write_csv(tmp_path / "vegan.csv", rows)
+
+    with pytest.raises(BuildError) as info:
+        build(source)
+    for line, row in enumerate(rows, start=2):  # every violation, with its line and id
+        assert f"vegan.csv:{line} ({row['id']}): a vegan row must also be tagged {missing}" in str(
+            info.value
+        )
+
+
+def test_build_fails_on_the_untagged_vegan_rows_in_check_mode(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    rows = [
+        {**row, "diet_tags": "vegan;vegetarian"} if row["id"] in VEGAN_BREADS else row
+        for row in csv_rows()
+    ]
+    source = write_csv(tmp_path / "catalog_at.csv", rows)
+
+    assert main(["--source", str(source), "--output", str(PRODUCTION_CATALOG), "--check"]) == 1
+    errors = capsys.readouterr().err
+    assert "Catalog build failed" in errors
+    assert all(product_id in errors for product_id in VEGAN_BREADS)
 
 
 def test_build_requires_net_weight_for_food_sold_by_pieces(tmp_path: Path) -> None:

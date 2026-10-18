@@ -51,6 +51,7 @@ Tags are assigned conservatively from the product type:
 - `vegan` only for products without any animal ingredient (plain plant foods, breads made from flour, water, yeast and salt, plant drinks). Wheat toast and similar bread that often contains milk or butter is only `vegetarian`.
 - `gluten_free` only for naturally gluten-free foods (fresh produce, plain meat and fish, milk, eggs, rice, polenta, dried legumes). Oats are **not** tagged because of cross-contamination.
 - `lactose_free` for foods without milk, and for dairy explicitly sold as lactose-free.
+- A `vegan` row must also be tagged `vegetarian` and `lactose_free`: the diet filter requires every chosen tag, so a missing one hides the product. The build fails and lists the offending rows; tags are never derived automatically.
 - Cheese is tagged `vegetarian`, although some cheeses use animal rennet.
 - Processed meat (sausages, Extrawurst, cevapcici) is not tagged `gluten_free`.
 
@@ -87,7 +88,7 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
    pytest -q tests/test_catalog_at.py       # coverage rules
    ```
 
-   The build fails on any invalid row and names the CSV line. The coverage tests require:
+   The build fails on any invalid row (including a `vegan` row without `vegetarian` and `lactose_free`) and names the CSV line. The coverage tests require:
    - at least 25 food products per store;
    - at least 12 food candidates for every pair of stores, with no diet and with each diet tag;
    - at most 100 candidates for any pair of stores (the LLM schema's enum limit);

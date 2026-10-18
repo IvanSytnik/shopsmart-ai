@@ -72,6 +72,11 @@ class BuildError(Exception):
     pass
 
 
+# A vegan product has no animal ingredients, so it is vegetarian and lactose-free too. The
+# diet filter needs every chosen tag, so a missing one hides the product from those diets.
+VEGAN_IMPLIES = ("vegetarian", "lactose_free")
+
+
 def pack_grams(row: dict[str, str]) -> float:
     """Contents of one pack in g (or ml), for converting nutrition per 100 g to per pack."""
     if row["unit"] in ("kg", "l"):
@@ -86,6 +91,10 @@ def to_product(row: dict[str, str]) -> dict[str, Any]:
         raise BuildError(f"unknown unit {row['unit']!r}")
     if row["verified"] not in ("yes", "no"):
         raise BuildError(f"verified must be yes or no, not {row['verified']!r}")
+    tags = [tag for tag in row["diet_tags"].split(";") if tag]
+    missing = [tag for tag in VEGAN_IMPLIES if "vegan" in tags and tag not in tags]
+    if missing:
+        raise BuildError(f"a vegan row must also be tagged {', '.join(missing)}")
     values = [row[column] for column in NUTRIENTS.values()]
     nutrition: dict[str, float | None]
     if all(values) and row["category"] not in NON_FOOD_CATEGORIES:
@@ -106,7 +115,7 @@ def to_product(row: dict[str, str]) -> dict[str, Any]:
         "portion_unit": row["portion_unit"] or None,
         "price_eur": row["price_eur"],
         **nutrition,
-        "diet_tags": [tag for tag in row["diet_tags"].split(";") if tag],
+        "diet_tags": tags,
         "source_url": row["source_url"],
         "price_date": row["price_date"],
     }
