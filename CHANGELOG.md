@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Vegan products missing the lactose-free tag.
+
 ## [2.0.0] - 2026-10-17
 
 v2 rebuilds the app around one principle: **the LLM chooses, the server computes**. Details: [docs/ROADMAP.md](docs/ROADMAP.md), [docs/API.md](docs/API.md), [backend/evals/report.md](backend/evals/report.md).
