@@ -39,7 +39,7 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 0.1 Split `requirements.txt` / `requirements-dev.txt`, update pins, add `ruff` config.
 - ✅ 0.2 Frontend: ESLint flat config so `npm run lint` passes; delete `translations_history.txt`; `api.ts` reads `VITE_API_URL`.
 - ✅ 0.3 Unify name spelling "Sytnik", fix README contact/GitHub, drop compose `version` and unused volume.
-- ⬜ 0.4 Add `CLAUDE.md` and this roadmap.
+- ✅ 0.4 Add `CLAUDE.md` and this roadmap.
 
 ## Phase 1 — Backend restructure + safety (1–2 days)
 - ✅ 1.1 Move to `app/` package layout (see CLAUDE.md); `Settings` via pydantic-settings.
@@ -69,9 +69,10 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 ## Phase 5 — Ship (½–1 day)
 - ✅ 5.1 Deploy: frontend → Cloudflare Pages, backend → Google Cloud Run (EU Tier 1 region, max-instances=1). Env vars/secrets set, health check green, OpenAI hard spend limit + GCP budget alert configured.
 - ✅ 5.2 README rewrite: problem → demo link + GIF → architecture diagram → "LLM chooses, server computes" → eval results → run locally.
-- ⬜ 5.3 Tag `v2.0.0` release.
+- ✅ 5.3 Tag `v2.0.0` release.
 
 ## Later (not MVP)
+- Budget rebalancing: swap low kcal-per-€ items before top-up when the budget is exhausted (fixes the one shopping kcal eval miss, `shop-en-hofer-2p-40-lactose-free`).
 - Catalog: Spar and Lidl AT (their sites gave no machine-readable prices for v1), German chains.
 - Price updates from public sources/scraper with freshness checks.
 - Accounts + saved plans server-side.
