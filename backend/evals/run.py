@@ -94,6 +94,13 @@ class CaseResult:
     calls: list[dict[str, Any]] = field(default_factory=list)  # per attempt, see LLMCall
     cost_usd: float | None = None
     error: str | None = None
+    # Parsed LLM reply per attempt: {"attempt", "lines": [{product_id, packs}] (shopping) or
+    # [{day, meal, product_id, amount_per_person}] (menu)}
+    llm_attempts: list[dict[str, Any]] = field(default_factory=list)
+    # The final basket after trimming and top-up: {product_id, packs, line_total, kcal}
+    items: list[dict[str, Any]] = field(default_factory=list)
+    # Lines cut by the server: {product_id, from_packs, to_packs}
+    trimmed: list[dict[str, Any]] = field(default_factory=list)
 
 
 def load_cases(path: Path = CASES_FILE) -> list[EvalCase]:
@@ -173,6 +180,19 @@ async def run_case(
         low, high = settings.min_kcal_per_person_day, settings.max_kcal_per_person_day
         result.kcal_in_range = low <= response.kcal_per_person_day <= high
         result.warnings = list(response.warnings)
+        result.items = [
+            {
+                "product_id": item.product_id,
+                "packs": item.packs,
+                "line_total": item.line_total,
+                "kcal": item.nutrition.kcal if item.nutrition is not None else None,
+            }
+            for item in response.items
+        ]
+        result.trimmed = [
+            {"product_id": t.product_id, "from_packs": t.from_packs, "to_packs": t.to_packs}
+            for t in response.trimmed
+        ]
         kcal_bought = response.nutrition_totals.kcal
         if kcal_bought > 0:
             result.cost_per_1000_kcal = round(response.total / kcal_bought * 1000, 2)
@@ -183,6 +203,7 @@ async def run_case(
     result.used_fallback = trace.used_fallback
     result.dropped_candidates = trace.dropped_candidates
     result.calls = [asdict(call) for call in trace.calls]
+    result.llm_attempts = trace.replies
     result.prompt_tokens = sum(c.prompt_tokens or 0 for c in trace.calls)
     result.completion_tokens = sum(c.completion_tokens or 0 for c in trace.calls)
     known = [c.completion_tokens for c in trace.calls if c.completion_tokens is not None]
@@ -306,6 +327,9 @@ def render_report(results: list[CaseResult], summary: dict[str, Any], meta: dict
         "",
         f"{meta['timestamp']} · model `{meta['model']}` · catalog `{meta['catalog_version']}` · "
         f"{summary['runs']} runs ({meta['cases']} cases × {meta['repeat']}) · **{verdict}**",
+        "",
+        f"Raw results, with the LLM's lines and the final basket per run: "
+        f"[results/{meta['timestamp']}.json](results/{meta['timestamp']}.json)",
         "",
         "| Metric | Value |",
         "|---|---|",

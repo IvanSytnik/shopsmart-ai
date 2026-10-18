@@ -15,7 +15,7 @@ import statistics
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import cast
+from typing import Any, cast
 
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
@@ -127,6 +127,30 @@ class PlanTrace:
     accepted_attempt: int | None = None  # the attempt whose plan was returned
     used_fallback: bool = False  # an earlier imperfect plan was returned
     dropped_candidates: int = 0  # food left out on a tight budget
+    # The parsed LLM reply per attempt that had one: {"attempt": n, "lines": reply_lines(...)}
+    replies: list[dict[str, Any]] = field(default_factory=list)
+
+
+def reply_lines(parsed: LLMShoppingPlan | LLMMenuPlan, mode: str) -> list[dict[str, Any]]:
+    """What the LLM chose, as plain data: packs per product, or menu portions per meal."""
+    if mode == "menu":
+        menu = cast(LLMMenuPlan, parsed).menu
+        return [
+            {
+                "day": day.day,
+                "meal": slot,
+                "product_id": ingredient.product_id,
+                "amount_per_person": ingredient.amount_per_person,
+            }
+            for day in menu
+            for slot in MEAL_SLOTS
+            if (meal := getattr(day, slot)) is not None
+            for ingredient in meal.ingredients
+        ]
+    return [
+        {"product_id": line.product_id, "packs": line.packs}
+        for line in cast(LLMShoppingPlan, parsed).lines
+    ]
 
 
 def select_candidates(catalog: ProductCatalog, request: GenerateRequest) -> list[Product]:
@@ -666,6 +690,9 @@ async def create_plan(
                     plan_model,
                     max_tokens_for(request, settings),
                     trace.calls,
+                )
+                trace.replies.append(
+                    {"attempt": attempt, "lines": reply_lines(parsed, request.mode)}
                 )
                 if request.mode == "menu":
                     draft, problems = menu_draft(

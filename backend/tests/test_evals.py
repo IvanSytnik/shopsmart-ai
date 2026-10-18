@@ -1,12 +1,15 @@
 """The offline eval harness, without the network: fake LLM, fixture catalog."""
 
 import asyncio
+import json
 import logging
+from pathlib import Path
 from typing import Any, get_args
 
 import httpx
 import pytest
 
+import evals.run
 from app.schemas.catalog import DietTag
 from app.schemas.requests import GenerateRequest
 from app.services.catalog import load_catalog
@@ -17,6 +20,7 @@ from evals.run import (
     cost_usd,
     diet_violations,
     load_cases,
+    main,
     max_tokens_cell,
     passed,
     render_report,
@@ -24,7 +28,16 @@ from evals.run import (
     select_cases,
     summarize,
 )
-from tests.conftest import BODY, FIXTURE_CATALOG, MILK, FakeOpenAI, make_plan, make_settings
+from tests.conftest import (
+    APPLES,
+    BODY,
+    FIXTURE_CATALOG,
+    MILK,
+    RICE,
+    FakeOpenAI,
+    make_plan,
+    make_settings,
+)
 from tests.test_catalog import PRODUCTION_CATALOG
 from tests.test_catalog_at import food_count
 
@@ -112,6 +125,119 @@ def test_dropped_candidates_are_recorded(fake_llm: FakeOpenAI) -> None:
     result = run(fake_llm, case(family_size=2), tight_budget_per_person_day=7.0)
 
     assert (result.status, result.dropped_candidates) == ("ok", 3)
+
+
+# --- what the LLM chose and what was bought ---------------------------------------
+
+CHICKEN = "at-lidl-chicken-breast-500g"  # €5.99, 550 kcal
+
+
+def test_records_the_llm_lines_and_the_final_basket(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan())  # milk 2, apples 2, rice 1
+
+    result = run(fake_llm, case())
+
+    assert result.llm_attempts == [
+        {
+            "attempt": 1,
+            "lines": [
+                {"product_id": MILK, "packs": 2},
+                {"product_id": APPLES, "packs": 2},
+                {"product_id": RICE, "packs": 1},
+            ],
+        }
+    ]
+    assert result.items == [
+        {"product_id": MILK, "packs": 2, "line_total": 2.58, "kcal": 1280.0},
+        {"product_id": APPLES, "packs": 2, "line_total": 3.98, "kcal": 1040.0},
+        {"product_id": RICE, "packs": 1, "line_total": 2.29, "kcal": 3500.0},
+    ]
+    assert (result.trimmed, result.warnings) == ([], [])
+
+
+def test_records_trimmed_lines_and_warnings(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan({CHICKEN: 2, RICE: 1}))  # €14.27, within 10% of €13.50
+
+    result = run(fake_llm, case(budget=13.5))
+
+    assert result.llm_attempts[0]["lines"] == [
+        {"product_id": CHICKEN, "packs": 2},
+        {"product_id": RICE, "packs": 1},
+    ]
+    assert result.trimmed == [{"product_id": CHICKEN, "from_packs": 2, "to_packs": 1}]
+    assert [(i["product_id"], i["packs"]) for i in result.items] == [(CHICKEN, 1), (RICE, 1)]
+    assert result.warnings == ["budget_trimmed"]
+
+
+def test_records_every_attempt_with_a_parsed_reply(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_raw("not json")  # attempt 1: nothing parsed, nothing recorded
+    fake_llm.queue_plan(make_plan({CHICKEN: 4}))  # attempt 2: €23.96, far over budget
+
+    over = run(fake_llm, case(budget=10))  # the over-budget plan, trimmed
+
+    assert over.attempts == 2
+    assert [a["attempt"] for a in over.llm_attempts] == [2]
+    assert over.llm_attempts[0]["lines"] == [{"product_id": CHICKEN, "packs": 4}]
+
+    fake_llm.queue_plan(make_plan({CHICKEN: 4}))
+    fake_llm.queue_plan(make_plan())
+
+    repaired = run(fake_llm, case(budget=10))
+
+    assert [a["attempt"] for a in repaired.llm_attempts] == [1, 2]
+    assert repaired.llm_attempts[1]["lines"][0] == {"product_id": MILK, "packs": 2}
+    assert [i["product_id"] for i in repaired.items] == [MILK, APPLES, RICE]
+
+
+def test_records_menu_portions(fake_llm: FakeOpenAI) -> None:
+    fake_llm.queue_plan(make_plan(days=1))
+
+    result = run(fake_llm, case(mode="menu", days=1), min_kcal_per_person_day=1000)
+
+    lines = result.llm_attempts[0]["lines"]
+    assert lines[0] == {
+        "day": "Day 1",
+        "meal": "breakfast",
+        "product_id": MILK,
+        "amount_per_person": 200,
+    }
+    assert [(line["meal"], line["product_id"]) for line in lines] == [
+        ("breakfast", MILK),
+        ("breakfast", APPLES),
+        ("lunch", RICE),
+        ("dinner", RICE),
+        ("dinner", APPLES),
+        ("snack", APPLES),
+    ]
+    assert {i["product_id"] for i in result.items} == {MILK, APPLES, RICE}
+
+
+def test_a_mocked_run_writes_the_new_fields_to_the_json(
+    fake_llm: FakeOpenAI, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("CATALOG_PATH", str(FIXTURE_CATALOG))
+    monkeypatch.setattr(evals.run, "load_cases", lambda: [case()])
+    monkeypatch.setattr(evals.run, "create_llm_client", lambda settings: fake_llm.client)
+    monkeypatch.setattr(evals.run, "RESULTS_DIR", tmp_path / "results")
+    monkeypatch.setattr(evals.run, "REPORT_FILE", tmp_path / "report.md")
+    fake_llm.queue_plan(make_plan())
+
+    assert main([]) == 0
+
+    [result_file] = (tmp_path / "results").glob("*.json")
+    [saved] = json.loads(result_file.read_text())["results"]
+    assert saved["llm_attempts"][0]["lines"][0] == {"product_id": MILK, "packs": 2}
+    assert saved["items"][0] == {
+        "product_id": MILK,
+        "packs": 2,
+        "line_total": 2.58,
+        "kcal": 1280.0,
+    }
+    # Default settings: the 1600 kcal floor tops the list up.
+    assert (saved["trimmed"], saved["warnings"]) == ([], ["kcal_topped_up"])
+    assert len(saved["items"]) > 3
+    report = (tmp_path / "report.md").read_text()
+    assert f"(results/{result_file.name})" in report
 
 
 def test_rejected_cases_never_call_the_llm(fake_llm: FakeOpenAI) -> None:
