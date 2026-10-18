@@ -1,0 +1,355 @@
+{
+  "meta": {
+    "timestamp": "20261018T221227Z",
+    "model": "gpt-4o-mini",
+    "catalog_version": "at-2026-10-15",
+    "cases": 1,
+    "repeat": 3
+  },
+  "summary": {
+    "runs": 3,
+    "rejected_before_llm": 0,
+    "valid_output_rate": 1.0,
+    "per_mode": {
+      "shopping": {
+        "runs": 3,
+        "first_attempt_acceptance": 1.0,
+        "repair_rate": 0.0
+      },
+      "menu": {
+        "runs": 0,
+        "first_attempt_acceptance": null,
+        "repair_rate": null
+      }
+    },
+    "budget_adherence": 1.0,
+    "diet_violations": 0,
+    "kcal_in_range_rate_menu": null,
+    "shopping_kcal_in_range": 1.0,
+    "topped_up_runs": 3,
+    "trimmed_runs": 0,
+    "scaled_menu_runs": 0,
+    "latency_p50_s": 2.44,
+    "latency_p95_s": 2.65,
+    "avg_cost_usd": 0.00028,
+    "total_cost_usd": 0.0008
+  },
+  "results": [
+    {
+      "id": "shop-en-hofer-2p-40-lactose-free",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 32.41,
+      "budget": 40.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1659.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.4,
+      "dropped_candidates": 4,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.67,
+      "prompt_tokens": 1356,
+      "completion_tokens": 115,
+      "max_completion_tokens": 115,
+      "calls": [
+        {
+          "duration_s": 2.65,
+          "prompt_tokens": 1356,
+          "completion_tokens": 115,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00027239999999999995,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-hofer-crust-bread-750g",
+              "packs": 4
+            },
+            {
+              "product_id": "at-hofer-lactose-free-butter-250g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-hofer-cevapcici-450g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-hofer-rye-farmhouse-slices-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "packs": 3
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 4,
+          "line_total": 7.2,
+          "kcal": 6900.0
+        },
+        {
+          "product_id": "at-hofer-lactose-free-butter-250g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 2,
+          "line_total": 7.18,
+          "kcal": 2340.0
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 5,
+          "line_total": 4.7,
+          "kcal": 5250.0
+        },
+        {
+          "product_id": "at-hofer-organic-oat-drink-970ml",
+          "packs": 3,
+          "line_total": 5.37,
+          "kcal": 1338.6
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-en-hofer-2p-40-lactose-free",
+      "run": 2,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 30.97,
+      "budget": 40.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1633.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.35,
+      "dropped_candidates": 4,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.06,
+      "prompt_tokens": 1356,
+      "completion_tokens": 132,
+      "max_completion_tokens": 132,
+      "calls": [
+        {
+          "duration_s": 2.06,
+          "prompt_tokens": 1356,
+          "completion_tokens": 132,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00028260000000000004,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-hofer-crust-bread-750g",
+              "packs": 3
+            },
+            {
+              "product_id": "at-hofer-lactose-free-butter-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-mixed-mince-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-cevapcici-450g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-rye-farmhouse-slices-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 4,
+          "line_total": 7.2,
+          "kcal": 6900.0
+        },
+        {
+          "product_id": "at-hofer-lactose-free-butter-250g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 4,
+          "line_total": 3.76,
+          "kcal": 4200.0
+        },
+        {
+          "product_id": "at-hofer-organic-oat-drink-970ml",
+          "packs": 1,
+          "line_total": 1.79,
+          "kcal": 446.2
+        },
+        {
+          "product_id": "at-hofer-mini-baguettes-300g",
+          "packs": 2,
+          "line_total": 1.68,
+          "kcal": 1500.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-en-hofer-2p-40-lactose-free",
+      "run": 3,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 26.92,
+      "budget": 40.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1619.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.19,
+      "dropped_candidates": 4,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.44,
+      "prompt_tokens": 1356,
+      "completion_tokens": 113,
+      "max_completion_tokens": 113,
+      "calls": [
+        {
+          "duration_s": 2.43,
+          "prompt_tokens": 1356,
+          "completion_tokens": 113,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0002712,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-hofer-crust-bread-750g",
+              "packs": 3
+            },
+            {
+              "product_id": "at-hofer-lactose-free-butter-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-cevapcici-450g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-rye-farmhouse-slices-500g",
+              "packs": 2
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 4,
+          "line_total": 7.2,
+          "kcal": 6900.0
+        },
+        {
+          "product_id": "at-hofer-lactose-free-butter-250g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-hofer-organic-oat-drink-970ml",
+          "packs": 1,
+          "line_total": 1.79,
+          "kcal": 446.2
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 5,
+          "line_total": 4.7,
+          "kcal": 5250.0
+        },
+        {
+          "product_id": "at-hofer-mini-baguettes-300g",
+          "packs": 2,
+          "line_total": 1.68,
+          "kcal": 1500.0
+        }
+      ],
+      "trimmed": []
+    }
+  ]
+}

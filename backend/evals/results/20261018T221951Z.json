@@ -1,0 +1,719 @@
+{
+  "meta": {
+    "timestamp": "20261018T221951Z",
+    "model": "gpt-4o-mini",
+    "catalog_version": "at-2026-10-15",
+    "cases": 1,
+    "repeat": 5
+  },
+  "summary": {
+    "runs": 5,
+    "rejected_before_llm": 0,
+    "valid_output_rate": 1.0,
+    "per_mode": {
+      "shopping": {
+        "runs": 5,
+        "first_attempt_acceptance": 1.0,
+        "repair_rate": 0.0
+      },
+      "menu": {
+        "runs": 0,
+        "first_attempt_acceptance": null,
+        "repair_rate": null
+      }
+    },
+    "budget_adherence": 1.0,
+    "diet_violations": 0,
+    "kcal_in_range_rate_menu": null,
+    "shopping_kcal_in_range": 0.8,
+    "topped_up_runs": 3,
+    "trimmed_runs": 1,
+    "scaled_menu_runs": 0,
+    "latency_p50_s": 2.62,
+    "latency_p95_s": 2.98,
+    "avg_cost_usd": 0.00069,
+    "total_cost_usd": 0.0035
+  },
+  "results": [
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 13.15,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1848.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.02,
+      "dropped_candidates": 14,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.62,
+      "prompt_tokens": 3939,
+      "completion_tokens": 161,
+      "max_completion_tokens": 161,
+      "calls": [
+        {
+          "duration_s": 2.61,
+          "prompt_tokens": 3939,
+          "completion_tokens": 161,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00068745,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-soup-vegetables-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-uht-whole-milk-1l",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-uht-whole-milk-1l",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 640.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 3700.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 2,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 2,
+      "total": 14.86,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1427.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": false,
+      "cost_per_1000_kcal": 1.49,
+      "dropped_candidates": 14,
+      "warnings": [
+        "low_kcal",
+        "budget_trimmed"
+      ],
+      "latency_s": 3.07,
+      "prompt_tokens": 3939,
+      "completion_tokens": 170,
+      "max_completion_tokens": 170,
+      "calls": [
+        {
+          "duration_s": 3.07,
+          "prompt_tokens": 3939,
+          "completion_tokens": 170,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0006928500000000001,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-chicken-wings-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-hofer-chicken-wings-500g",
+          "packs": 1,
+          "line_total": 4.49,
+          "kcal": 1000.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        }
+      ],
+      "trimmed": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "from_packs": 1,
+          "to_packs": 0
+        }
+      ]
+    },
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 3,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 12.71,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1737.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.05,
+      "dropped_candidates": 14,
+      "warnings": [],
+      "latency_s": 2.64,
+      "prompt_tokens": 3939,
+      "completion_tokens": 170,
+      "max_completion_tokens": 170,
+      "calls": [
+        {
+          "duration_s": 2.63,
+          "prompt_tokens": 3939,
+          "completion_tokens": 170,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0006928500000000001,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-passata-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-butter-250g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-butter-250g",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 1850.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 4,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 12.39,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1835.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 0.96,
+      "dropped_candidates": 14,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.6,
+      "prompt_tokens": 3939,
+      "completion_tokens": 174,
+      "max_completion_tokens": 174,
+      "calls": [
+        {
+          "duration_s": 2.6,
+          "prompt_tokens": 3939,
+          "completion_tokens": 174,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00069525,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-apple-juice-1l",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 2,
+          "line_total": 1.7,
+          "kcal": 3550.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-billa-apple-juice-1l",
+          "packs": 1,
+          "line_total": 0.86,
+          "kcal": 450.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 5,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 12.61,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1648.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.09,
+      "dropped_candidates": 14,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.24,
+      "prompt_tokens": 3939,
+      "completion_tokens": 154,
+      "max_completion_tokens": 154,
+      "calls": [
+        {
+          "duration_s": 2.24,
+          "prompt_tokens": 3939,
+          "completion_tokens": 154,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00068325,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-soup-vegetables-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 3700.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        }
+      ],
+      "trimmed": []
+    }
+  ]
+}

@@ -1,0 +1,5409 @@
+{
+  "meta": {
+    "timestamp": "20261018T221443Z",
+    "model": "gpt-4o-mini",
+    "catalog_version": "at-2026-10-15",
+    "cases": 20,
+    "repeat": 1
+  },
+  "summary": {
+    "runs": 20,
+    "rejected_before_llm": 0,
+    "valid_output_rate": 1.0,
+    "per_mode": {
+      "shopping": {
+        "runs": 9,
+        "first_attempt_acceptance": 1.0,
+        "repair_rate": 0.0
+      },
+      "menu": {
+        "runs": 11,
+        "first_attempt_acceptance": 0.818,
+        "repair_rate": 0.182
+      }
+    },
+    "budget_adherence": 1.0,
+    "diet_violations": 0,
+    "kcal_in_range_rate_menu": 0.909,
+    "shopping_kcal_in_range": 0.889,
+    "topped_up_runs": 5,
+    "trimmed_runs": 3,
+    "scaled_menu_runs": 10,
+    "latency_p50_s": 4.09,
+    "latency_p95_s": 15.4,
+    "avg_cost_usd": 0.00108,
+    "total_cost_usd": 0.0216
+  },
+  "results": [
+    {
+      "id": "shop-en-both-2p-50",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 26.44,
+      "budget": 50.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1696.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.11,
+      "dropped_candidates": 14,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.49,
+      "prompt_tokens": 3939,
+      "completion_tokens": 188,
+      "max_completion_tokens": 188,
+      "calls": [
+        {
+          "duration_s": 2.48,
+          "prompt_tokens": 3939,
+          "completion_tokens": 188,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00070365,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-mixed-mince-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-butter-250g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 4,
+          "line_total": 3.16,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 2,
+          "line_total": 2.26,
+          "kcal": 7000.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-mixed-mince-1kg",
+          "packs": 1,
+          "line_total": 8.49,
+          "kcal": 2500.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-butter-250g",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 1850.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-de-billa-1p-30",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 15.96,
+      "budget": 30.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1750.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.3,
+      "dropped_candidates": 8,
+      "warnings": [],
+      "latency_s": 2.62,
+      "prompt_tokens": 2659,
+      "completion_tokens": 162,
+      "max_completion_tokens": 162,
+      "calls": [
+        {
+          "duration_s": 2.61,
+          "prompt_tokens": 2659,
+          "completion_tokens": 162,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0004960499999999999,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-uht-whole-milk-1l",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-hummus-200g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 2,
+          "line_total": 4.98,
+          "kcal": 2880.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-uht-whole-milk-1l",
+          "packs": 2,
+          "line_total": 1.88,
+          "kcal": 1280.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 1,
+          "line_total": 1.69,
+          "kcal": 560.0
+        },
+        {
+          "product_id": "at-billa-bake-off-rolls-300g",
+          "packs": 1,
+          "line_total": 0.84,
+          "kcal": 750.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-uk-hofer-3p-80",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 52.64,
+      "budget": 80.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1662.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.51,
+      "dropped_candidates": 6,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.6,
+      "prompt_tokens": 1943,
+      "completion_tokens": 151,
+      "max_completion_tokens": 151,
+      "calls": [
+        {
+          "duration_s": 2.59,
+          "prompt_tokens": 1943,
+          "completion_tokens": 151,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00038204999999999994,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-hofer-toast-bread-500g",
+              "packs": 6
+            },
+            {
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "packs": 6
+            },
+            {
+              "product_id": "at-hofer-mixed-mince-500g",
+              "packs": 3
+            },
+            {
+              "product_id": "at-hofer-gouda-450g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-emmentaler-slices-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-crust-bread-750g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-cevapcici-450g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 9,
+          "line_total": 8.46,
+          "kcal": 11700.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 6,
+          "line_total": 5.64,
+          "kcal": 1980.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 3,
+          "line_total": 14.97,
+          "kcal": 3750.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-hofer-emmentaler-slices-250g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 4,
+          "line_total": 7.2,
+          "kcal": 6900.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 3,
+          "line_total": 2.82,
+          "kcal": 3150.0
+        },
+        {
+          "product_id": "at-hofer-lactose-free-butter-250g",
+          "packs": 2,
+          "line_total": 3.98,
+          "kcal": 3700.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-en-both-4p-120-vegetarian",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 37.27,
+      "budget": 120.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1604.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 0.83,
+      "dropped_candidates": 10,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 3.06,
+      "prompt_tokens": 3160,
+      "completion_tokens": 228,
+      "max_completion_tokens": 228,
+      "calls": [
+        {
+          "duration_s": 3.05,
+          "prompt_tokens": 3160,
+          "completion_tokens": 228,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0006108,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 4
+            },
+            {
+              "product_id": "at-billa-apple-juice-1l",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-gouda-slices-400g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-whole-milk-1l",
+              "packs": 4
+            },
+            {
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "packs": 2
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 5,
+          "line_total": 3.95,
+          "kcal": 9250.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 4,
+          "line_total": 4.52,
+          "kcal": 14000.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3300.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3400.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 4,
+          "line_total": 2.08,
+          "kcal": 660.0
+        },
+        {
+          "product_id": "at-billa-apple-juice-1l",
+          "packs": 2,
+          "line_total": 1.72,
+          "kcal": 900.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-gouda-slices-400g",
+          "packs": 1,
+          "line_total": 4.39,
+          "kcal": 1424.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 4,
+          "line_total": 5.28,
+          "kcal": 2560.0
+        },
+        {
+          "product_id": "at-billa-bake-off-rolls-300g",
+          "packs": 2,
+          "line_total": 1.68,
+          "kcal": 1500.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 3,
+          "line_total": 2.55,
+          "kcal": 5325.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-de-billa-2p-60-vegan",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 22.85,
+      "budget": 60.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1617.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.01,
+      "dropped_candidates": 4,
+      "warnings": [],
+      "latency_s": 2.53,
+      "prompt_tokens": 1964,
+      "completion_tokens": 160,
+      "max_completion_tokens": 160,
+      "calls": [
+        {
+          "duration_s": 2.52,
+          "prompt_tokens": 1964,
+          "completion_tokens": 160,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00039059999999999995,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 3
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-hummus-200g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-apple-juice-1l",
+              "packs": 2
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 3,
+          "line_total": 7.47,
+          "kcal": 4320.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 2,
+          "line_total": 2.26,
+          "kcal": 7000.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3300.0
+        },
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 3700.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 800.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-billa-bake-off-rolls-300g",
+          "packs": 2,
+          "line_total": 1.68,
+          "kcal": 1500.0
+        },
+        {
+          "product_id": "at-billa-apple-juice-1l",
+          "packs": 2,
+          "line_total": 1.72,
+          "kcal": 900.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-uk-both-5p-150-gluten-free",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 66.13,
+      "budget": 150.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1647.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.15,
+      "dropped_candidates": 9,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 2.53,
+      "prompt_tokens": 3248,
+      "completion_tokens": 192,
+      "max_completion_tokens": 192,
+      "calls": [
+        {
+          "duration_s": 2.52,
+          "prompt_tokens": 3248,
+          "completion_tokens": 192,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0006024,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 6
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 4
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 3
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-chopped-tomatoes-400g",
+              "packs": 4
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 8
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 3
+            },
+            {
+              "product_id": "at-hofer-mixed-mince-500g",
+              "packs": 3
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-sauerkraut-500g",
+              "packs": 2
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 6,
+          "line_total": 6.78,
+          "kcal": 21000.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 7,
+          "line_total": 8.33,
+          "kcal": 11550.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 3,
+          "line_total": 7.47,
+          "kcal": 4320.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 800.0
+        },
+        {
+          "product_id": "at-billa-chopped-tomatoes-400g",
+          "packs": 4,
+          "line_total": 2.76,
+          "kcal": 352.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 8,
+          "line_total": 4.16,
+          "kcal": 1320.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 3,
+          "line_total": 7.98,
+          "kcal": 2226.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 3,
+          "line_total": 14.97,
+          "kcal": 3750.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 2,
+          "line_total": 3.18,
+          "kcal": 1780.0
+        },
+        {
+          "product_id": "at-billa-sauerkraut-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 200.0
+        },
+        {
+          "product_id": "at-billa-polenta-500g",
+          "packs": 3,
+          "line_total": 2.97,
+          "kcal": 5250.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 3,
+          "line_total": 3.57,
+          "kcal": 5100.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-en-hofer-2p-40-lactose-free",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 30.23,
+      "budget": 40.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1601.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.35,
+      "dropped_candidates": 4,
+      "warnings": [
+        "kcal_topped_up"
+      ],
+      "latency_s": 1.99,
+      "prompt_tokens": 1356,
+      "completion_tokens": 132,
+      "max_completion_tokens": 132,
+      "calls": [
+        {
+          "duration_s": 1.98,
+          "prompt_tokens": 1356,
+          "completion_tokens": 132,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00028260000000000004,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-hofer-crust-bread-750g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-hofer-lactose-free-butter-250g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-mixed-mince-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-cevapcici-450g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-rye-farmhouse-slices-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 4,
+          "line_total": 7.2,
+          "kcal": 6900.0
+        },
+        {
+          "product_id": "at-hofer-lactose-free-butter-250g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 5,
+          "line_total": 4.7,
+          "kcal": 5250.0
+        },
+        {
+          "product_id": "at-hofer-organic-oat-drink-970ml",
+          "packs": 1,
+          "line_total": 1.79,
+          "kcal": 446.2
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "shop-en-both-3p-100-gf-lf",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 43.22,
+      "budget": 100.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1717.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.2,
+      "dropped_candidates": 6,
+      "warnings": [],
+      "latency_s": 3.04,
+      "prompt_tokens": 2365,
+      "completion_tokens": 227,
+      "max_completion_tokens": 227,
+      "calls": [
+        {
+          "duration_s": 3.04,
+          "prompt_tokens": 2365,
+          "completion_tokens": 227,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00049095,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 5
+            },
+            {
+              "product_id": "at-billa-dried-lentils-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 3
+            },
+            {
+              "product_id": "at-billa-onions-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-frozen-peas-750g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-hummus-200g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-lactose-free-milk-1l",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-sauerkraut-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-mandarins-750g",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 5,
+          "line_total": 5.65,
+          "kcal": 17500.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3300.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3400.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 3,
+          "line_total": 7.47,
+          "kcal": 4320.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 800.0
+        },
+        {
+          "product_id": "at-billa-frozen-peas-750g",
+          "packs": 1,
+          "line_total": 3.7,
+          "kcal": 600.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 2,
+          "line_total": 5.32,
+          "kcal": 1484.0
+        },
+        {
+          "product_id": "at-billa-lactose-free-milk-1l",
+          "packs": 2,
+          "line_total": 3.6,
+          "kcal": 1280.0
+        },
+        {
+          "product_id": "at-billa-sauerkraut-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 2,
+          "line_total": 3.18,
+          "kcal": 1780.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "tight-shop-en-both-1p-15",
+      "run": 1,
+      "mode": "shopping",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 1,
+      "total": 14.86,
+      "budget": 15.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1427.0,
+      "kcal_basis": "purchased",
+      "kcal_in_range": false,
+      "cost_per_1000_kcal": 1.49,
+      "dropped_candidates": 14,
+      "warnings": [
+        "low_kcal",
+        "budget_trimmed"
+      ],
+      "latency_s": 1.96,
+      "prompt_tokens": 3939,
+      "completion_tokens": 152,
+      "max_completion_tokens": 152,
+      "calls": [
+        {
+          "duration_s": 1.95,
+          "prompt_tokens": 3939,
+          "completion_tokens": 152,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00068205,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "product_id": "at-billa-oats-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-potatoes-2kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-natural-yogurt-250g",
+              "packs": 2
+            },
+            {
+              "product_id": "at-billa-bananas-1kg",
+              "packs": 1
+            },
+            {
+              "product_id": "at-hofer-mixed-mince-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-passata-500g",
+              "packs": 1
+            },
+            {
+              "product_id": "at-billa-eggs-m-10",
+              "packs": 1
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        }
+      ],
+      "trimmed": [
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "from_packs": 2,
+          "to_packs": 1
+        }
+      ]
+    },
+    {
+      "id": "menu-en-both-2p-1d-25",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": false,
+      "trimmed_count": 0,
+      "total": 16.2,
+      "budget": 25.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1853.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.71,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 5.12,
+      "prompt_tokens": 5843,
+      "completion_tokens": 640,
+      "max_completion_tokens": 640,
+      "calls": [
+        {
+          "duration_s": 5.11,
+          "prompt_tokens": 5843,
+          "completion_tokens": 640,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0012604499999999998,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-hofer-mixed-mince-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 300.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-hofer-mixed-mince-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 300.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 1,
+          "line_total": 1.32,
+          "kcal": 640.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 330.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-de-both-2p-3d-50",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 49.02,
+      "budget": 50.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1669.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.23,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 7.0,
+      "prompt_tokens": 5971,
+      "completion_tokens": 785,
+      "max_completion_tokens": 785,
+      "calls": [
+        {
+          "duration_s": 6.98,
+          "prompt_tokens": 5971,
+          "completion_tokens": 785,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00136665,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-hofer-mixed-mince-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-hofer-crust-bread-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-hofer-chicken-thighs-400g",
+              "amount_per_person": 180.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-natural-yogurt-250g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-billa-fish-fingers-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 150.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 1,
+          "line_total": 1.32,
+          "kcal": 640.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 1,
+          "line_total": 1.8,
+          "kcal": 1725.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 330.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1300.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-hofer-chicken-thighs-400g",
+          "packs": 2,
+          "line_total": 9.58,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-hofer-rye-crispbread-250g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 850.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 2,
+          "line_total": 1.04,
+          "kcal": 330.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-fish-fingers-450g",
+          "packs": 1,
+          "line_total": 2.65,
+          "kcal": 900.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-uk-billa-3p-3d-60",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 41.76,
+      "budget": 60.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1666.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.77,
+      "dropped_candidates": 8,
+      "warnings": [],
+      "latency_s": 7.3,
+      "prompt_tokens": 3499,
+      "completion_tokens": 903,
+      "max_completion_tokens": 903,
+      "calls": [
+        {
+          "duration_s": 7.28,
+          "prompt_tokens": 3499,
+          "completion_tokens": 903,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0010666500000000002,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-uht-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-fish-fingers-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-natural-yogurt-250g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-wheat-toast-500g",
+              "amount_per_person": 40.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-frankfurters-480g",
+              "amount_per_person": 120.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-dried-lentils-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 3700.0
+        },
+        {
+          "product_id": "at-billa-uht-whole-milk-1l",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 640.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 3,
+          "line_total": 5.97,
+          "kcal": 450.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 2,
+          "line_total": 1.38,
+          "kcal": 300.0
+        },
+        {
+          "product_id": "at-billa-fish-fingers-450g",
+          "packs": 2,
+          "line_total": 5.3,
+          "kcal": 1800.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 2,
+          "line_total": 4.98,
+          "kcal": 200.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 3,
+          "line_total": 1.56,
+          "kcal": 495.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-billa-wheat-toast-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1300.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-frankfurters-480g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1296.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-en-both-4p-7d-150",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 109.79,
+      "budget": 150.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1690.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.03,
+      "dropped_candidates": 14,
+      "warnings": [],
+      "latency_s": 15.24,
+      "prompt_tokens": 4972,
+      "completion_tokens": 1791,
+      "max_completion_tokens": 1791,
+      "calls": [
+        {
+          "duration_s": 15.23,
+          "prompt_tokens": 4972,
+          "completion_tokens": 1791,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0018203999999999998,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-butter-250g",
+              "amount_per_person": 20.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-hofer-cevapcici-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "lunch",
+              "product_id": "at-billa-fish-fingers-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "dinner",
+              "product_id": "at-hofer-organic-feta-200g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Thursday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Friday",
+              "meal": "breakfast",
+              "product_id": "at-billa-eggs-m-10",
+              "amount_per_person": 2.0
+            },
+            {
+              "day": "Friday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Friday",
+              "meal": "lunch",
+              "product_id": "at-billa-couscous-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Friday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Friday",
+              "meal": "dinner",
+              "product_id": "at-hofer-mixed-mince-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Friday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Friday",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "lunch",
+              "product_id": "at-hofer-chicken-wings-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Saturday",
+              "meal": "snack",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "dinner",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "dinner",
+              "product_id": "at-billa-dried-lentils-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Sunday",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 4,
+          "line_total": 3.16,
+          "kcal": 7400.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 2,
+          "line_total": 2.64,
+          "kcal": 1280.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 8,
+          "line_total": 15.92,
+          "kcal": 1200.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 5,
+          "line_total": 3.45,
+          "kcal": 750.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 2,
+          "line_total": 1.7,
+          "kcal": 3550.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 11,
+          "line_total": 10.34,
+          "kcal": 3630.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 2,
+          "line_total": 3.18,
+          "kcal": 1780.0
+        },
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 2,
+          "line_total": 1.88,
+          "kcal": 2600.0
+        },
+        {
+          "product_id": "at-billa-butter-250g",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1700.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 2,
+          "line_total": 2.26,
+          "kcal": 7000.0
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "packs": 2,
+          "line_total": 3.98,
+          "kcal": 700.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 2,
+          "line_total": 5.98,
+          "kcal": 750.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 2,
+          "line_total": 4.98,
+          "kcal": 2880.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 2,
+          "line_total": 7.18,
+          "kcal": 2340.0
+        },
+        {
+          "product_id": "at-billa-fish-fingers-450g",
+          "packs": 2,
+          "line_total": 5.3,
+          "kcal": 1800.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-hofer-organic-feta-200g",
+          "packs": 2,
+          "line_total": 5.58,
+          "kcal": 1080.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-couscous-500g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 1800.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 2,
+          "line_total": 9.98,
+          "kcal": 2500.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-hofer-chicken-wings-500g",
+          "packs": 2,
+          "line_total": 8.98,
+          "kcal": 2000.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-de-hofer-2p-1d-20",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 12.2,
+      "budget": 20.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1688.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.7,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 2.7,
+      "prompt_tokens": 3027,
+      "completion_tokens": 236,
+      "max_completion_tokens": 236,
+      "calls": [
+        {
+          "duration_s": 2.69,
+          "prompt_tokens": 3027,
+          "completion_tokens": 236,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00059565,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-hofer-rye-farmhouse-slices-500g",
+              "amount_per_person": 120.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-hofer-cevapcici-450g",
+              "amount_per_person": 180.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-hofer-crust-bread-750g",
+              "amount_per_person": 100.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 330.0
+        },
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1300.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-hofer-rye-farmhouse-slices-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1050.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-hofer-crust-bread-750g",
+          "packs": 1,
+          "line_total": 1.8,
+          "kcal": 1725.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-uk-both-1p-7d-60-vegetarian",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 47.89,
+      "budget": 60.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1696.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.97,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 15.56,
+      "prompt_tokens": 4904,
+      "completion_tokens": 2055,
+      "max_completion_tokens": 2055,
+      "calls": [
+        {
+          "duration_s": 15.54,
+          "prompt_tokens": 4904,
+          "completion_tokens": 2055,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0019686,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 300.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-chopped-tomatoes-400g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-polenta-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-mushrooms-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-kidney-beans-400g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-cashews-150g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "lunch",
+              "product_id": "at-hofer-organic-feta-200g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "snack",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0427\u0435\u0442\u0432\u0435\u0440",
+              "meal": "snack",
+              "product_id": "at-hofer-cream-cheese-200g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "breakfast",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "dinner",
+              "product_id": "at-billa-kidney-beans-400g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "snack",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041f'\u044f\u0442\u043d\u0438\u0446\u044f",
+              "meal": "snack",
+              "product_id": "at-billa-cashews-150g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-polenta-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0443\u0431\u043e\u0442\u0430",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 300.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "lunch",
+              "product_id": "at-billa-chopped-tomatoes-400g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "snack",
+              "product_id": "at-billa-cashews-150g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u041d\u0435\u0434\u0456\u043b\u044f",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 1,
+          "line_total": 1.32,
+          "kcal": 640.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 2,
+          "line_total": 3.98,
+          "kcal": 300.0
+        },
+        {
+          "product_id": "at-billa-chopped-tomatoes-400g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 88.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 2,
+          "line_total": 1.38,
+          "kcal": 300.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 3,
+          "line_total": 2.82,
+          "kcal": 990.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1300.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-billa-polenta-500g",
+          "packs": 1,
+          "line_total": 0.99,
+          "kcal": 1750.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 2,
+          "line_total": 3.78,
+          "kcal": 450.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-mushrooms-200g",
+          "packs": 1,
+          "line_total": 2.28,
+          "kcal": 44.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-hofer-rye-crispbread-250g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 850.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-kidney-beans-400g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 360.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-cashews-150g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 900.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-hofer-organic-feta-200g",
+          "packs": 1,
+          "line_total": 2.79,
+          "kcal": 540.0
+        },
+        {
+          "product_id": "at-hofer-cream-cheese-200g",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 380.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-en-billa-2p-3d-45-vegan",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 37.21,
+      "budget": 45.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1685.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.88,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 7.98,
+      "prompt_tokens": 2779,
+      "completion_tokens": 869,
+      "max_completion_tokens": 869,
+      "calls": [
+        {
+          "duration_s": 7.97,
+          "prompt_tokens": 2779,
+          "completion_tokens": 869,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00093825,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-chopped-tomatoes-400g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-peas-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-apple-juice-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 120.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-chopped-tomatoes-400g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-couscous-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-dried-lentils-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-chopped-tomatoes-400g",
+          "packs": 2,
+          "line_total": 1.38,
+          "kcal": 176.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 3,
+          "line_total": 5.97,
+          "kcal": 450.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-frozen-peas-750g",
+          "packs": 1,
+          "line_total": 3.7,
+          "kcal": 600.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-billa-apple-juice-1l",
+          "packs": 1,
+          "line_total": 0.86,
+          "kcal": 450.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1700.0
+        },
+        {
+          "product_id": "at-billa-couscous-500g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 1800.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 350.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 1650.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-de-both-3p-3d-70-gluten-free",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 59.6,
+      "budget": 70.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1689.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.57,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 6.2,
+      "prompt_tokens": 4535,
+      "completion_tokens": 815,
+      "max_completion_tokens": 815,
+      "calls": [
+        {
+          "duration_s": 6.19,
+          "prompt_tokens": 4535,
+          "completion_tokens": 815,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00116925,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-lentils-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-hofer-protein-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "snack",
+              "product_id": "at-billa-low-fat-quark-250g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-eggs-m-10",
+              "amount_per_person": 2.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-natural-yogurt-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-lentils-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-hofer-chicken-thighs-400g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 2,
+          "line_total": 1.88,
+          "kcal": 660.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-dried-lentils-500g",
+          "packs": 3,
+          "line_total": 3.57,
+          "kcal": 4950.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 600.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 2,
+          "line_total": 3.38,
+          "kcal": 1120.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 2,
+          "line_total": 4.98,
+          "kcal": 200.0
+        },
+        {
+          "product_id": "at-hofer-protein-yogurt-500g",
+          "packs": 2,
+          "line_total": 2.46,
+          "kcal": 600.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3400.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-billa-low-fat-quark-250g",
+          "packs": 3,
+          "line_total": 2.97,
+          "kcal": 525.0
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 350.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-natural-yogurt-250g",
+          "packs": 1,
+          "line_total": 0.52,
+          "kcal": 165.0
+        },
+        {
+          "product_id": "at-hofer-chicken-thighs-400g",
+          "packs": 2,
+          "line_total": 9.58,
+          "kcal": 1440.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "menu-uk-both-2p-3d-50-lactose-free",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 2,
+      "first_attempt_accepted": false,
+      "repaired": true,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 2,
+      "total": 48.55,
+      "budget": 50.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1669.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 2.51,
+      "dropped_candidates": 0,
+      "warnings": [
+        "budget_trimmed"
+      ],
+      "latency_s": 15.39,
+      "prompt_tokens": 10895,
+      "completion_tokens": 1868,
+      "max_completion_tokens": 934,
+      "calls": [
+        {
+          "duration_s": 8.17,
+          "prompt_tokens": 4907,
+          "completion_tokens": 934,
+          "finish_reason": "stop"
+        },
+        {
+          "duration_s": 7.2,
+          "prompt_tokens": 5988,
+          "completion_tokens": 934,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.00275505,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 300.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-hofer-organic-rye-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-hofer-chicken-thighs-400g",
+              "amount_per_person": 180.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-vegan-wholegrain-toast-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-cooked-ham-125g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-tuna-195g",
+              "amount_per_person": 90.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-eggs-m-10",
+              "amount_per_person": 2.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-sauerkraut-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-hofer-cevapcici-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            }
+          ]
+        },
+        {
+          "attempt": 2,
+          "lines": [
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-organic-oat-drink-970ml",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-hofer-organic-rye-bread-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-hofer-chicken-thighs-400g",
+              "amount_per_person": 120.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u041f\u043e\u043d\u0435\u0434\u0456\u043b\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-vegan-wholegrain-toast-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-hofer-cooked-ham-125g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "breakfast",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "lunch",
+              "product_id": "at-billa-tuna-195g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0412\u0456\u0432\u0442\u043e\u0440\u043e\u043a",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "breakfast",
+              "product_id": "at-billa-eggs-m-10",
+              "amount_per_person": 2.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-onions-1kg",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "lunch",
+              "product_id": "at-billa-sauerkraut-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-hofer-cevapcici-450g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "\u0421\u0435\u0440\u0435\u0434\u0430",
+              "meal": "snack",
+              "product_id": "at-billa-pretzel-sticks-250g",
+              "amount_per_person": 50.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 1850.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-hofer-organic-oat-drink-970ml",
+          "packs": 1,
+          "line_total": 1.79,
+          "kcal": 446.2
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-hofer-organic-rye-bread-500g",
+          "packs": 1,
+          "line_total": 2.75,
+          "kcal": 1000.0
+        },
+        {
+          "product_id": "at-hofer-chicken-thighs-400g",
+          "packs": 1,
+          "line_total": 4.79,
+          "kcal": 720.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 1,
+          "line_total": 1.69,
+          "kcal": 560.0
+        },
+        {
+          "product_id": "at-hofer-rye-crispbread-250g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 850.0
+        },
+        {
+          "product_id": "at-hofer-vegan-wholegrain-toast-500g",
+          "packs": 1,
+          "line_total": 1.79,
+          "kcal": 1200.0
+        },
+        {
+          "product_id": "at-hofer-cooked-ham-125g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-tuna-195g",
+          "packs": 1,
+          "line_total": 3.49,
+          "kcal": 214.5
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 1,
+          "line_total": 0.69,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 350.0
+        },
+        {
+          "product_id": "at-billa-eggs-m-10",
+          "packs": 1,
+          "line_total": 2.66,
+          "kcal": 742.0
+        },
+        {
+          "product_id": "at-billa-onions-1kg",
+          "packs": 1,
+          "line_total": 1.19,
+          "kcal": 400.0
+        },
+        {
+          "product_id": "at-billa-sauerkraut-500g",
+          "packs": 1,
+          "line_total": 0.79,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-hofer-cevapcici-450g",
+          "packs": 1,
+          "line_total": 3.59,
+          "kcal": 1170.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-billa-pretzel-sticks-250g",
+          "packs": 1,
+          "line_total": 0.65,
+          "kcal": 950.0
+        }
+      ],
+      "trimmed": [
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "from_packs": 2,
+          "to_packs": 1
+        }
+      ]
+    },
+    {
+      "id": "menu-de-billa-2p-7d-100-veg-lf",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 1,
+      "first_attempt_accepted": true,
+      "repaired": false,
+      "used_fallback": false,
+      "scaled": true,
+      "trimmed_count": 0,
+      "total": 51.74,
+      "budget": 100.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1690.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": true,
+      "cost_per_1000_kcal": 1.72,
+      "dropped_candidates": 0,
+      "warnings": [],
+      "latency_s": 13.19,
+      "prompt_tokens": 2976,
+      "completion_tokens": 1863,
+      "max_completion_tokens": 1863,
+      "calls": [
+        {
+          "duration_s": 13.18,
+          "prompt_tokens": 2976,
+          "completion_tokens": 1863,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0015641999999999997,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Montag",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "dinner",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Montag",
+              "meal": "snack",
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Dienstag",
+              "meal": "snack",
+              "product_id": "at-billa-cashews-150g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-peas-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-billa-polenta-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Mittwoch",
+              "meal": "snack",
+              "product_id": "at-billa-apple-juice-1l",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "dinner",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "snack",
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Donnerstag",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-broccoli-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "dinner",
+              "product_id": "at-billa-frozen-peas-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Freitag",
+              "meal": "snack",
+              "product_id": "at-billa-cashews-150g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "breakfast",
+              "product_id": "at-billa-mandarins-750g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "lunch",
+              "product_id": "at-billa-dried-chickpeas-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "lunch",
+              "product_id": "at-billa-cherry-tomatoes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Samstag",
+              "meal": "snack",
+              "product_id": "at-billa-apple-juice-1l",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "breakfast",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "lunch",
+              "product_id": "at-billa-frozen-peas-750g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "dinner",
+              "product_id": "at-billa-polenta-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "dinner",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "snack",
+              "product_id": "at-billa-bake-off-rolls-300g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Sonntag",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 3,
+          "line_total": 2.37,
+          "kcal": 5550.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 1,
+          "line_total": 1.59,
+          "kcal": 890.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 4,
+          "line_total": 7.96,
+          "kcal": 600.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 2,
+          "line_total": 1.38,
+          "kcal": 300.0
+        },
+        {
+          "product_id": "at-billa-hummus-200g",
+          "packs": 4,
+          "line_total": 6.76,
+          "kcal": 2240.0
+        },
+        {
+          "product_id": "at-billa-bake-off-rolls-300g",
+          "packs": 3,
+          "line_total": 2.52,
+          "kcal": 2250.0
+        },
+        {
+          "product_id": "at-billa-mandarins-750g",
+          "packs": 1,
+          "line_total": 2.99,
+          "kcal": 375.0
+        },
+        {
+          "product_id": "at-billa-dried-chickpeas-500g",
+          "packs": 2,
+          "line_total": 2.38,
+          "kcal": 3400.0
+        },
+        {
+          "product_id": "at-billa-cherry-tomatoes-500g",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 100.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-billa-frozen-broccoli-750g",
+          "packs": 1,
+          "line_total": 1.89,
+          "kcal": 225.0
+        },
+        {
+          "product_id": "at-billa-cashews-150g",
+          "packs": 2,
+          "line_total": 3.98,
+          "kcal": 1800.0
+        },
+        {
+          "product_id": "at-billa-frozen-peas-750g",
+          "packs": 2,
+          "line_total": 7.4,
+          "kcal": 1200.0
+        },
+        {
+          "product_id": "at-billa-polenta-500g",
+          "packs": 1,
+          "line_total": 0.99,
+          "kcal": 1750.0
+        },
+        {
+          "product_id": "at-billa-apple-juice-1l",
+          "packs": 2,
+          "line_total": 1.72,
+          "kcal": 900.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 1,
+          "line_total": 0.85,
+          "kcal": 1775.0
+        }
+      ],
+      "trimmed": []
+    },
+    {
+      "id": "tight-menu-en-both-5p-3d-40",
+      "run": 1,
+      "mode": "menu",
+      "status": "ok",
+      "attempts": 2,
+      "first_attempt_accepted": false,
+      "repaired": true,
+      "used_fallback": true,
+      "scaled": true,
+      "trimmed_count": 6,
+      "total": 39.34,
+      "budget": 40.0,
+      "within_budget": true,
+      "diet_violations": [],
+      "kcal_per_person_day": 1468.0,
+      "kcal_basis": "menu",
+      "kcal_in_range": false,
+      "cost_per_1000_kcal": 1.43,
+      "dropped_candidates": 14,
+      "warnings": [
+        "low_kcal",
+        "budget_trimmed"
+      ],
+      "latency_s": 14.43,
+      "prompt_tokens": 10787,
+      "completion_tokens": 1451,
+      "max_completion_tokens": 726,
+      "calls": [
+        {
+          "duration_s": 7.26,
+          "prompt_tokens": 4964,
+          "completion_tokens": 726,
+          "finish_reason": "stop"
+        },
+        {
+          "duration_s": 7.16,
+          "prompt_tokens": 5823,
+          "completion_tokens": 725,
+          "finish_reason": "stop"
+        }
+      ],
+      "cost_usd": 0.0024886500000000002,
+      "error": null,
+      "llm_attempts": [
+        {
+          "attempt": 1,
+          "lines": [
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 75.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 200.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-hofer-cevapcici-450g",
+              "amount_per_person": 120.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-billa-hummus-200g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-emmentaler-slices-250g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-fish-fingers-450g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            }
+          ]
+        },
+        {
+          "attempt": 2,
+          "lines": [
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Monday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-whole-milk-1l",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-billa-organic-spaghetti-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Monday",
+              "meal": "dinner",
+              "product_id": "at-hofer-gouda-450g",
+              "amount_per_person": 40.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-bananas-1kg",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Monday",
+              "meal": "snack",
+              "product_id": "at-billa-grapes-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-natural-yogurt-500g",
+              "amount_per_person": 150.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "breakfast",
+              "product_id": "at-billa-oats-500g",
+              "amount_per_person": 50.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-long-grain-rice-1kg",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "lunch",
+              "product_id": "at-billa-soup-vegetables-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-hofer-mixed-mince-500g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 250.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-hofer-rye-crispbread-250g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Tuesday",
+              "meal": "snack",
+              "product_id": "at-hofer-emmentaler-slices-250g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-toast-bread-500g",
+              "amount_per_person": 60.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "breakfast",
+              "product_id": "at-hofer-emmentaler-slices-250g",
+              "amount_per_person": 30.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-organic-fusilli-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "lunch",
+              "product_id": "at-billa-passata-500g",
+              "amount_per_person": 100.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-fish-fingers-450g",
+              "amount_per_person": 80.0
+            },
+            {
+              "day": "Wednesday",
+              "meal": "dinner",
+              "product_id": "at-billa-potatoes-2kg",
+              "amount_per_person": 200.0
+            }
+          ]
+        }
+      ],
+      "items": [
+        {
+          "product_id": "at-billa-oats-500g",
+          "packs": 2,
+          "line_total": 1.58,
+          "kcal": 3700.0
+        },
+        {
+          "product_id": "at-hofer-whole-milk-1l",
+          "packs": 2,
+          "line_total": 2.64,
+          "kcal": 1280.0
+        },
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 150.0
+        },
+        {
+          "product_id": "at-billa-passata-500g",
+          "packs": 3,
+          "line_total": 2.07,
+          "kcal": 450.0
+        },
+        {
+          "product_id": "at-billa-organic-spaghetti-500g",
+          "packs": 2,
+          "line_total": 1.7,
+          "kcal": 3550.0
+        },
+        {
+          "product_id": "at-hofer-gouda-450g",
+          "packs": 1,
+          "line_total": 3.99,
+          "kcal": 1602.0
+        },
+        {
+          "product_id": "at-billa-bananas-1kg",
+          "packs": 2,
+          "line_total": 3.18,
+          "kcal": 1780.0
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 350.0
+        },
+        {
+          "product_id": "at-hofer-natural-yogurt-500g",
+          "packs": 3,
+          "line_total": 2.82,
+          "kcal": 990.0
+        },
+        {
+          "product_id": "at-billa-long-grain-rice-1kg",
+          "packs": 1,
+          "line_total": 1.13,
+          "kcal": 3500.0
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "packs": 1,
+          "line_total": 4.99,
+          "kcal": 1250.0
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "packs": 1,
+          "line_total": 2.49,
+          "kcal": 1440.0
+        },
+        {
+          "product_id": "at-hofer-rye-crispbread-250g",
+          "packs": 1,
+          "line_total": 1.49,
+          "kcal": 850.0
+        },
+        {
+          "product_id": "at-hofer-emmentaler-slices-250g",
+          "packs": 1,
+          "line_total": 1.99,
+          "kcal": 950.0
+        },
+        {
+          "product_id": "at-hofer-toast-bread-500g",
+          "packs": 1,
+          "line_total": 0.94,
+          "kcal": 1300.0
+        },
+        {
+          "product_id": "at-billa-organic-fusilli-500g",
+          "packs": 2,
+          "line_total": 1.7,
+          "kcal": 3550.0
+        },
+        {
+          "product_id": "at-billa-fish-fingers-450g",
+          "packs": 1,
+          "line_total": 2.65,
+          "kcal": 900.0
+        }
+      ],
+      "trimmed": [
+        {
+          "product_id": "at-billa-soup-vegetables-500g",
+          "from_packs": 4,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-billa-grapes-500g",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-hofer-mixed-mince-500g",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-billa-potatoes-2kg",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-hofer-emmentaler-slices-250g",
+          "from_packs": 2,
+          "to_packs": 1
+        },
+        {
+          "product_id": "at-billa-fish-fingers-450g",
+          "from_packs": 2,
+          "to_packs": 1
+        }
+      ]
+    }
+  ]
+}
