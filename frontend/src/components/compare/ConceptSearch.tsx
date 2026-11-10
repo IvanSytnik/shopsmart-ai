@@ -146,7 +146,7 @@ export const ConceptSearch: React.FC<ConceptSearchProps> = ({ concepts, onList, 
                   onMouseMove={() => setActive(index)}
                   className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${
                     selected
-                      ? 'bg-primary-50 dark:bg-primary-900 dark:ring-2 dark:ring-inset dark:ring-primary-400'
+                      ? 'bg-primary-100 ring-2 ring-inset ring-primary-600 dark:bg-primary-900 dark:ring-primary-400'
                       : ''
                   }`}
                 >
@@ -155,15 +155,19 @@ export const ConceptSearch: React.FC<ConceptSearchProps> = ({ concepts, onList, 
                   </span>
                   <span className="flex-1 min-w-0">
                     <span
-                      className={`block font-medium text-gray-800 ${
-                        selected ? 'dark:text-white' : 'dark:text-gray-200'
+                      className={`block font-medium ${
+                        selected
+                          ? 'text-primary-900 dark:text-white'
+                          : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
                       {concept.name[language]}
                     </span>
                     <span
-                      className={`block text-xs text-gray-500 ${
-                        selected ? 'dark:text-primary-100' : 'dark:text-gray-400'
+                      className={`block text-xs ${
+                        selected
+                          ? 'text-primary-800 dark:text-primary-100'
+                          : 'text-gray-500 dark:text-gray-400'
                       }`}
                     >
                       {formatSize(concept.reference_pack_size, concept.unit, language, t)} ·{' '}

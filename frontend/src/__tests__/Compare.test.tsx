@@ -111,6 +111,26 @@ describe('compare list builder', () => {
     expect(optionNames().length).toBeGreaterThan(1); // the whole catalog, nothing typed
   });
 
+  it('marks the highlighted suggestion with a ring in light and dark mode', async () => {
+    const { user } = await renderCompare();
+
+    await user.click(search());
+    await user.keyboard('{ArrowDown}{ArrowDown}');
+
+    const options = within(screen.getByRole('listbox')).getAllByRole('option');
+    const active = options.filter(o => o.getAttribute('aria-selected') === 'true');
+    expect(active).toEqual([options[1]]);
+    expect(active[0].className.split(' ')).toEqual(
+      expect.arrayContaining([
+        'bg-primary-100',
+        'ring-2',
+        'ring-primary-600',
+        'dark:bg-primary-900',
+      ])
+    );
+    expect(options.filter(o => /\bring-/.test(o.className))).toEqual(active);
+  });
+
   it('filters by category', async () => {
     const { user } = await renderCompare();
 
