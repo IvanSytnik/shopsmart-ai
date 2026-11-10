@@ -11,3 +11,9 @@ __pycache__/
 
 # Generated at build time by frontend/scripts/gen-headers.mjs
 frontend/public/_headers
+
+# Price scanner (backend/scripts/price_scanner): browser login, run screenshots and
+# offers, review queue
+backend/.browser_profile/
+backend/.scanner/
+backend/data_src/scanner_review.json

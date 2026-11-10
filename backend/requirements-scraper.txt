@@ -1,0 +1,11 @@
+# ShopSmart AI - weekly price scanner (scripts/price_scanner), run locally only.
+# Never installed in the Docker image: the app doesn't import the scanner, and
+# .dockerignore leaves it out. After installing: python -m playwright install chromium
+-r requirements.txt
+
+# Browser with a saved login profile (backend/.browser_profile)
+playwright==1.64.1
+
+# Flyer PDFs -> one image per page for the vision model
+pypdfium2==5.14.0
+pillow==13.0.0

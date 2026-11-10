@@ -105,6 +105,7 @@ backend/
   data_src/catalog_at.csv  # human-editable catalog source
   data_src/concepts_at.csv # display names of product concepts (compare mode)
   scripts/build_catalog.py # CSV -> catalog.json, with validation
+  scripts/price_scanner/   # weekly price/promo scanner, local only (Playwright + OpenAI)
   tests/                   # pytest, OpenAI always mocked
   evals/                   # offline eval runner, cases, reports
 frontend/
@@ -188,6 +189,8 @@ cd backend
 python scripts/build_catalog.py          # validate the CSV and write app/data/catalog.json
 python scripts/build_catalog.py --check  # fail if catalog.json is out of date (CI)
 ```
+
+Prices and promotions are refreshed weekly by a local scanner (`python -m scripts.price_scanner.cli`; Playwright + OpenAI, own `requirements-scraper.txt`, not part of the app or its Docker image): see [Weekly price updates](docs/CATALOG.md#weekly-price-updates).
 
 ## Tests
 

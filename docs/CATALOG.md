@@ -122,3 +122,140 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
 3. Commit the CSVs and the generated JSON together.
 
 Collect politely: a few dozen page views per store, by hand or with a rate-limited script. No bulk scraping.
+
+## Weekly price updates
+
+`backend/scripts/price_scanner` reads current prices and promotions off the stores' pages and flyers (Flugblätter) and writes them into `catalog_at.csv`. It runs on your computer only: it uses a browser profile with your cookie consent and PLZ, and its dependencies (`backend/requirements-scraper.txt`: Playwright, pypdfium2, Pillow) are neither in `requirements.txt` nor in the Docker image (`.dockerignore` leaves the scanner out, and nothing in `app/` imports it).
+
+1. **Pages.** For each store, the scanner opens the `source_url` of every product in the CSV, then the store's offers page (Billa `shop.billa.at/aktionen`, Hofer `www.hofer.at/de/angebote.html`). It reads in one tab, one page after another, with 3–7 s pauses and some scrolling so lazy-loaded prices appear. That is about 50 pages for Billa and 30 for Hofer, roughly 10 minutes a week. Instead of the browser it can read flyer files you saved (`--from-files`).
+2. **Reading.** An OpenAI model (`gpt-4o-mini`, Structured Outputs) reads each page's text, or each flyer page's image. It lists the offers it sees: regular price, promo price and dates, a confidence, and the matching product id. The id can only be one of that store's ids or `null`. The model reads prices; it never computes them.
+3. **Checking.** An offer changes the CSV only if it names one of the store's products, its confidence is at least `--min-confidence` (0.85) and its prices pass these checks:
+   - the regular price moved by at most 50 % (a bigger jump usually means another pack size);
+   - prices are above 0;
+   - the promo price is below the regular price;
+   - the promotion has a last day, has started and hasn't ended;
+   - the row wasn't checked after the scan.
+
+   Everything else goes to `backend/data_src/scanner_review.json` (git-ignored) with the reason:
+   - promotions of products not in the catalog;
+   - offers below the confidence threshold;
+   - offers that failed a check;
+   - a second offer for a product that disagrees with the one applied.
+4. **Writing** (`--apply`). The changed rows are built with `build_catalog.py`'s validation first; only if that passes are `catalog_at.csv` and `app/data/catalog.json` written. A failing build writes neither.
+
+What a changed row says is what the shelf showed on the scan day:
+
+| Column | Written as |
+|---|---|
+| `price_eur` | the regular price seen, 2 decimals; kept when only a promo price was shown |
+| `promo_price_eur`, `promo_valid_until` | the promotion seen; cleared when the page shows none ("promo ended") |
+| `price_date` | the scan day; an unchanged price only moves the date ("confirmed") |
+| `verified`, `source_url`, names, nutrition | unchanged |
+
+### Setup (once)
+
+```bash
+cd backend && source .venv/bin/activate
+pip install -r requirements-scraper.txt
+python -m playwright install chromium
+python -m scripts.price_scanner.cli --login
+```
+
+`--login` opens a visible browser with the Billa online shop, Hofer, Roksh and Marktguru. In each tab:
+- accept the cookie banner;
+- solve the captcha if there is one;
+- log in if you want to;
+- pick your PLZ or store.
+
+Then close the window. Aktionsfinder has been offline since May 2026, so `--login` doesn't open it. The profile is saved in `backend/.browser_profile/`. It is git-ignored and left out of the Docker image; it holds your shop sessions, so don't share it. Run `--login` again when a scan reports product pages without a price (a cookie banner or captcha came back). If a shop blocks the headless browser, scan with `--headed`.
+
+### Each week
+
+```bash
+cd backend
+python -m scripts.price_scanner.cli                      # scan both stores: prints the changes, writes nothing
+python -m scripts.price_scanner.cli --last-run --apply   # write exactly what that run showed
+```
+
+A dry run prints the changed rows, then a summary:
+
+```
+Offers read: 92; pages that failed: 0
+Store  Product                 Price EUR     Promo EUR                   Conf.  Change
+-----  ----------------------  ------------  --------------------------  -----  ------
+Hofer  at-hofer-whole-milk-1l  1.32 -> 1.39  -                           0.96   price
+Hofer  at-hofer-gouda-450g     3.99          - -> 3.49 until 2026-11-14  0.93   promo
+Unchanged prices confirmed: 61 (price_date -> 2026-11-10)
+For review: 9 offers in data_src/scanner_review.json (not in the catalog 7, low confidence 2)
+```
+
+`--last-run` reuses the offers saved by the previous scan (`backend/.scanner/last_offers.json`), so applying needs no second scan and no OpenAI calls, and writes what you saw. Page screenshots of the last 8 runs are in `backend/.scanner/<date-time>/`; review items name theirs.
+
+After applying, check `git diff data_src/catalog_at.csv` and go through `scanner_review.json`. Add rows for new products worth keeping by hand (with a `concepts_at.csv` name for a new concept), then commit the CSVs and `catalog.json` together, as with any catalog change.
+
+### Flyers (`--from-files`)
+
+Save the flyer as a PDF (from the store's site or Marktguru) or take screenshots of its pages, then name the store:
+
+```bash
+python -m scripts.price_scanner.cli --store billa --from-files ~/Downloads/billa-flugblatt.pdf
+python -m scripts.price_scanner.cli --store hofer --from-files ~/Desktop/hofer-pages/
+```
+
+It reads PDFs (one 144 dpi image per page), PNG, JPEG, WebP and folders of them, as well as text saved from a shop page (`.txt`, `.json`, `.md`). Each page is one OpenAI call; an image page costs more than a text page (with `gpt-4o-mini`, roughly half a cent per flyer page; a full browser scan costs a few cents). Flyers often show next week's offers: promotions that haven't started yet go to review. Scan a flyer on or after its first day.
+
+### Options
+
+| Flag | |
+|---|---|
+| `--login` | open the shops in a visible browser to accept cookies, log in and pick a PLZ |
+| `--store billa\|hofer\|all` | stores to scan (default `all`; `--from-files` needs one store) |
+| `--from-files PATH...` | read flyer files instead of the browser |
+| `--last-run` | reuse the previous scan's offers |
+| `--dry-run` | print the changes, write nothing (default) |
+| `--apply` | write `catalog_at.csv` and rebuild `catalog.json` |
+| `--min-confidence 0.85` | offers below it go to review |
+| `--headed` | show the browser while scanning |
+| `--source`, `--output`, `--review-file`, `--runs-dir` | other paths (tests, experiments) |
+
+The OpenAI key comes from `OPENAI_API_KEY` in the environment or `backend/.env`. These optional settings can go in the same places:
+- `SCANNER_MODEL` (default `gpt-4o-mini`);
+- `SCANNER_TEMPERATURE` (0);
+- `SCANNER_MAX_TOKENS` (6000);
+- `SCANNER_TIMEOUT_S` (120);
+- `SCANNER_MAX_RETRIES` (2);
+- `SCANNER_CONCURRENCY` (3 calls at once).
+
+### Running it every week
+
+A scheduled dry run prepares the week's changes; you then read the log and apply them with `--last-run --apply`. For example, run it on Thursday morning, after the new flyers start. With cron (`crontab -e`):
+
+```cron
+0 8 * * 4  cd /path/to/shopsmart-ai-full/backend && mkdir -p .scanner && .venv/bin/python -m scripts.price_scanner.cli >> .scanner/cron.log 2>&1
+```
+
+Add `--apply` to the job to write the changes as well. They then wait in `git diff` until you commit them.
+
+On macOS, cron skips jobs while the Mac sleeps. A launchd agent catches up after wake instead. Save this as `~/Library/LaunchAgents/at.shopsmart.price-scanner.plist`, with your paths, create `backend/.scanner/` for its log, and run `launchctl load ~/Library/LaunchAgents/at.shopsmart.price-scanner.plist`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>at.shopsmart.price-scanner</string>
+  <key>WorkingDirectory</key><string>/path/to/shopsmart-ai-full/backend</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/path/to/shopsmart-ai-full/backend/.venv/bin/python</string>
+    <string>-m</string><string>scripts.price_scanner.cli</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>8</integer></dict>
+  <key>StandardOutPath</key><string>/path/to/shopsmart-ai-full/backend/.scanner/scheduled.log</string>
+  <key>StandardErrorPath</key><string>/path/to/shopsmart-ai-full/backend/.scanner/scheduled.log</string>
+</dict>
+</plist>
+```
+
+The scanner stays within the polite-collection rule above. Each week it reads one tab at a time, with pauses: each product's own page plus the first offers page per store. It uses no parallel requests and makes no attempt to hide that it is a browser driven by a script.

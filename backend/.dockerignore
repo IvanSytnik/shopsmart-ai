@@ -10,3 +10,10 @@ __pycache__/
 *.log
 .git
 .ruff_cache/
+
+# Price scanner: local tool with its own requirements; the profile holds shop logins
+.browser_profile/
+.scanner/
+scripts/price_scanner/
+requirements-scraper.txt
+data_src/scanner_review.json
