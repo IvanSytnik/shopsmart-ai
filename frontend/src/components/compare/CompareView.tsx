@@ -37,6 +37,7 @@ interface Comparison {
   id: number; // a new one resets the result tabs and checklist
   request: CompareRequest;
   response: CompareResponse;
+  focus: boolean; // asked for from the result, whose button is gone: focus the new one
 }
 
 const thresholdText = (value: number) => String(value);
@@ -118,14 +119,14 @@ export const CompareView: React.FC<CompareViewProps> = ({ onModeChange, sharedLi
     if (isSplitThreshold(value)) setList(l => ({ ...l, min_split_savings_eur: value }));
   };
 
-  const runCompare = async () => {
+  const runCompare = async (focusResult = false) => {
     if (!request) return;
     setLoading(true);
     setError(null);
     setOpenedShared(false);
     try {
       const response = await compareBasket(request);
-      setComparison(prev => ({ id: (prev?.id ?? 0) + 1, request, response }));
+      setComparison(prev => ({ id: (prev?.id ?? 0) + 1, request, response, focus: focusResult }));
     } catch (err) {
       setError(err instanceof ApiError ? err.code : 'generation_failed');
     } finally {
@@ -152,7 +153,7 @@ export const CompareView: React.FC<CompareViewProps> = ({ onModeChange, sharedLi
         ? 'compareFailed'
         : ERROR_MESSAGE_KEYS[error];
   const stepperClass =
-    'w-9 h-9 shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 text-lg font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed';
+    'w-10 h-10 shrink-0 rounded-lg border border-gray-200 dark:border-gray-600 text-lg font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed';
   const secondaryClass =
     'flex-1 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed';
 
@@ -434,7 +435,7 @@ export const CompareView: React.FC<CompareViewProps> = ({ onModeChange, sharedLi
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="button"
-            onClick={runCompare}
+            onClick={() => runCompare()}
             disabled={request === null || loading}
             className="flex-[2] py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:from-primary-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
           >
@@ -470,6 +471,9 @@ export const CompareView: React.FC<CompareViewProps> = ({ onModeChange, sharedLi
           request={comparison.request}
           conceptsById={conceptsById}
           stale={stale}
+          onCompareAgain={request ? () => runCompare(true) : null}
+          comparing={loading}
+          focusOnMount={comparison.focus}
         />
       )}
     </div>

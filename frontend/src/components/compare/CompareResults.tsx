@@ -1,4 +1,4 @@
-import React, { useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { useLanguage } from '../../LanguageContext';
 import type { TranslationKey } from '../../translations';
 import type { CompareRequest, CompareResponse, ConceptSummary, Strategy } from '../../types';
@@ -17,6 +17,9 @@ interface CompareResultsProps {
   request: CompareRequest; // what was compared
   conceptsById: ReadonlyMap<string, ConceptSummary>;
   stale: boolean; // the list has changed since
+  onCompareAgain: (() => void) | null; // null: the list as it is can't be compared
+  comparing: boolean;
+  focusOnMount: boolean;
 }
 
 /** The recommendation, then each store's prices and the split basket in two tabs. */
@@ -25,12 +28,21 @@ export const CompareResults: React.FC<CompareResultsProps> = ({
   request,
   conceptsById,
   stale,
+  onCompareAgain,
+  comparing,
+  focusOnMount,
 }) => {
   const { t, tn, language } = useLanguage();
   const id = useId();
   const [tab, setTab] = useState<Strategy>(response.recommended_strategy);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const tabRefs = useRef<Partial<Record<Strategy, HTMLButtonElement | null>>>({});
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Fixed for this result: each comparison mounts a new one (it's keyed by the comparison).
+  useEffect(() => {
+    if (focusOnMount) sectionRef.current?.focus();
+  }, [focusOnMount]);
 
   const best = response.single_store_rankings[0];
   const basket = response.split_basket;
@@ -67,11 +79,26 @@ export const CompareResults: React.FC<CompareResultsProps> = ({
     'rounded-xl p-4 text-sm bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300';
 
   return (
-    <section aria-label={t('compareResults')} className="space-y-6 animate-fade-in">
+    <section
+      ref={sectionRef}
+      tabIndex={-1}
+      aria-label={t('compareResults')}
+      className="space-y-6 animate-fade-in focus:outline-none"
+    >
       {stale && (
-        <p role="status" className={warningClass}>
-          <span aria-hidden="true">↻</span> {t('compareOutdated')}
-        </p>
+        <div className={`${warningClass} flex flex-col sm:flex-row sm:items-center gap-3`}>
+          <p role="status" className="flex-1">
+            <span aria-hidden="true">↻</span> {t('compareOutdated')}
+          </p>
+          <button
+            type="button"
+            onClick={onCompareAgain ?? undefined}
+            disabled={onCompareAgain === null || comparing}
+            className="self-start sm:self-auto shrink-0 min-h-[40px] px-4 rounded-lg font-semibold bg-amber-700 text-white hover:bg-amber-800 dark:bg-amber-400 dark:text-gray-900 dark:hover:bg-amber-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {comparing ? t('comparing') : `${t('compareAgain')} ↻`}
+          </button>
+        </div>
       )}
       <div className={`space-y-6 transition-opacity ${stale ? 'opacity-60' : ''}`}>
         {nothingSold ? (

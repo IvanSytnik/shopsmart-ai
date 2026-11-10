@@ -17,7 +17,8 @@ interface ConceptSearchProps {
 
 /**
  * Autocomplete over the concepts (ARIA 1.2 combobox with a listbox popup) and a category
- * filter. Focus or typing opens the list; arrows move, Enter adds, Escape closes.
+ * filter. Focus, a click or typing opens the list; arrows move, Enter adds (and closes it),
+ * Escape closes.
  */
 export const ConceptSearch: React.FC<ConceptSearchProps> = ({ concepts, onList, full, onAdd }) => {
   const { t, language } = useLanguage();
@@ -44,10 +45,12 @@ export const ConceptSearch: React.FC<ConceptSearchProps> = ({ concepts, onList, 
     if (activeId) document.getElementById(activeId)?.scrollIntoView?.({ block: 'nearest' });
   }, [activeId]);
 
+  // Closes the list: typing, a click on the field or ArrowDown opens it again.
   const choose = (concept: ConceptSummary) => {
     onAdd(concept);
     setAnnouncement(t('compareAdded', { name: concept.name[language] }));
     setQuery('');
+    setOpen(false);
     setActive(-1);
   };
 
@@ -129,35 +132,48 @@ export const ConceptSearch: React.FC<ConceptSearchProps> = ({ concepts, onList, 
             hidden={!open || matches.length === 0}
             className="absolute z-20 mt-1 w-full max-h-72 overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl"
           >
-            {matches.map((concept, index) => (
-              <li
-                key={concept.concept_id}
-                id={optionId(concept)}
-                role="option"
-                aria-selected={index === active}
-                // Keep focus in the input, so the click lands before the list closes.
-                onMouseDown={e => e.preventDefault()}
-                onClick={() => choose(concept)}
-                onMouseMove={() => setActive(index)}
-                className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${
-                  index === active ? 'bg-primary-50 dark:bg-primary-900/30' : ''
-                }`}
-              >
-                <span className="text-xl" aria-hidden="true">
-                  {CATEGORY_ICONS[concept.category]}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="block font-medium text-gray-800 dark:text-gray-200">
-                    {concept.name[language]}
+            {matches.map((concept, index) => {
+              const selected = index === active;
+              return (
+                <li
+                  key={concept.concept_id}
+                  id={optionId(concept)}
+                  role="option"
+                  aria-selected={selected}
+                  // Keep focus in the input, so the click lands before the list closes.
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={() => choose(concept)}
+                  onMouseMove={() => setActive(index)}
+                  className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${
+                    selected
+                      ? 'bg-primary-50 dark:bg-primary-900 dark:ring-2 dark:ring-inset dark:ring-primary-400'
+                      : ''
+                  }`}
+                >
+                  <span className="text-xl" aria-hidden="true">
+                    {CATEGORY_ICONS[concept.category]}
                   </span>
-                  <span className="block text-xs text-gray-500 dark:text-gray-400">
-                    {formatSize(concept.reference_pack_size, concept.unit, language, t)} ·{' '}
-                    {concept.stores.join(', ')}
-                    {onList.has(concept.concept_id) && ` · ✓ ${t('compareInList')}`}
+                  <span className="flex-1 min-w-0">
+                    <span
+                      className={`block font-medium text-gray-800 ${
+                        selected ? 'dark:text-white' : 'dark:text-gray-200'
+                      }`}
+                    >
+                      {concept.name[language]}
+                    </span>
+                    <span
+                      className={`block text-xs text-gray-500 ${
+                        selected ? 'dark:text-primary-100' : 'dark:text-gray-400'
+                      }`}
+                    >
+                      {formatSize(concept.reference_pack_size, concept.unit, language, t)} ·{' '}
+                      {concept.stores.join(', ')}
+                      {onList.has(concept.concept_id) && ` · ✓ ${t('compareInList')}`}
+                    </span>
                   </span>
-                </span>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </div>
         <label htmlFor={`${id}-category`} className="sr-only">

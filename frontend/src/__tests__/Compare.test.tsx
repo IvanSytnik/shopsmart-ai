@@ -88,8 +88,27 @@ describe('compare list builder', () => {
     expect(listRows()).toEqual(['🥛Whole milk1 × 1 l−+✕']);
     expect(search()).toHaveProperty('value', '');
     expect(screen.getByText('Added: Whole milk')).toBeTruthy();
+    // The suggestions close after adding, until the next keystroke.
+    expect(screen.getByRole('listbox', { hidden: true }).hidden).toBe(true);
+    expect(search().getAttribute('aria-expanded')).toBe('false');
+    expect(search().getAttribute('aria-activedescendant')).toBeNull();
+    await user.keyboard('ban');
+    expect(optionNames()).toEqual(['🍎Bananas1 kg · Lidl']);
     await user.keyboard('{Escape}');
     expect(screen.getByRole('listbox', { hidden: true }).hidden).toBe(true);
+  });
+
+  it('closes the suggestions after a click on one, and a click on the field opens them', async () => {
+    const { user } = await renderCompare();
+
+    await add(user, 'yog', /^Natural yogurt/);
+
+    expect(search()).toBe(document.activeElement);
+    expect(screen.getByRole('listbox', { hidden: true }).hidden).toBe(true);
+    expect(screen.queryByText('No products match.')).toBeNull();
+    await user.click(search());
+    expect(search().getAttribute('aria-expanded')).toBe('true');
+    expect(optionNames().length).toBeGreaterThan(1); // the whole catalog, nothing typed
   });
 
   it('filters by category', async () => {
@@ -327,6 +346,45 @@ describe('compare results', () => {
     expect(screen.queryByText(/Your list has changed/)).toBeNull();
   });
 
+  it('compares again from the outdated notice and moves focus to the new result', async () => {
+    const updated: CompareResponse = {
+      ...COMPARE_SPLIT,
+      split_basket: { ...COMPARE_SPLIT.split_basket, total_eur: 6 },
+    };
+    const { user, fetchMock } = await renderCompare([
+      { status: 200, body: COMPARE_SPLIT },
+      { status: 200, body: updated },
+    ]);
+    await buildList(user);
+    await user.click(screen.getByRole('button', { name: /Compare prices/ }));
+    await screen.findByTestId('compare-recommendation');
+    expect(screen.queryByRole('button', { name: /Compare again/ })).toBeNull();
+
+    await user.click(screen.getByRole('button', { name: 'More: Bananas' }));
+    await user.click(screen.getByRole('button', { name: /Compare again/ }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('compare-recommendation').textContent).toContain('Total: €6.00');
+    });
+    expect(screen.queryByText(/Your list has changed/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Compare again/ })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('region', { name: 'Comparison' }));
+    const [, init] = fetchMock.mock.calls.at(-1) as unknown as [string, RequestInit];
+    expect(JSON.parse(String(init.body)).items).toContainEqual({
+      concept_id: 'bananas',
+      quantity: 2,
+    });
+  });
+
+  it('cannot compare again from the notice while the list is empty', async () => {
+    const { user } = await compareWith(COMPARE_SPLIT);
+
+    await user.click(screen.getByRole('button', { name: 'Clear list' }));
+
+    expect(screen.getByText(/Your list has changed/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Compare again/ })).toHaveProperty('disabled', true);
+  });
+
   it.each([
     [{ status: 500, body: null }, 'Could not compare prices. Please try again.'],
     [
@@ -365,5 +423,9 @@ describe('compare in Ukrainian', () => {
     await waitFor(() => {
       expect(screen.getByRole('region', { name: 'У Lidl взяти на €4.00' })).toBeTruthy();
     });
+
+    await user.click(screen.getByRole('button', { name: 'Більше: Рис' }));
+    expect(screen.getByText(/Список змінився/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Порівняти ще раз/ })).toBeTruthy();
   });
 });

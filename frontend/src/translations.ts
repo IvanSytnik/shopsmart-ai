@@ -83,6 +83,10 @@ export const translations = {
     mode: 'Mode',
     shoppingList: 'Shopping List',
     mealPlanning: 'Meal Planning',
+    // Mode tabs on narrow screens: part of the full label, which stays the accessible name
+    shoppingListShort: 'Shopping List',
+    mealPlanningShort: 'Meal Planning',
+    compareModeShort: 'Compare',
     days: 'Days',
     day: 'Day',
     breakfast: 'Breakfast',
@@ -175,6 +179,7 @@ export const translations = {
     sharedList: "Shared list opened. Compare to see today's prices.",
     compareResults: 'Comparison',
     compareOutdated: 'Your list has changed. Compare again to update the prices.',
+    compareAgain: 'Compare again',
     compareSplitTitle: 'Split your shopping',
     compareSplitBody:
       'Buying each product where it costs least saves €{amount} compared with shopping only at {store}.',
@@ -279,6 +284,9 @@ export const translations = {
     mode: 'Режим',
     shoppingList: 'Список покупок',
     mealPlanning: 'Планування меню',
+    shoppingListShort: 'Список покупок',
+    mealPlanningShort: 'Меню',
+    compareModeShort: 'Порівняти',
     days: 'Днів',
     day: 'День',
     breakfast: 'Сніданок',
@@ -370,6 +378,7 @@ export const translations = {
     sharedList: 'Відкрито спільний список. Порівняйте, щоб побачити сьогоднішні ціни.',
     compareResults: 'Результати порівняння',
     compareOutdated: 'Список змінився. Порівняйте ще раз, щоб оновити ціни.',
+    compareAgain: 'Порівняти ще раз',
     compareSplitTitle: 'Розділіть покупки',
     compareSplitBody:
       'Купуючи кожен продукт там, де він найдешевший, ви заощадите €{amount} порівняно з покупками лише в {store}.',
@@ -477,6 +486,9 @@ export const translations = {
     mode: 'Modus',
     shoppingList: 'Einkaufsliste',
     mealPlanning: 'Menüplanung',
+    shoppingListShort: 'Einkauf',
+    mealPlanningShort: 'Menü',
+    compareModeShort: 'Vergleich',
     days: 'Tage',
     day: 'Tag',
     breakfast: 'Frühstück',
@@ -573,6 +585,7 @@ export const translations = {
     compareResults: 'Vergleich',
     compareOutdated:
       'Ihre Liste hat sich geändert. Vergleichen Sie erneut, um die Preise zu aktualisieren.',
+    compareAgain: 'Erneut vergleichen',
     compareSplitTitle: 'Einkauf aufteilen',
     compareSplitBody:
       'Wenn Sie jedes Produkt dort kaufen, wo es am günstigsten ist, sparen Sie €{amount} gegenüber einem Einkauf nur bei {store}.',
