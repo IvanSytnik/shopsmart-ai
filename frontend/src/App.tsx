@@ -7,13 +7,15 @@ import {
   LanguageSelector,
   ThemeToggle,
   History,
+  CompareView,
 } from './components';
 import { LanguageProvider, useLanguage } from './LanguageContext';
 import { ThemeProvider } from './ThemeContext';
 import { ApiError, ErrorCode, generate } from './api';
 import { saveToHistory } from './history';
+import type { CompareList } from './compareList';
 import { SharedPlan, parseShareHash } from './share';
-import { GenerateRequest, GenerateResponse } from './types';
+import { AppMode, GenerateRequest, GenerateResponse, Mode } from './types';
 
 const AppContent: React.FC = () => {
   const [response, setResponse] = useState<GenerateResponse | null>(null);
@@ -22,6 +24,13 @@ const AppContent: React.FC = () => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [isMenuMode, setIsMenuMode] = useState(false);
   const [shared, setShared] = useState<SharedPlan>(() => parseShareHash(window.location.hash));
+  // The plan form's mode, and whether the compare tab shows instead of it.
+  const [planMode, setPlanMode] = useState<Mode>('shopping');
+  const [comparing, setComparing] = useState(false);
+  // Mounted on first use, then kept (hidden) so the plan form and the comparison both
+  // survive switching tabs.
+  const [compareMounted, setCompareMounted] = useState(false);
+  const [sharedList, setSharedList] = useState<CompareList | null>(null);
   const { t } = useLanguage();
 
   // A share link pasted into an open tab only changes the hash.
@@ -31,10 +40,33 @@ const AppContent: React.FC = () => {
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
-  const leaveShared = () => {
+  const clearHash = () =>
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
+
+  const leaveShared = () => {
+    clearHash();
     setShared({ kind: 'none' });
   };
+
+  const changeMode = (mode: AppMode) => {
+    if (mode === 'compare') {
+      setCompareMounted(true);
+      setComparing(true);
+    } else {
+      setPlanMode(mode);
+      setComparing(false);
+    }
+  };
+
+  // A shared compare list opens in the compare tab, where it becomes the list being built.
+  useEffect(() => {
+    if (shared.kind !== 'list') return;
+    setSharedList(shared.list);
+    setCompareMounted(true);
+    setComparing(true);
+    clearHash();
+    setShared({ kind: 'none' });
+  }, [shared]);
 
   const handleGenerate = async (input: GenerateRequest) => {
     setLoading(true);
@@ -60,6 +92,7 @@ const AppContent: React.FC = () => {
     leaveShared();
     setError(null);
     setResponse(savedResponse);
+    setComparing(false);
   };
 
   return (
@@ -117,18 +150,24 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {shared.kind === 'none' && error && (
-          <ErrorBanner code={error} onDismiss={() => setError(null)} onRetry={handleReset} />
+        {shared.kind === 'none' && (
+          <div hidden={comparing}>
+            {error && (
+              <ErrorBanner code={error} onDismiss={() => setError(null)} onRetry={handleReset} />
+            )}
+            {loading && <LoadingSpinner isMenu={isMenuMode} />}
+            {!loading && response && <Results response={response} onReset={handleReset} />}
+            {/* Kept mounted while loading so the user's choices survive an error. */}
+            {!response && (
+              <div className={loading ? 'hidden' : undefined}>
+                <ShopForm mode={planMode} onModeChange={changeMode} onSubmit={handleGenerate} />
+              </div>
+            )}
+          </div>
         )}
-
-        {shared.kind === 'none' && loading && <LoadingSpinner isMenu={isMenuMode} />}
-        {shared.kind === 'none' && !loading && response && (
-          <Results response={response} onReset={handleReset} />
-        )}
-        {/* Kept mounted while loading so the user's choices survive an error. */}
-        {shared.kind === 'none' && !response && (
-          <div className={loading ? 'hidden' : undefined}>
-            <ShopForm onSubmit={handleGenerate} />
+        {compareMounted && (
+          <div hidden={shared.kind !== 'none' || !comparing}>
+            <CompareView onModeChange={changeMode} sharedList={sharedList} />
           </div>
         )}
 

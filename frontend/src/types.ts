@@ -22,6 +22,8 @@ export type Category =
   | 'other';
 
 export type Mode = 'shopping' | 'menu';
+// The app's tabs: the two modes of /generate, and comparing a list across stores (/compare).
+export type AppMode = Mode | 'compare';
 
 // Mirrors backend app/schemas/requests.py (GenerateRequest).
 export interface GenerateRequest {
@@ -109,6 +111,85 @@ export interface GenerateResponse {
   catalog_version: string;
   price_date: string; // YYYY-MM-DD
   generated_at: string; // ISO 8601 with time zone
+}
+
+// Mirrors backend app/schemas/compare.py (GET /api/catalog/concepts, POST /compare).
+export interface ConceptSummary {
+  concept_id: string;
+  name: LocalizedNames; // neutral, without store brands: shown in the list
+  names: LocalizedNames[]; // its products' names in the country: searched too
+  category: Category;
+  unit: Unit;
+  stores: string[]; // sorted
+  reference_pack_size: number; // what quantity 1 means: the smallest pack, in `unit`
+}
+
+export interface ConceptsResponse {
+  country: Country;
+  concepts: ConceptSummary[]; // sorted by concept_id
+}
+
+export interface CompareItemRequest {
+  concept_id: string;
+  quantity: number; // 1-50 reference packs
+}
+
+export interface CompareRequest {
+  items: CompareItemRequest[]; // 1-50, unique concept ids
+  stores: string[]; // 1-5, unique, from CatalogMeta.countries[country]
+  diet_tags?: DietTag[]; // unique; default []
+  min_split_savings_eur?: number; // 0-1000, 2 decimals; default 3
+  country?: Country; // default 'AT'
+}
+
+export interface MatchedStoreItem {
+  concept_id: string;
+  product_id: string;
+  names: LocalizedNames;
+  store: string;
+  packs_needed: number;
+  pack_size: number;
+  unit: Unit;
+  price_eur: number; // per pack, today: the promo price while a promotion runs
+  regular_price_eur: number;
+  promo_price_eur: number | null; // only while the promotion runs
+  promo_valid_until: string | null; // YYYY-MM-DD, only while the promotion runs
+  line_total_eur: number;
+  price_per_base_unit_eur: number; // per 1 kg, 1 l, 1 piece or 1 pack (`unit`)
+}
+
+export interface StoreComparison {
+  store: string;
+  items: MatchedStoreItem[]; // in request order
+  total_eur: number;
+  promo_savings_eur: number;
+  missing_concepts: string[]; // requested concepts this store doesn't sell (for the diets)
+}
+
+export interface SplitStoreGroup {
+  store: string;
+  items: MatchedStoreItem[];
+  total_eur: number;
+}
+
+export interface SplitBasket {
+  stores: SplitStoreGroup[]; // only stores with items, sorted by name
+  total_eur: number;
+  missing_concepts: string[]; // sold by none of the stores (for the diets)
+  total_savings_vs_worst_eur: number;
+}
+
+export type Strategy = 'single_store' | 'split_basket';
+
+export interface CompareResponse {
+  // Fewest missing concepts first, then the lowest total, then the store name.
+  single_store_rankings: StoreComparison[];
+  split_basket: SplitBasket;
+  recommended_strategy: Strategy;
+  recommended_store: string | null; // the best single store; null for split_basket
+  split_extra_savings_eur: number; // what the split saves over the best single store
+  catalog_version: string;
+  price_date: string; // YYYY-MM-DD
 }
 
 export interface CatalogMeta {

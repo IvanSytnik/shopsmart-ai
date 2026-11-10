@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Country, DietTag, GenerateRequest, Mode } from '../types';
+import { AppMode, Country, DietTag, GenerateRequest, Mode } from '../types';
 import {
   BUDGET_PRESETS,
   BUDGET_MIN,
@@ -14,8 +14,12 @@ import {
 import { useLanguage } from '../LanguageContext';
 import { useCatalogMeta } from '../hooks/useCatalogMeta';
 import { normalizeDecimalInput, parseDecimal } from '../numberInput';
+import { chipClass, labelClass, toggle } from './formControls';
+import { ModeSelector } from './ModeSelector';
 
 interface ShopFormProps {
+  mode: Mode;
+  onModeChange: (mode: AppMode) => void;
   onSubmit: (input: GenerateRequest) => void;
 }
 
@@ -30,17 +34,7 @@ const preferenceKeys = [
 
 type PreferenceKey = (typeof preferenceKeys)[number]['key'];
 
-const chipClass = (selected: boolean) =>
-  `flex items-center gap-1 px-3 py-2 rounded-lg border transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-    selected
-      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-      : 'border-gray-200 dark:border-gray-600 dark:text-gray-300'
-  }`;
-
-const toggle = <T,>(list: T[], value: T): T[] =>
-  list.includes(value) ? list.filter(v => v !== value) : [...list, value];
-
-export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
+export const ShopForm: React.FC<ShopFormProps> = ({ mode, onModeChange, onSubmit }) => {
   const { t, tn, language } = useLanguage();
   const catalog = useCatalogMeta();
   const [country, setCountry] = useState<Country>('AT');
@@ -54,7 +48,6 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
   const [preferences, setPreferences] = useState<string>('');
   const [selectedDiets, setSelectedDiets] = useState<DietTag[]>([]);
   const [selectedPreferences, setSelectedPreferences] = useState<PreferenceKey[]>([]);
-  const [mode, setMode] = useState<Mode>('shopping');
   const [days, setDays] = useState<number>(7);
 
   const meta = catalog.status === 'ready' ? catalog.meta : null;
@@ -101,43 +94,9 @@ export const ShopForm: React.FC<ShopFormProps> = ({ onSubmit }) => {
     });
   };
 
-  // Group captions are <p>s named by aria-labelledby: a <label> must point at one field.
-  const labelClass = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3';
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 space-y-6 animate-fade-in transition-colors">
-      {/* Mode Selector */}
-      <div>
-        <p className={labelClass}>
-          <span aria-hidden="true">🎯</span> <span id="mode-label">{t('mode')}</span>
-        </p>
-        <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="mode-label">
-          {(
-            [
-              ['shopping', '🛒', 'shoppingList'],
-              ['menu', '📅', 'mealPlanning'],
-            ] as const
-          ).map(([value, emoji, key]) => (
-            <button
-              key={value}
-              onClick={() => setMode(value)}
-              aria-pressed={mode === value}
-              className={`p-4 rounded-xl border-2 transition-all ${
-                mode === value
-                  ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30'
-                  : 'border-gray-200 dark:border-gray-600'
-              }`}
-            >
-              <span className="text-2xl block mb-1">{emoji}</span>
-              <span
-                className={`font-medium ${mode === value ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-gray-300'}`}
-              >
-                {t(key)}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
+      <ModeSelector mode={mode} onChange={onModeChange} />
 
       {/* Days Selector (only for menu mode) */}
       {mode === 'menu' && (

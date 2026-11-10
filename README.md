@@ -78,9 +78,10 @@ Reports: [backend/evals/report.md](backend/evals/report.md) (the full run above,
 ## Features
 
 - **Two modes**: a 7-day shopping list, or a 1–7 day menu (breakfast, lunch, dinner, snack) with the shopping list derived from its portions.
+- **Compare a list across stores** (no LLM call): pick products by kind under neutral names (`Butter`, not a store brand), in packs (`2 × 250 g (500 g)`); see the list's price at each store (price per kg/l, promotions, what a store lacks) and the cheapest split across stores, recommended only if it saves at least a threshold you set (default €3). The list is kept in `localStorage` and can be shared as a link (`/#/list/<data>`).
 - **Grounded prices**: per-store subtotals, a budget bar (used / remaining) and the catalog's price date on every plan.
 - **Honest warnings**: trimmed products, kcal top-up and low-kcal notices.
-- **Share links**: the whole plan is compressed into the URL fragment (`/#/plan/<data>`) and opens read-only; nothing is stored on the server.
+- **Share links**: the whole plan is compressed into the URL fragment (`/#/plan/<data>`) and opens read-only; a compare list (`/#/list/<data>`) opens in the compare tab with today's prices. Nothing is stored on the server.
 - **History** of recent plans in `localStorage`; check off items while shopping; copy or print.
 - **i18n**: English, Ukrainian and German, product names in all three, plurals via `Intl.PluralRules` (e.g. uk: 1 день, 3 дні, 5 днів).
 - **Dark mode**, **mobile layout**, **accessibility**: labelled form controls and groups, `aria-pressed` toggle chips, `aria-invalid` fields with linked error text.

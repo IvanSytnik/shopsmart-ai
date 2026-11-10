@@ -33,7 +33,7 @@ const isSavedPlan = (value: unknown): value is SavedPlan =>
   isGenerateResponse(value.response);
 
 // Storage can throw (private mode, quota, disabled); history is a convenience, so ignore it.
-function readStorage(key: string): string | null {
+export function readStorage(key: string): string | null {
   try {
     return localStorage.getItem(key);
   } catch {
@@ -41,7 +41,7 @@ function readStorage(key: string): string | null {
   }
 }
 
-function writeStorage(key: string, value: string | null): void {
+export function writeStorage(key: string, value: string | null): void {
   try {
     if (value === null) {
       localStorage.removeItem(key);

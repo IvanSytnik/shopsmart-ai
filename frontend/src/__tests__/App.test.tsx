@@ -2,8 +2,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it } from 'vitest';
 import App from '../App';
+import { COMPARE_LIST_KEY, CompareList } from '../compareList';
 import { HISTORY_KEY } from '../history';
-import { SHARE_HASH_PREFIX, encodePlan } from '../share';
+import { LIST_HASH_PREFIX, SHARE_HASH_PREFIX, encodeList, encodePlan } from '../share';
 import { SHOPPING, mockFetch } from '../test/fixtures';
 
 // Lidl and Penny are preselected.
@@ -138,5 +139,58 @@ describe('App', () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /Create your own/ }));
     expect(await screen.findByRole('button', { name: /Generate Shopping List/ })).toBeTruthy();
+  });
+
+  it('switches to the compare tab and back without losing either form', async () => {
+    mockFetch();
+    render(<App />);
+    const user = userEvent.setup();
+    await screen.findByRole('button', { name: 'Lidl' });
+    await user.click(screen.getByRole('button', { name: /Vegetarian/ }));
+
+    await user.click(screen.getByRole('button', { name: 'Compare' }));
+    const search = await screen.findByRole('combobox', { name: 'Add products' });
+    expect(screen.queryByRole('button', { name: /Generate Shopping List/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Compare' }).getAttribute('aria-pressed')).toBe(
+      'true'
+    );
+    await user.type(search, 'yog');
+    await user.click(screen.getByRole('option', { name: /^Natural yogurt/ }));
+
+    await user.click(screen.getByRole('button', { name: 'Meal Planning' }));
+    expect(screen.getByRole('button', { name: /Generate Menu/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Vegetarian/ }).getAttribute('aria-pressed')).toBe(
+      'true'
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Compare' }));
+    expect(screen.getByText('1 × 250 g')).toBeTruthy();
+  });
+
+  it('opens a shared list in the compare tab, where it replaces the list', async () => {
+    const list: CompareList = {
+      items: [{ concept_id: 'yogurt_natural', quantity: 2 }],
+      stores: ['Penny'],
+      diet_tags: ['vegan'],
+      min_split_savings_eur: 4.5,
+      country: 'AT',
+    };
+    localStorage.setItem(
+      COMPARE_LIST_KEY,
+      JSON.stringify({ ...list, items: [{ concept_id: 'rice', quantity: 1 }] })
+    );
+    window.history.replaceState(null, '', `/${LIST_HASH_PREFIX}${encodeList(list)}`);
+    mockFetch();
+    render(<App />);
+
+    expect(await screen.findByText(/Shared list opened/)).toBeTruthy();
+    expect(await screen.findByText('2 × 250 g (500 g)')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Remove: Natural yogurt' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Remove: Rice' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Penny' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: 'Lidl' }).getAttribute('aria-pressed')).toBe('false');
+    expect(screen.getByLabelText(/Split across stores only if/)).toHaveProperty('value', '4.5');
+    expect(window.location.hash).toBe('');
+    expect(JSON.parse(localStorage.getItem(COMPARE_LIST_KEY) ?? '{}')).toEqual(list);
   });
 });

@@ -2,6 +2,10 @@ import type {
   ApiErrorBody,
   ApiErrorCode,
   CatalogMeta,
+  CompareRequest,
+  CompareResponse,
+  ConceptsResponse,
+  Country,
   GenerateRequest,
   GenerateResponse,
 } from './types';
@@ -70,6 +74,17 @@ async function request<T>(path: string, init: RequestInit = {}, timeoutMs?: numb
 }
 
 export const getCatalogMeta = (): Promise<CatalogMeta> => request<CatalogMeta>('/api/catalog/meta');
+
+export const fetchCatalogConcepts = (country: Country): Promise<ConceptsResponse> =>
+  request<ConceptsResponse>(`/api/catalog/concepts?country=${encodeURIComponent(country)}`);
+
+// Computed from the catalog without the LLM, so no long timeout like /generate.
+export const compareBasket = (body: CompareRequest): Promise<CompareResponse> =>
+  request<CompareResponse>('/compare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 
 export const generate = (input: GenerateRequest): Promise<GenerateResponse> =>
   request<GenerateResponse>(

@@ -1,9 +1,19 @@
+import React, { useState } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { ShopForm } from '../components';
 import { META, mockFetch } from '../test/fixtures';
 import { renderWithLanguage } from '../test/render';
+import type { GenerateRequest, Mode } from '../types';
+
+// The form with its mode held as App holds it (the compare tab is App's to show).
+const Form: React.FC<{ onSubmit: (input: GenerateRequest) => void }> = ({ onSubmit }) => {
+  const [mode, setMode] = useState<Mode>('shopping');
+  return (
+    <ShopForm mode={mode} onModeChange={m => m !== 'compare' && setMode(m)} onSubmit={onSubmit} />
+  );
+};
 
 const storeGroup = () => screen.getByRole('group', { name: 'Select Supermarkets' });
 const storeChips = () =>
@@ -16,7 +26,7 @@ describe('ShopForm', () => {
   it('renders store chips from the catalog meta and changes them with the country', async () => {
     mockFetch({ ...META, countries: { AT: ['Lidl', 'Penny', 'Spar'], DE: ['Lidl', 'Rewe'] } });
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Penny' });
     // The first two stores are preselected.
@@ -37,7 +47,7 @@ describe('ShopForm', () => {
   it('preselects the first two stores when nothing valid is left after a country change', async () => {
     mockFetch({ ...META, countries: { AT: ['Penny', 'Spar'], DE: ['Edeka', 'Lidl', 'Rewe'] } });
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Penny' });
     await user.click(screen.getByRole('button', { name: /Germany/ }));
@@ -50,7 +60,7 @@ describe('ShopForm', () => {
   it('labels every form field and names every option group', async () => {
     mockFetch(META);
     const user = userEvent.setup();
-    const { container } = renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    const { container } = renderWithLanguage(<Form onSubmit={vi.fn()} />);
     await screen.findByRole('button', { name: 'Penny' });
     await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
 
@@ -71,7 +81,7 @@ describe('ShopForm', () => {
 
   it('hides a country without stores', async () => {
     mockFetch({ ...META, countries: { AT: ['Lidl', 'Penny'], DE: [] } });
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Penny' });
     expect(screen.queryByRole('button', { name: /Germany/ })).toBeNull();
@@ -80,7 +90,7 @@ describe('ShopForm', () => {
   it('shows loading, then an error with a working retry', async () => {
     const fetchMock = mockFetch({ status: 500, body: null });
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     expect(screen.getByRole('status').textContent).toBe('Loading stores…');
     expect(await screen.findByText('Could not load the store list.')).toBeTruthy();
@@ -98,7 +108,7 @@ describe('ShopForm', () => {
     mockFetch();
     const onSubmit = vi.fn();
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
+    renderWithLanguage(<Form onSubmit={onSubmit} />);
 
     await screen.findByRole('button', { name: 'Lidl' });
     await user.click(screen.getByRole('button', { name: /Vegetarian/ }));
@@ -122,7 +132,7 @@ describe('ShopForm', () => {
   it('needs at least one store and a budget of 10-1000', async () => {
     mockFetch();
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'Lidl' });
     expect(submitButton()).toHaveProperty('disabled', false);
@@ -149,7 +159,7 @@ describe('ShopForm', () => {
     it('can be cleared to empty and retyped', async () => {
       mockFetch();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      renderWithLanguage(<Form onSubmit={vi.fn()} />);
       await screen.findByRole('button', { name: 'Lidl' });
 
       await user.clear(budgetInput());
@@ -167,7 +177,7 @@ describe('ShopForm', () => {
       mockFetch();
       const onSubmit = vi.fn();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={onSubmit} />, 'de');
+      renderWithLanguage(<Form onSubmit={onSubmit} />, 'de');
       await screen.findByRole('button', { name: 'Lidl' });
       const input = screen.getByLabelText<HTMLInputElement>(/^💰 Wochenbudget$/);
 
@@ -186,7 +196,7 @@ describe('ShopForm', () => {
       mockFetch();
       const onSubmit = vi.fn();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
+      renderWithLanguage(<Form onSubmit={onSubmit} />);
       await screen.findByRole('button', { name: 'Lidl' });
 
       await user.clear(budgetInput());
@@ -208,7 +218,7 @@ describe('ShopForm', () => {
       mockFetch();
       const onSubmit = vi.fn();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={onSubmit} />);
+      renderWithLanguage(<Form onSubmit={onSubmit} />);
       await screen.findByRole('button', { name: 'Lidl' });
 
       await user.click(budgetInput());
@@ -223,7 +233,7 @@ describe('ShopForm', () => {
     it('a later click inside the focused field places the cursor normally', async () => {
       mockFetch();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      renderWithLanguage(<Form onSubmit={vi.fn()} />);
       await screen.findByRole('button', { name: 'Lidl' });
 
       await user.click(budgetInput());
@@ -235,7 +245,7 @@ describe('ShopForm', () => {
     it('preset chips set the field', async () => {
       mockFetch();
       const user = userEvent.setup();
-      renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+      renderWithLanguage(<Form onSubmit={vi.fn()} />);
       await screen.findByRole('button', { name: 'Lidl' });
 
       await user.clear(budgetInput());
@@ -247,7 +257,7 @@ describe('ShopForm', () => {
   it('labels the budget per mode', async () => {
     mockFetch();
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     expect(screen.getByLabelText(/^💰 Weekly budget$/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /Meal Planning/ }));
@@ -260,7 +270,7 @@ describe('ShopForm', () => {
     const stores = ['A', 'B', 'C', 'D', 'E', 'F'];
     mockFetch({ ...META, countries: { AT: stores, DE: [] } });
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />);
+    renderWithLanguage(<Form onSubmit={vi.fn()} />);
 
     await screen.findByRole('button', { name: 'F' });
     for (const store of ['C', 'D', 'E']) {
@@ -274,7 +284,7 @@ describe('budget label in Ukrainian', () => {
   it('uses the plural form of the day count', async () => {
     mockFetch();
     const user = userEvent.setup();
-    renderWithLanguage(<ShopForm onSubmit={vi.fn()} />, 'uk');
+    renderWithLanguage(<Form onSubmit={vi.fn()} />, 'uk');
 
     expect(screen.getByLabelText(/^💰 Бюджет на тиждень$/)).toBeTruthy();
     await user.click(screen.getByRole('button', { name: /Планування меню/ }));
