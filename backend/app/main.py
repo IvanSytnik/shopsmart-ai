@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import catalog, generate, health
+from app.api import catalog, compare, generate, health
 from app.config import Settings
 from app.errors import register_error_handlers
 from app.security import SecurityHeadersMiddleware
@@ -54,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health.router)
     app.include_router(generate.router)
     app.include_router(catalog.router)
+    app.include_router(compare.router)
     return app
 
 

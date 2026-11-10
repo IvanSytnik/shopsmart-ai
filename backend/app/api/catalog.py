@@ -3,7 +3,8 @@ from typing import Annotated, get_args
 from fastapi import APIRouter, Depends
 
 from app.api.deps import get_catalog
-from app.schemas.catalog import Category, DietTag
+from app.schemas.catalog import Category, Country, DietTag
+from app.schemas.compare import ConceptsResponse
 from app.schemas.responses import CatalogMeta
 from app.services.catalog import ProductCatalog
 
@@ -20,3 +21,11 @@ def catalog_meta(catalog: Annotated[ProductCatalog, Depends(get_catalog)]) -> Ca
         diet_tags=list(get_args(DietTag)),
         categories=list(get_args(Category)),
     )
+
+
+@router.get("/concepts", response_model=ConceptsResponse)
+def catalog_concepts(
+    catalog: Annotated[ProductCatalog, Depends(get_catalog)], country: Country = "AT"
+) -> ConceptsResponse:
+    """Every concept sold in `country`, for the compare form's autocomplete."""
+    return ConceptsResponse(country=country, concepts=catalog.concepts(country))

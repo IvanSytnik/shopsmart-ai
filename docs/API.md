@@ -190,6 +190,77 @@ GET /api/catalog/meta
 }
 ```
 
+## Concepts
+
+```http
+GET /api/catalog/concepts?country=AT
+```
+
+Every concept sold in `country` (default `AT`), sorted by id, for the compare form's autocomplete. `names` are the names of the concept's products (catalog order, no repeats): show the first, search all of them. `reference_pack_size` is what `quantity: 1` means in `POST /compare`: the concept's smallest pack in the country, in `unit`.
+
+```json
+{
+  "country": "AT",
+  "concepts": [
+    {
+      "concept_id": "yogurt_natural",
+      "names": [
+        {"en": "Natural yogurt 3.6%", "uk": "Натуральний йогурт 3,6%", "de": "Naturjoghurt 3,6% Fett"},
+        {"en": "Natural yogurt 3.6%", "uk": "Натуральний йогурт 3,6%", "de": "Clever Joghurt Natur 3,6%"}
+      ],
+      "category": "dairy",
+      "unit": "kg",
+      "stores": ["Billa", "Hofer"],
+      "reference_pack_size": 0.25
+    }
+  ]
+}
+```
+
+## Compare a shopping list
+
+Prices a list of concepts at each chosen store and works out the cheapest split across them. Computed from the catalog only: **no LLM call**, so it is not subject to `RATE_LIMIT` or `DAILY_GENERATE_CAP`.
+
+```http
+POST /compare
+Content-Type: application/json
+
+{
+  "items": [{"concept_id": "yogurt_natural", "quantity": 2}, {"concept_id": "milk_whole", "quantity": 1}],
+  "stores": ["Billa", "Hofer"],
+  "diet_tags": ["lactose_free"],
+  "min_split_savings_eur": 3.00,
+  "country": "AT"
+}
+```
+
+| Field | Rules |
+|---|---|
+| `items` | 1–50, unique `concept_id`s; `quantity` 1–50. An unknown concept is reported as missing at every store |
+| `stores` | 1–5 unique store names of `country` (else `422 unknown_store`) |
+| `diet_tags` | optional, unique: `vegetarian`, `vegan`, `gluten_free`, `lactose_free`; filter products within each concept (cleaning and hygiene products fit every diet) |
+| `min_split_savings_eur` | 0–1000, 2 decimals, default `3.00` |
+| `country` | `AT` (default) or `DE` |
+
+How it is computed:
+
+- **Quantity** counts the concept's reference pack (`reference_pack_size`, its smallest pack in the country). Each store buys the fewest whole packs that hold at least that much, so every basket has at least the requested amount: 2 × yogurt (smallest pack 250 g) is 2 × 250 g at Billa and 1 × 500 g at Hofer. No store buys more than `quantity` packs.
+- **Which product:** within a store (and across stores for the split basket) the lowest `line_total_eur` for that amount wins; ties go to the lower `price_per_base_unit_eur`, then the store name and product id. A cheaper-per-kg 1 kg pack doesn't win when 250 g were asked for and a 250 g pack costs less.
+- **Prices** are today's: the promo price while a promotion runs, the regular price after `promo_valid_until`.
+- **Ranking:** fewest `missing_concepts` first, then the lowest `total_eur`, then the store name. The first is the best single store.
+- **Savings** compare the same items: `split_extra_savings_eur` is what the best store charges above the split basket for the items it has; `total_savings_vs_worst_eur` is the largest such difference over all stores.
+- **Recommendation:** `split_basket` when the split uses more than one store and `split_extra_savings_eur ≥ min_split_savings_eur`; otherwise `single_store` with `recommended_store` (`null` if no store has any item).
+
+| Field | Meaning |
+|---|---|
+| `single_store_rankings[]` | per store: `items`, `total_eur`, `promo_savings_eur` (regular minus promo price over all packs), `missing_concepts` |
+| `items[]` | `concept_id`, `product_id`, `names`, `store`, `packs_needed`, `pack_size`, `unit`, `price_eur` (per pack, today), `regular_price_eur`, `promo_price_eur` and `promo_valid_until` (only while a promotion runs, else `null`), `line_total_eur`, `price_per_base_unit_eur` (per 1 kg, 1 l, 1 piece or 1 pack: the item's `unit`) |
+| `split_basket` | `stores[]` (only stores with items, by name: `store`, `items`, `total_eur`), `total_eur`, `missing_concepts` (sold by none of the stores), `total_savings_vs_worst_eur` |
+| `recommended_strategy`, `recommended_store`, `split_extra_savings_eur` | see above |
+| `catalog_version`, `price_date` | which reference prices were used |
+
+Money is a number rounded to cents. Errors use the same format as `/generate`: `422 validation_error`, `422 unknown_store`.
+
 ## Endpoints
 
 | Method | Endpoint | Description |
@@ -197,4 +268,6 @@ GET /api/catalog/meta
 | GET | `/` | API information |
 | GET | `/health` | Health check: `{"status": "healthy", "catalog_version": "..."}` |
 | GET | `/api/catalog/meta` | Stores per country, diet tags, categories, price date |
+| GET | `/api/catalog/concepts` | Concepts per country for the compare form |
 | POST | `/generate` | Generate a shopping list or menu |
+| POST | `/compare` | Price a shopping list at each store, plus the cheapest split (no LLM) |

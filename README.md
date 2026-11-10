@@ -97,9 +97,9 @@ Reports: [backend/evals/report.md](backend/evals/report.md) (the full run above,
 backend/
   app/
     main.py, config.py     # app factory, middleware; env-driven Settings
-    api/                   # routers: health, generate, catalog
+    api/                   # routers: health, generate, catalog, compare
     schemas/               # request/response and LLM output models
-    services/              # llm, planner (prompt + repair), pricing, portions, catalog, limits
+    services/              # llm, planner (prompt + repair), pricing, portions, catalog, comparison, limits
     data/catalog.json      # generated price catalog (do not edit by hand)
   data_src/catalog_at.csv  # human-editable catalog source
   scripts/build_catalog.py # CSV -> catalog.json, with validation
