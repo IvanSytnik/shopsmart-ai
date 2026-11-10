@@ -154,12 +154,26 @@ class Product(BaseModel):
         return self if price == self.price_eur else self.model_copy(update={"price_eur": price})
 
 
+class Concept(BaseModel):
+    """A kind of product (`Product.concept_id`), named for shoppers picking from a list."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    concept_id: ConceptId
+    name: LocalizedName = Field(
+        description="Neutral, without store brands or variants: 'Butter', not 'Clever Teebutter'."
+    )
+
+
 class Catalog(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     version: NonEmptyStr
     price_date: date = Field(description="Date the reference prices were collected.")
     products: list[Product]
+    # A name for every concept_id of the products, sorted by id. The build writes no others;
+    # extra ones are ignored, so a cut-down catalog needn't prune them.
+    concepts: list[Concept] = []
 
     @model_validator(mode="after")
     def check_unique_ids(self) -> "Catalog":
@@ -177,4 +191,19 @@ class Catalog(BaseModel):
                 f"price_eur must be the price on the catalog's price_date {self.price_date} "
                 f"(regular price once a promotion has ended): {', '.join(stale)}"
             )
+        return self
+
+    @model_validator(mode="after")
+    def check_concepts(self) -> "Catalog":
+        counts = Counter(c.concept_id for c in self.concepts)
+        problems = [
+            f"{what}: {', '.join(sorted(ids))}"
+            for what, ids in (
+                ("concepts named twice", {i for i, n in counts.items() if n > 1}),
+                ("concepts without a name", {p.concept_id for p in self.products} - counts.keys()),
+            )
+            if ids
+        ]
+        if problems:
+            raise ValueError("; ".join(problems))
         return self

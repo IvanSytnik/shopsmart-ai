@@ -21,6 +21,8 @@ from app.schemas.catalog import NON_FOOD_CATEGORIES, DietTag
 from app.services.catalog import load_catalog
 from scripts.build_catalog import (
     BACKEND,
+    CONCEPT_COLUMNS,
+    DEFAULT_CONCEPTS,
     DEFAULT_SOURCE,
     BuildError,
     build,
@@ -46,6 +48,11 @@ MAX_PAIR_CANDIDATES = 100  # keeps the LLM schema enum within its limit
 
 def csv_rows() -> list[dict[str, str]]:
     with DEFAULT_SOURCE.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def concept_rows() -> list[dict[str, str]]:
+    with DEFAULT_CONCEPTS.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
@@ -217,6 +224,38 @@ def test_lactose_free_hofer_includes_the_vegan_breads() -> None:
     assert len(candidates) == 20
 
 
+# Store names and own brands of Billa and Hofer (and the ones before them) that show up in
+# product names. Concept names are for shoppers comparing stores, so they name none.
+STORE_BRANDS = re.compile(
+    r"\b(Billa|Hofer|Clever|Ja! Natürlich|Da komm ich her|SanLucar|Vegavita|Milsani|Milfina"
+    r"|Happy Harvest|Backbox|Sonnhof|Fairhof|Zurück zum Ursprung|Golden Seafood|Almare)\b",
+    re.IGNORECASE,
+)
+
+
+def test_concept_names_match_the_concepts_of_the_products() -> None:
+    names = [row["concept_id"] for row in concept_rows()]
+
+    assert names == sorted(set(names))  # one row each, sorted
+    assert set(names) == {row["concept_id"] for row in csv_rows()}  # no gaps, no stale rows
+    assert [c.concept_id for c in CATALOG.catalog.concepts] == names
+
+
+def test_concept_names_name_no_store_or_brand() -> None:
+    branded = [
+        (c.concept_id, name)
+        for c in CATALOG.catalog.concepts
+        for name in (c.name.en, c.name.uk, c.name.de)
+        if STORE_BRANDS.search(name)
+    ]
+
+    assert branded == []
+    assert any(STORE_BRANDS.search(p.name.de) for p in CATALOG.catalog.products)  # it can tell
+    butter = next(c for c in CATALOG.concepts("AT") if c.concept_id == "butter")
+    assert butter.name.de == "Butter"
+    assert "Clever Teebutter" in [n.de for n in butter.names]
+
+
 # --- the build script -----------------------------------------------------------
 
 
@@ -253,6 +292,42 @@ def test_build_fails_on_a_bad_row(tmp_path: Path, change: dict[str, str], messag
 
     with pytest.raises(BuildError, match=r"bad\.csv:3") as info:
         build(source)
+    assert message in str(info.value)
+
+
+def test_build_names_only_the_concepts_it_has(tmp_path: Path) -> None:
+    rows = csv_rows()[:3]
+    catalog, _ = build(write_csv(tmp_path / "some.csv", rows))
+
+    assert [c.concept_id for c in catalog.concepts] == sorted({r["concept_id"] for r in rows})
+
+
+@pytest.mark.parametrize(
+    ("change", "message"),
+    [
+        (
+            lambda rows: [{**rows[0], "concept_id": "milk_hole"}],  # a typo
+            "concepts_at.csv has no name for: milk_whole",
+        ),
+        (lambda rows: [*rows, rows[0]], "concepts_at.csv:3 (milk_whole): named twice"),
+        (lambda rows: [{**rows[0], "name_uk": ""}], "concepts_at.csv:2 (milk_whole)"),
+        (lambda rows: [{**rows[0], "concept_id": "Milk"}], "concepts_at.csv:2 (Milk)"),
+        (lambda rows: [{k: rows[0][k] for k in CONCEPT_COLUMNS[:3]}], "columns must be exactly"),
+    ],
+    ids=["missing", "twice", "empty name", "bad id", "columns"],
+)
+def test_build_fails_on_bad_concept_names(
+    tmp_path: Path,
+    change: Callable[[list[dict[str, str]]], list[dict[str, str]]],
+    message: str,
+) -> None:
+    milk = csv_rows()[0]  # the first product: Hofer milk
+    assert milk["concept_id"] == "milk_whole"
+    [row] = [r for r in concept_rows() if r["concept_id"] == "milk_whole"]
+    names = write_csv(tmp_path / "concepts_at.csv", change([row]))
+
+    with pytest.raises(BuildError) as info:
+        build(write_csv(tmp_path / "catalog.csv", [milk]), names)
     assert message in str(info.value)
 
 

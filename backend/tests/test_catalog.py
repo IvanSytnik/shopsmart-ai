@@ -265,10 +265,34 @@ def _without_concept_id() -> dict[str, Any]:
     return data
 
 
+def _without_concept_name(concept_id: str) -> dict[str, Any]:
+    data = fixture_data()
+    data["concepts"] = [c for c in data["concepts"] if c["concept_id"] != concept_id]
+    return data
+
+
 @pytest.mark.parametrize(
     ("case", "data", "message"),
     [
         ("missing concept_id", _without_concept_id(), "concept_id"),
+        (
+            "concept without a name",
+            _without_concept_name("milk_whole"),
+            "concepts without a name: milk_whole",
+        ),
+        (
+            "concept named twice",
+            {**fixture_data(), "concepts": fixture_data()["concepts"][:2] * 2},
+            "concepts named twice: apples, bananas",
+        ),
+        (
+            "concept name in two languages",
+            {
+                **fixture_data(),
+                "concepts": [{"concept_id": "milk_whole", "name": {"en": "Milk", "de": "Milch"}}],
+            },
+            "uk",
+        ),
         ("kebab-case concept_id", _break_first_product(concept_id="milk-whole-1l"), "concept_id"),
         (
             "promo price without end date",

@@ -18,8 +18,9 @@ Eur = Annotated[Decimal, PlainSerializer(float, return_type=float, when_used="js
 
 class ConceptSummary(BaseModel):
     concept_id: str
-    # Every product's names, in catalog order without repeats: the first is a display name,
-    # all of them are worth searching.
+    name: LocalizedName  # neutral, to display: "Butter"
+    # Every product's names in the country, in catalog order without repeats, to search too:
+    # they carry brands and variants ("Clever Teebutter", "BILLA Bio Fusilli").
     names: list[LocalizedName]
     category: Category
     unit: Unit

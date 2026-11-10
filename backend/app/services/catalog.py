@@ -30,6 +30,7 @@ class ProductCatalog:
         self._ids_by_concept: dict[str, list[str]] = {}
         for product in catalog.products:
             self._ids_by_concept.setdefault(product.concept_id, []).append(product.id)
+        self._concept_names = {c.concept_id: c.name for c in catalog.concepts}
 
     def _current(self) -> dict[str, Product]:
         # Never before the catalog's own date, so an ended promotion can't come back.
@@ -108,6 +109,7 @@ class ProductCatalog:
             summaries.append(
                 ConceptSummary(
                     concept_id=concept_id,
+                    name=self._concept_names[concept_id],  # the catalog names every concept
                     names=list(dict.fromkeys(p.name for p in products)),
                     category=first.category,
                     unit=first.unit,

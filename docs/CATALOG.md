@@ -64,6 +64,7 @@ Tags are assigned conservatively from the product type:
 - Different concepts when the product itself differs: beef or mixed mince (`minced_beef`, `minced_meat`), white or wholegrain toast, dried or canned legumes (their price per kg isn't comparable), smoked or fresh fish.
 - Products sharing a concept must have the same `unit` and `category`, or the build fails. Their diet tags may differ (`butter` holds a lactose-free and a regular butter): diets filter the products within a concept.
 - Products sold by the `pack` compare per pack, so their id says what one pack holds: `toilet_paper_10_rolls`. A size that isn't the pack size stays too: `bin_bags_30l`, sold by the piece.
+- Every concept has a name in `backend/data_src/concepts_at.csv` (`concept_id,name_en,name_uk,name_de`, sorted by id), shown when shoppers build a list to compare. Name the kind of product, neutrally: no store or own brand, no variant of one product (`Butter`, not `Clever Teebutter`; `Vollmilch`, not `Haltbar-Vollmilch 3,5%`; `Nudeln`, not `Fusilli`). A product whose concept has no name fails the build; the tests also reject names of concepts without products and names with a known store brand.
 
 Billa and Hofer currently share 11 of 68: `milk_whole`, `cheese_gouda`, `yogurt_natural`, `butter`, `oat_drink`, `bread_toast`, `bread_rolls`, `minced_meat`, `chicken_breast`, `ham_cooked`, `salmon_fillet`.
 
@@ -100,7 +101,7 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
 
 ## Updating the catalog
 
-1. Edit `backend/data_src/catalog_at.csv`: add, change or remove rows. Keep ids stable, since saved plans refer to them.
+1. Edit `backend/data_src/catalog_at.csv`: add, change or remove rows. Keep ids stable, since saved plans refer to them. A new `concept_id` needs a row in `backend/data_src/concepts_at.csv`; remove the row of a concept whose last product you remove.
 2. Build and check:
 
    ```bash
@@ -116,7 +117,8 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
    - unique ids;
    - a `source_url` on the store's own domain for every row;
    - a `concept_id` without the pack size, and exactly the known set of concepts shared between stores (update `SHARED_CONCEPTS` when it grows);
+   - a brand-free name in `concepts_at.csv` for exactly the concepts of the products;
    - a `catalog.json` that matches the CSV.
-3. Commit the CSV and the generated JSON together.
+3. Commit the CSVs and the generated JSON together.
 
 Collect politely: a few dozen page views per store, by hand or with a rate-limited script. No bulk scraping.

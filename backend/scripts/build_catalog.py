@@ -1,7 +1,7 @@
 """Build app/data/catalog.json from the human-editable CSV source.
 
     cd backend
-    python scripts/build_catalog.py            # data_src/catalog_at.csv -> app/data/catalog.json
+    python scripts/build_catalog.py            # data_src/*_at.csv -> app/data/catalog.json
     python scripts/build_catalog.py --check    # validate, and fail if catalog.json is stale
 
 `python -m scripts.build_catalog` works too.
@@ -19,6 +19,9 @@ every plan uses: the promo price if the promotion still runs on the catalog's pr
 `concept_id` names the kind of product, without its pack size (`milk_whole`); products a
 shopper would buy in place of each other share it and must have the same unit and category,
 so prices compare per kg, l or piece. Diet tags may differ: diets filter within a concept.
+data_src/concepts_at.csv names every concept for shoppers, in all three languages, neutrally
+("Butter", not "Clever Teebutter"); a product whose concept has no name there fails the build.
+Names of concepts without products are left out of catalog.json.
 
 Every row is validated with the app's Pydantic schema; any error stops the build.
 """
@@ -40,12 +43,14 @@ from pydantic import ValidationError  # noqa: E402
 from app.schemas.catalog import (  # noqa: E402
     NON_FOOD_CATEGORIES,
     Catalog,
+    Concept,
     DietTag,
     Product,
     Unit,
 )
 
 DEFAULT_SOURCE = BACKEND / "data_src" / "catalog_at.csv"
+DEFAULT_CONCEPTS = BACKEND / "data_src" / "concepts_at.csv"
 DEFAULT_OUTPUT = BACKEND / "app" / "data" / "catalog.json"
 COUNTRY = "AT"
 
@@ -73,6 +78,7 @@ COLUMNS = [
     "price_date",
     "verified",
 ]
+CONCEPT_COLUMNS = ["concept_id", "name_en", "name_uk", "name_de"]
 MONEY_FIELDS = ("price_eur", "regular_price_eur", "promo_price_eur")
 NUTRIENTS = {
     "kcal": "kcal_100",
@@ -157,16 +163,40 @@ def concept_conflict(product: Product, other: Product) -> str | None:
     return f"concept {product.concept_id} differs from {other.id} in {', '.join(differ)}"
 
 
-def read_rows(source: Path) -> list[dict[str, str]]:
+def read_rows(source: Path, columns: list[str] = COLUMNS) -> list[dict[str, str]]:
     with source.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        if reader.fieldnames != COLUMNS:
-            raise BuildError(f"columns must be exactly: {', '.join(COLUMNS)}")
+        if reader.fieldnames != columns:
+            raise BuildError(f"{source.name}: columns must be exactly: {', '.join(columns)}")
         return [{k: (v or "").strip() for k, v in row.items()} for row in reader]
 
 
-def build(source: Path) -> tuple[Catalog, list[dict[str, str]]]:
+def read_concepts(source: Path) -> dict[str, Concept]:
+    concepts: dict[str, Concept] = {}
+    errors = []
+    for line, row in enumerate(read_rows(source, CONCEPT_COLUMNS), start=2):
+        try:
+            concept = Concept.model_validate(
+                {
+                    "concept_id": row["concept_id"],
+                    "name": {lang: row[f"name_{lang}"] for lang in ("en", "uk", "de")},
+                }
+            )
+            if concept.concept_id in concepts:
+                raise BuildError("named twice")
+            concepts[concept.concept_id] = concept
+        except (BuildError, ValidationError) as e:
+            errors.append(f"{source.name}:{line} ({row['concept_id'] or '?'}): {e}")
+    if errors:
+        raise BuildError("\n".join(errors))
+    return concepts
+
+
+def build(
+    source: Path, concepts_source: Path = DEFAULT_CONCEPTS
+) -> tuple[Catalog, list[dict[str, str]]]:
     rows = read_rows(source)
+    names = read_concepts(concepts_source)
     products = []
     errors = []
     by_concept: dict[str, Product] = {}
@@ -183,11 +213,17 @@ def build(source: Path) -> tuple[Catalog, list[dict[str, str]]]:
         raise BuildError("\n".join(errors))
     if not products:
         raise BuildError("no products")
+    used = sorted({p.concept_id for p in products})
+    if unnamed := [c for c in used if c not in names]:
+        raise BuildError(f"{concepts_source.name} has no name for: {', '.join(unnamed)}")
     price_date = max(p.price_date for p in products)
     products = [p.priced_on(price_date) for p in products]  # ended promotions: regular price
     try:
         catalog = Catalog(
-            version=f"at-{price_date.isoformat()}", price_date=price_date, products=products
+            version=f"at-{price_date.isoformat()}",
+            price_date=price_date,
+            products=products,
+            concepts=[names[c] for c in used],
         )
     except ValidationError as e:
         raise BuildError(str(e)) from e
@@ -236,6 +272,7 @@ def render(catalog: Catalog) -> str:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE)
+    parser.add_argument("--concepts", type=Path, default=DEFAULT_CONCEPTS)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument(
         "--check",
@@ -244,7 +281,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     try:
-        catalog, rows = build(args.source)
+        catalog, rows = build(args.source, args.concepts)
     except (BuildError, OSError) as e:
         print(f"Catalog build failed:\n{e}", file=sys.stderr)
         return 1

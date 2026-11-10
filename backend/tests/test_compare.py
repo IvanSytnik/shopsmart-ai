@@ -10,7 +10,8 @@ A small AT catalog with easy numbers, prices as of 2026-11-02:
     butter          250 g €2.00, promo €1.50 until 11-08    250 g €1.80
     dish_soap       500 ml €1.00 (non-food)                 -
 
-A DE Hofer sells milk_whole for €0.10, which AT comparisons must ignore.
+A DE Hofer sells milk_whole for €0.10, which AT comparisons must ignore. Product names are
+their ids; concepts have names of their own.
 """
 
 import json
@@ -116,6 +117,17 @@ CATALOG_DATA = {
         ),
         product("de-hofer-milk-1l", "milk_whole", "l", 1, 0.10),
     ],
+    "concepts": [
+        {"concept_id": concept_id, "name": {"en": en, "uk": uk, "de": de}}
+        for concept_id, en, uk, de in (
+            ("bananas", "Bananas", "Банани", "Bananen"),
+            ("butter", "Butter", "Вершкове масло", "Butter"),
+            ("dish_soap", "Dish soap", "Засіб для миття посуду", "Spülmittel"),
+            ("eggs", "Eggs", "Яйця", "Eier"),
+            ("milk_whole", "Whole milk", "Цільне молоко", "Vollmilch"),
+            ("yogurt_natural", "Natural yogurt", "Натуральний йогурт", "Naturjoghurt"),
+        )
+    ],
 }
 
 # Billa: 1.20 + 1.00 + 3.00 + 1.50 = 6.70, nothing missing.
@@ -167,7 +179,8 @@ def test_concepts_list_each_concept_once_per_country() -> None:
         "yogurt_natural",
     ]
     milk = concepts["milk_whole"]
-    assert milk.names == [
+    assert milk.name == LocalizedName(en="Whole milk", uk="Цільне молоко", de="Vollmilch")
+    assert milk.names == [  # this country's products, to search
         LocalizedName(en=i, uk=f"uk {i}", de=f"de {i}")
         for i in ("at-billa-milk-1l", "at-billa-milk-lactose-free-1l", "at-hofer-milk-1l")
     ]
@@ -421,6 +434,7 @@ def test_concepts_endpoint(compare_client: TestClient) -> None:
     assert [c["concept_id"] for c in body["concepts"]][:2] == ["bananas", "butter"]
     assert body["concepts"][0] == {
         "concept_id": "bananas",
+        "name": {"en": "Bananas", "uk": "Банани", "de": "Bananen"},
         "names": [
             {
                 "en": "at-billa-bananas-1kg",

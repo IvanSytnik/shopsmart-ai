@@ -2392,5 +2392,551 @@
       "source_url": "https://shop.billa.at/produkte/clever-muellsaecke-mit-zugband-30l-00360948",
       "price_date": "2026-10-15"
     }
+  ],
+  "concepts": [
+    {
+      "concept_id": "baguette",
+      "name": {
+        "en": "Baguette",
+        "uk": "Багет",
+        "de": "Baguette"
+      }
+    },
+    {
+      "concept_id": "bananas",
+      "name": {
+        "en": "Bananas",
+        "uk": "Банани",
+        "de": "Bananen"
+      }
+    },
+    {
+      "concept_id": "beans_kidney_canned",
+      "name": {
+        "en": "Kidney beans, canned",
+        "uk": "Червона квасоля, консервована",
+        "de": "Kidneybohnen, Dose"
+      }
+    },
+    {
+      "concept_id": "bin_bags_30l",
+      "name": {
+        "en": "Bin bags 30 l",
+        "uk": "Пакети для сміття 30 л",
+        "de": "Müllsäcke 30 l"
+      }
+    },
+    {
+      "concept_id": "bread_crusty",
+      "name": {
+        "en": "Crusty bread",
+        "uk": "Хліб із хрусткою скоринкою",
+        "de": "Krustenbrot"
+      }
+    },
+    {
+      "concept_id": "bread_rolls",
+      "name": {
+        "en": "Bread rolls",
+        "uk": "Булочки",
+        "de": "Semmeln"
+      }
+    },
+    {
+      "concept_id": "bread_rye",
+      "name": {
+        "en": "Rye bread",
+        "uk": "Житній хліб",
+        "de": "Roggenbrot"
+      }
+    },
+    {
+      "concept_id": "bread_rye_wholemeal",
+      "name": {
+        "en": "Wholemeal rye bread",
+        "uk": "Житній хліб з цільного зерна",
+        "de": "Roggenvollkornbrot"
+      }
+    },
+    {
+      "concept_id": "bread_toast",
+      "name": {
+        "en": "Toast bread",
+        "uk": "Тостовий хліб",
+        "de": "Toastbrot"
+      }
+    },
+    {
+      "concept_id": "bread_toast_wholegrain",
+      "name": {
+        "en": "Wholegrain toast",
+        "uk": "Цільнозерновий тост",
+        "de": "Vollkorntoast"
+      }
+    },
+    {
+      "concept_id": "broccoli_frozen",
+      "name": {
+        "en": "Frozen broccoli",
+        "uk": "Заморожена броколі",
+        "de": "Brokkoli, tiefgekühlt"
+      }
+    },
+    {
+      "concept_id": "butter",
+      "name": {
+        "en": "Butter",
+        "uk": "Вершкове масло",
+        "de": "Butter"
+      }
+    },
+    {
+      "concept_id": "buttermilk",
+      "name": {
+        "en": "Buttermilk",
+        "uk": "Маслянка",
+        "de": "Buttermilch"
+      }
+    },
+    {
+      "concept_id": "cashews",
+      "name": {
+        "en": "Cashews",
+        "uk": "Кеш'ю",
+        "de": "Cashewkerne"
+      }
+    },
+    {
+      "concept_id": "cevapcici",
+      "name": {
+        "en": "Cevapcici",
+        "uk": "Чевапчичі",
+        "de": "Cevapcici"
+      }
+    },
+    {
+      "concept_id": "cheese_emmental",
+      "name": {
+        "en": "Emmental cheese",
+        "uk": "Сир Емменталь",
+        "de": "Emmentaler"
+      }
+    },
+    {
+      "concept_id": "cheese_feta",
+      "name": {
+        "en": "Feta",
+        "uk": "Сир фета",
+        "de": "Feta"
+      }
+    },
+    {
+      "concept_id": "cheese_gouda",
+      "name": {
+        "en": "Gouda cheese",
+        "uk": "Сир Гауда",
+        "de": "Gouda"
+      }
+    },
+    {
+      "concept_id": "cheese_grated",
+      "name": {
+        "en": "Grated cheese",
+        "uk": "Тертий сир",
+        "de": "Reibkäse"
+      }
+    },
+    {
+      "concept_id": "cheese_mozzarella",
+      "name": {
+        "en": "Mozzarella",
+        "uk": "Моцарела",
+        "de": "Mozzarella"
+      }
+    },
+    {
+      "concept_id": "chicken_breast",
+      "name": {
+        "en": "Chicken breast",
+        "uk": "Куряче філе",
+        "de": "Hendlbrust"
+      }
+    },
+    {
+      "concept_id": "chicken_thighs",
+      "name": {
+        "en": "Chicken thighs",
+        "uk": "Курячі стегна",
+        "de": "Hendl-Oberkeulen"
+      }
+    },
+    {
+      "concept_id": "chicken_wings",
+      "name": {
+        "en": "Chicken wings",
+        "uk": "Курячі крильця",
+        "de": "Hendlflügel"
+      }
+    },
+    {
+      "concept_id": "chickpeas_dried",
+      "name": {
+        "en": "Dried chickpeas",
+        "uk": "Сушений нут",
+        "de": "Kichererbsen, getrocknet"
+      }
+    },
+    {
+      "concept_id": "couscous",
+      "name": {
+        "en": "Couscous",
+        "uk": "Кускус",
+        "de": "Couscous"
+      }
+    },
+    {
+      "concept_id": "cream_cheese",
+      "name": {
+        "en": "Cream cheese",
+        "uk": "Вершковий сир",
+        "de": "Frischkäse"
+      }
+    },
+    {
+      "concept_id": "cream_whipping",
+      "name": {
+        "en": "Whipping cream",
+        "uk": "Вершки для збивання",
+        "de": "Schlagobers"
+      }
+    },
+    {
+      "concept_id": "crispbread_rye",
+      "name": {
+        "en": "Rye crispbread",
+        "uk": "Житні хлібці",
+        "de": "Roggen-Knäckebrot"
+      }
+    },
+    {
+      "concept_id": "dishwasher_tablets",
+      "name": {
+        "en": "Dishwasher tablets",
+        "uk": "Таблетки для посудомийки",
+        "de": "Geschirrspül-Tabs"
+      }
+    },
+    {
+      "concept_id": "eggs",
+      "name": {
+        "en": "Eggs",
+        "uk": "Яйця",
+        "de": "Eier"
+      }
+    },
+    {
+      "concept_id": "extrawurst",
+      "name": {
+        "en": "Extrawurst",
+        "uk": "Ковбаса Екстравурст",
+        "de": "Extrawurst"
+      }
+    },
+    {
+      "concept_id": "fish_fingers",
+      "name": {
+        "en": "Fish fingers",
+        "uk": "Рибні палички",
+        "de": "Fischstäbchen"
+      }
+    },
+    {
+      "concept_id": "grapes",
+      "name": {
+        "en": "Grapes",
+        "uk": "Виноград",
+        "de": "Weintrauben"
+      }
+    },
+    {
+      "concept_id": "ham_cooked",
+      "name": {
+        "en": "Cooked ham",
+        "uk": "Варена шинка",
+        "de": "Kochschinken"
+      }
+    },
+    {
+      "concept_id": "hummus",
+      "name": {
+        "en": "Hummus",
+        "uk": "Хумус",
+        "de": "Hummus"
+      }
+    },
+    {
+      "concept_id": "juice_apple",
+      "name": {
+        "en": "Apple juice",
+        "uk": "Яблучний сік",
+        "de": "Apfelsaft"
+      }
+    },
+    {
+      "concept_id": "kitchen_roll_4_rolls",
+      "name": {
+        "en": "Kitchen roll, 4 rolls",
+        "uk": "Паперові рушники, 4 рулони",
+        "de": "Küchenrolle, 4 Rollen"
+      }
+    },
+    {
+      "concept_id": "lentils_dried",
+      "name": {
+        "en": "Dried lentils",
+        "uk": "Сушена сочевиця",
+        "de": "Linsen, getrocknet"
+      }
+    },
+    {
+      "concept_id": "mandarins",
+      "name": {
+        "en": "Mandarins",
+        "uk": "Мандарини",
+        "de": "Mandarinen"
+      }
+    },
+    {
+      "concept_id": "milk_whole",
+      "name": {
+        "en": "Whole milk",
+        "uk": "Цільне молоко",
+        "de": "Vollmilch"
+      }
+    },
+    {
+      "concept_id": "minced_beef",
+      "name": {
+        "en": "Minced beef",
+        "uk": "Яловичий фарш",
+        "de": "Rinderfaschiertes"
+      }
+    },
+    {
+      "concept_id": "minced_meat",
+      "name": {
+        "en": "Mixed minced meat",
+        "uk": "Змішаний фарш",
+        "de": "Faschiertes gemischt"
+      }
+    },
+    {
+      "concept_id": "mushrooms",
+      "name": {
+        "en": "Mushrooms",
+        "uk": "Печериці",
+        "de": "Champignons"
+      }
+    },
+    {
+      "concept_id": "oat_drink",
+      "name": {
+        "en": "Oat drink",
+        "uk": "Вівсяний напій",
+        "de": "Haferdrink"
+      }
+    },
+    {
+      "concept_id": "oats",
+      "name": {
+        "en": "Rolled oats",
+        "uk": "Вівсяні пластівці",
+        "de": "Haferflocken"
+      }
+    },
+    {
+      "concept_id": "onions",
+      "name": {
+        "en": "Onions",
+        "uk": "Цибуля",
+        "de": "Zwiebeln"
+      }
+    },
+    {
+      "concept_id": "pasta",
+      "name": {
+        "en": "Pasta",
+        "uk": "Макарони",
+        "de": "Nudeln"
+      }
+    },
+    {
+      "concept_id": "peas_frozen",
+      "name": {
+        "en": "Frozen peas",
+        "uk": "Заморожений горошок",
+        "de": "Erbsen, tiefgekühlt"
+      }
+    },
+    {
+      "concept_id": "polenta",
+      "name": {
+        "en": "Polenta",
+        "uk": "Полента",
+        "de": "Polenta"
+      }
+    },
+    {
+      "concept_id": "potatoes",
+      "name": {
+        "en": "Potatoes",
+        "uk": "Картопля",
+        "de": "Erdäpfel"
+      }
+    },
+    {
+      "concept_id": "prawns",
+      "name": {
+        "en": "Prawns",
+        "uk": "Креветки",
+        "de": "Garnelen"
+      }
+    },
+    {
+      "concept_id": "pretzel_sticks",
+      "name": {
+        "en": "Pretzel sticks",
+        "uk": "Солоні соломки",
+        "de": "Salzstangerl"
+      }
+    },
+    {
+      "concept_id": "quark",
+      "name": {
+        "en": "Quark",
+        "uk": "Кисломолочний сир",
+        "de": "Topfen"
+      }
+    },
+    {
+      "concept_id": "rice",
+      "name": {
+        "en": "Rice",
+        "uk": "Рис",
+        "de": "Reis"
+      }
+    },
+    {
+      "concept_id": "salmon_fillet",
+      "name": {
+        "en": "Salmon fillet",
+        "uk": "Філе лосося",
+        "de": "Lachsfilet"
+      }
+    },
+    {
+      "concept_id": "salmon_smoked",
+      "name": {
+        "en": "Smoked salmon",
+        "uk": "Копчений лосось",
+        "de": "Räucherlachs"
+      }
+    },
+    {
+      "concept_id": "sauerkraut",
+      "name": {
+        "en": "Sauerkraut",
+        "uk": "Квашена капуста",
+        "de": "Sauerkraut"
+      }
+    },
+    {
+      "concept_id": "sausages_frankfurter",
+      "name": {
+        "en": "Frankfurter sausages",
+        "uk": "Франкфуртські сосиски",
+        "de": "Frankfurter"
+      }
+    },
+    {
+      "concept_id": "soup_vegetables",
+      "name": {
+        "en": "Soup vegetables",
+        "uk": "Овочі для супу",
+        "de": "Suppengemüse"
+      }
+    },
+    {
+      "concept_id": "soy_drink",
+      "name": {
+        "en": "Soy drink",
+        "uk": "Соєвий напій",
+        "de": "Sojadrink"
+      }
+    },
+    {
+      "concept_id": "toilet_paper_10_rolls",
+      "name": {
+        "en": "Toilet paper, 10 rolls",
+        "uk": "Туалетний папір, 10 рулонів",
+        "de": "Toilettenpapier, 10 Rollen"
+      }
+    },
+    {
+      "concept_id": "tomato_passata",
+      "name": {
+        "en": "Tomato passata",
+        "uk": "Томатна пасата",
+        "de": "Passierte Tomaten"
+      }
+    },
+    {
+      "concept_id": "tomatoes_cherry",
+      "name": {
+        "en": "Cherry tomatoes",
+        "uk": "Помідори черрі",
+        "de": "Cherrytomaten"
+      }
+    },
+    {
+      "concept_id": "tomatoes_chopped_canned",
+      "name": {
+        "en": "Chopped tomatoes, canned",
+        "uk": "Подрібнені томати, консервовані",
+        "de": "Gehackte Tomaten, Dose"
+      }
+    },
+    {
+      "concept_id": "trout_smoked",
+      "name": {
+        "en": "Smoked trout",
+        "uk": "Копчена форель",
+        "de": "Räucherforelle"
+      }
+    },
+    {
+      "concept_id": "tuna_canned",
+      "name": {
+        "en": "Canned tuna",
+        "uk": "Консервований тунець",
+        "de": "Thunfisch, Dose"
+      }
+    },
+    {
+      "concept_id": "yogurt_high_protein",
+      "name": {
+        "en": "High-protein yogurt",
+        "uk": "Протеїновий йогурт",
+        "de": "High-Protein-Joghurt"
+      }
+    },
+    {
+      "concept_id": "yogurt_natural",
+      "name": {
+        "en": "Natural yogurt",
+        "uk": "Натуральний йогурт",
+        "de": "Naturjoghurt"
+      }
+    }
   ]
 }

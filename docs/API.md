@@ -196,7 +196,7 @@ GET /api/catalog/meta
 GET /api/catalog/concepts?country=AT
 ```
 
-Every concept sold in `country` (default `AT`), sorted by id, for the compare form's autocomplete. `names` are the names of the concept's products (catalog order, no repeats): show the first, search all of them. `reference_pack_size` is what `quantity: 1` means in `POST /compare`: the concept's smallest pack in the country, in `unit`.
+Every concept sold in `country` (default `AT`), sorted by id, for the compare form's autocomplete. `name` is the concept's own name, without store brands, to display; `names` are the names of its products in the country (catalog order, no repeats), worth searching too since they carry brands and variants. `reference_pack_size` is what `quantity: 1` means in `POST /compare`: the concept's smallest pack in the country, in `unit`.
 
 ```json
 {
@@ -204,6 +204,7 @@ Every concept sold in `country` (default `AT`), sorted by id, for the compare fo
   "concepts": [
     {
       "concept_id": "yogurt_natural",
+      "name": {"en": "Natural yogurt", "uk": "Натуральний йогурт", "de": "Naturjoghurt"},
       "names": [
         {"en": "Natural yogurt 3.6%", "uk": "Натуральний йогурт 3,6%", "de": "Naturjoghurt 3,6% Fett"},
         {"en": "Natural yogurt 3.6%", "uk": "Натуральний йогурт 3,6%", "de": "Clever Joghurt Natur 3,6%"}

@@ -1016,5 +1016,263 @@
       "source_url": "https://example.com/penny-de/apples-1kg",
       "price_date": "2026-10-01"
     }
+  ],
+  "concepts": [
+    {
+      "concept_id": "apples",
+      "name": {
+        "en": "Apples",
+        "uk": "\u042f\u0431\u043b\u0443\u043a\u0430",
+        "de": "\u00c4pfel"
+      }
+    },
+    {
+      "concept_id": "bananas",
+      "name": {
+        "en": "Bananas",
+        "uk": "\u0411\u0430\u043d\u0430\u043d\u0438",
+        "de": "Bananen"
+      }
+    },
+    {
+      "concept_id": "bread_rye",
+      "name": {
+        "en": "Rye bread",
+        "uk": "\u0416\u0438\u0442\u043d\u0456\u0439 \u0445\u043b\u0456\u0431",
+        "de": "Roggenbrot"
+      }
+    },
+    {
+      "concept_id": "bread_wholegrain",
+      "name": {
+        "en": "Wholegrain bread",
+        "uk": "\u0426\u0456\u043b\u044c\u043d\u043e\u0437\u0435\u0440\u043d\u043e\u0432\u0438\u0439 \u0445\u043b\u0456\u0431",
+        "de": "Vollkornbrot"
+      }
+    },
+    {
+      "concept_id": "carrots",
+      "name": {
+        "en": "Carrots",
+        "uk": "\u041c\u043e\u0440\u043a\u0432\u0430",
+        "de": "Karotten"
+      }
+    },
+    {
+      "concept_id": "cheese_gouda",
+      "name": {
+        "en": "Gouda cheese",
+        "uk": "\u0421\u0438\u0440 \u0433\u0430\u0443\u0434\u0430",
+        "de": "Gouda"
+      }
+    },
+    {
+      "concept_id": "chicken_breast",
+      "name": {
+        "en": "Chicken breast",
+        "uk": "\u041a\u0443\u0440\u044f\u0447\u0435 \u0444\u0456\u043b\u0435",
+        "de": "H\u00e4hnchenbrust"
+      }
+    },
+    {
+      "concept_id": "chickpeas_canned",
+      "name": {
+        "en": "Chickpeas, canned",
+        "uk": "\u041d\u0443\u0442 \u043a\u043e\u043d\u0441\u0435\u0440\u0432\u043e\u0432\u0430\u043d\u0438\u0439",
+        "de": "Kichererbsen"
+      }
+    },
+    {
+      "concept_id": "chocolate_dark",
+      "name": {
+        "en": "Dark chocolate",
+        "uk": "\u0427\u043e\u0440\u043d\u0438\u0439 \u0448\u043e\u043a\u043e\u043b\u0430\u0434",
+        "de": "Zartbitterschokolade"
+      }
+    },
+    {
+      "concept_id": "cola",
+      "name": {
+        "en": "Cola",
+        "uk": "\u041a\u043e\u043b\u0430",
+        "de": "Cola"
+      }
+    },
+    {
+      "concept_id": "dish_soap",
+      "name": {
+        "en": "Dish soap",
+        "uk": "\u0417\u0430\u0441\u0456\u0431 \u0434\u043b\u044f \u043c\u0438\u0442\u0442\u044f \u043f\u043e\u0441\u0443\u0434\u0443",
+        "de": "Sp\u00fclmittel"
+      }
+    },
+    {
+      "concept_id": "eggs",
+      "name": {
+        "en": "Eggs",
+        "uk": "\u042f\u0439\u0446\u044f",
+        "de": "Eier"
+      }
+    },
+    {
+      "concept_id": "juice_orange",
+      "name": {
+        "en": "Orange juice",
+        "uk": "\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d\u043e\u0432\u0438\u0439 \u0441\u0456\u043a",
+        "de": "Orangensaft"
+      }
+    },
+    {
+      "concept_id": "lentils_red",
+      "name": {
+        "en": "Red lentils",
+        "uk": "\u0427\u0435\u0440\u0432\u043e\u043d\u0430 \u0441\u043e\u0447\u0435\u0432\u0438\u0446\u044f",
+        "de": "Rote Linsen"
+      }
+    },
+    {
+      "concept_id": "milk_whole",
+      "name": {
+        "en": "Whole milk",
+        "uk": "\u0426\u0456\u043b\u044c\u043d\u0435 \u043c\u043e\u043b\u043e\u043a\u043e",
+        "de": "Vollmilch"
+      }
+    },
+    {
+      "concept_id": "minced_beef",
+      "name": {
+        "en": "Minced beef",
+        "uk": "\u042f\u043b\u043e\u0432\u0438\u0447\u0438\u0439 \u0444\u0430\u0440\u0448",
+        "de": "Rinderhackfleisch"
+      }
+    },
+    {
+      "concept_id": "oat_drink",
+      "name": {
+        "en": "Oat drink",
+        "uk": "\u0412\u0456\u0432\u0441\u044f\u043d\u0438\u0439 \u043d\u0430\u043f\u0456\u0439",
+        "de": "Haferdrink"
+      }
+    },
+    {
+      "concept_id": "oats",
+      "name": {
+        "en": "Oat flakes",
+        "uk": "\u0412\u0456\u0432\u0441\u044f\u043d\u0456 \u043f\u043b\u0430\u0441\u0442\u0456\u0432\u0446\u0456",
+        "de": "Haferflocken"
+      }
+    },
+    {
+      "concept_id": "onions",
+      "name": {
+        "en": "Onions",
+        "uk": "\u0426\u0438\u0431\u0443\u043b\u044f",
+        "de": "Zwiebeln"
+      }
+    },
+    {
+      "concept_id": "pasta",
+      "name": {
+        "en": "Pasta",
+        "uk": "\u041c\u0430\u043a\u0430\u0440\u043e\u043d\u0438",
+        "de": "Nudeln"
+      }
+    },
+    {
+      "concept_id": "peanut_butter",
+      "name": {
+        "en": "Peanut butter",
+        "uk": "\u0410\u0440\u0430\u0445\u0456\u0441\u043e\u0432\u0430 \u043f\u0430\u0441\u0442\u0430",
+        "de": "Erdnussbutter"
+      }
+    },
+    {
+      "concept_id": "pizza_frozen",
+      "name": {
+        "en": "Frozen pizza",
+        "uk": "\u0417\u0430\u043c\u043e\u0440\u043e\u0436\u0435\u043d\u0430 \u043f\u0456\u0446\u0430",
+        "de": "TK-Pizza"
+      }
+    },
+    {
+      "concept_id": "potato_chips",
+      "name": {
+        "en": "Potato chips",
+        "uk": "\u041a\u0430\u0440\u0442\u043e\u043f\u043b\u044f\u043d\u0456 \u0447\u0438\u043f\u0441\u0438",
+        "de": "Kartoffelchips"
+      }
+    },
+    {
+      "concept_id": "potatoes",
+      "name": {
+        "en": "Potatoes",
+        "uk": "\u041a\u0430\u0440\u0442\u043e\u043f\u043b\u044f",
+        "de": "Kartoffeln"
+      }
+    },
+    {
+      "concept_id": "rice",
+      "name": {
+        "en": "Rice",
+        "uk": "\u0420\u0438\u0441",
+        "de": "Reis"
+      }
+    },
+    {
+      "concept_id": "salmon_fillet",
+      "name": {
+        "en": "Salmon fillet",
+        "uk": "\u0424\u0456\u043b\u0435 \u043b\u043e\u0441\u043e\u0441\u044f",
+        "de": "Lachsfilet"
+      }
+    },
+    {
+      "concept_id": "shower_gel",
+      "name": {
+        "en": "Shower gel",
+        "uk": "\u0413\u0435\u043b\u044c \u0434\u043b\u044f \u0434\u0443\u0448\u0443",
+        "de": "Duschgel"
+      }
+    },
+    {
+      "concept_id": "spinach_frozen",
+      "name": {
+        "en": "Frozen spinach",
+        "uk": "\u0417\u0430\u043c\u043e\u0440\u043e\u0436\u0435\u043d\u0438\u0439 \u0448\u043f\u0438\u043d\u0430\u0442",
+        "de": "TK-Spinat"
+      }
+    },
+    {
+      "concept_id": "tofu",
+      "name": {
+        "en": "Tofu",
+        "uk": "\u0422\u043e\u0444\u0443",
+        "de": "Tofu"
+      }
+    },
+    {
+      "concept_id": "tomatoes",
+      "name": {
+        "en": "Tomatoes",
+        "uk": "\u041f\u043e\u043c\u0456\u0434\u043e\u0440\u0438",
+        "de": "Tomaten"
+      }
+    },
+    {
+      "concept_id": "toothpaste",
+      "name": {
+        "en": "Toothpaste",
+        "uk": "\u0417\u0443\u0431\u043d\u0430 \u043f\u0430\u0441\u0442\u0430",
+        "de": "Zahnpasta"
+      }
+    },
+    {
+      "concept_id": "yogurt_natural",
+      "name": {
+        "en": "Natural yogurt",
+        "uk": "\u041d\u0430\u0442\u0443\u0440\u0430\u043b\u044c\u043d\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442",
+        "de": "Naturjoghurt"
+      }
+    }
   ]
 }

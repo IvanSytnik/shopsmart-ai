@@ -102,6 +102,7 @@ backend/
     services/              # llm, planner (prompt + repair), pricing, portions, catalog, comparison, limits
     data/catalog.json      # generated price catalog (do not edit by hand)
   data_src/catalog_at.csv  # human-editable catalog source
+  data_src/concepts_at.csv # display names of product concepts (compare mode)
   scripts/build_catalog.py # CSV -> catalog.json, with validation
   tests/                   # pytest, OpenAI always mocked
   evals/                   # offline eval runner, cases, reports
@@ -179,7 +180,7 @@ Frontend: `VITE_API_URL` is read at build time; `npm run dev` falls back to `htt
 
 ### Price catalog
 
-`backend/app/data/catalog.json` is generated from `backend/data_src/catalog_at.csv`; sources and disclaimer in [docs/CATALOG.md](docs/CATALOG.md).
+`backend/app/data/catalog.json` is generated from `backend/data_src/catalog_at.csv` and the concept names in `backend/data_src/concepts_at.csv`; sources and disclaimer in [docs/CATALOG.md](docs/CATALOG.md).
 
 ```bash
 cd backend
