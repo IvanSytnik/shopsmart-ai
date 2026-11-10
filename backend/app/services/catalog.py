@@ -1,7 +1,8 @@
 """Loads the price catalog once at startup and answers lookups against it."""
 
 import logging
-from collections.abc import Collection
+from collections.abc import Callable, Collection
+from datetime import date
 from pathlib import Path
 from typing import get_args
 
@@ -17,15 +18,32 @@ class CatalogLoadError(Exception):
 
 
 class ProductCatalog:
-    def __init__(self, catalog: Catalog) -> None:
-        self.catalog = catalog
+    """Lookups return each product with `price_eur` as of today: once a promotion has ended,
+    its regular price, without rebuilding or reloading the catalog."""
+
+    def __init__(self, catalog: Catalog, today: Callable[[], date] = date.today) -> None:
+        self.catalog = catalog  # as in the file: prices as of catalog.price_date
+        self._today = today
+        self._as_of = catalog.price_date
         self._by_id = {product.id: product for product in catalog.products}
+
+    def _current(self) -> dict[str, Product]:
+        # Never before the catalog's own date, so an ended promotion can't come back.
+        as_of = max(self._today(), self.catalog.price_date)
+        if as_of != self._as_of:
+            by_id = {product.id: product.priced_on(as_of) for product in self.catalog.products}
+            ended = [i for i, p in by_id.items() if p.price_eur != self._by_id[i].price_eur]
+            if ended:
+                logger.info("Promotions ended by %s, regular prices apply: %s", as_of, ended)
+            self._by_id = by_id
+            self._as_of = as_of
+        return self._by_id
 
     def __len__(self) -> int:
         return len(self._by_id)
 
     def get(self, product_id: str) -> Product | None:
-        return self._by_id.get(product_id)
+        return self._current().get(product_id)
 
     def stores_by_country(self) -> dict[Country, list[str]]:
         """Every country, each with its stores sorted by name (empty if it has none)."""
@@ -44,7 +62,7 @@ class ProductCatalog:
         required = set(diets)
         return [
             product
-            for product in self.catalog.products
+            for product in self._current().values()
             if product.country == country
             and product.store in stores
             and (product.category in NON_FOOD_CATEGORIES or required <= set(product.diet_tags))
@@ -60,9 +78,10 @@ def load_catalog(path: Path) -> ProductCatalog:
     except ValidationError as e:
         raise CatalogLoadError(f"invalid catalog {path}:\n{e}") from e
     logger.info(
-        "Loaded catalog %s: %d products, prices as of %s",
+        "Loaded catalog %s: %d products (%d with a promotion), prices as of %s",
         catalog.version,
         len(catalog.products),
+        sum(1 for p in catalog.products if p.promo_valid_until is not None),
         catalog.price_date,
     )
     return ProductCatalog(catalog)

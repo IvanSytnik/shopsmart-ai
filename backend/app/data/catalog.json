@@ -4,6 +4,7 @@
   "products": [
     {
       "id": "at-hofer-whole-milk-1l",
+      "concept_id": "milk_whole",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -16,6 +17,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 1.32,
+      "regular_price_eur": 1.32,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 640.0,
       "protein_g": 33.0,
       "fat_g": 35.0,
@@ -29,6 +33,7 @@
     },
     {
       "id": "at-hofer-gouda-450g",
+      "concept_id": "cheese_gouda",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -41,6 +46,9 @@
       "pack_size": 0.45,
       "portion_unit": "g",
       "price_eur": 3.99,
+      "regular_price_eur": 3.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1602.0,
       "protein_g": 112.5,
       "fat_g": 126.0,
@@ -54,6 +62,7 @@
     },
     {
       "id": "at-hofer-emmentaler-slices-250g",
+      "concept_id": "cheese_emmental",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -66,6 +75,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 950.0,
       "protein_g": 70.0,
       "fat_g": 75.0,
@@ -79,6 +91,7 @@
     },
     {
       "id": "at-hofer-pizza-cheese-250g",
+      "concept_id": "cheese_grated",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -91,6 +104,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 825.0,
       "protein_g": 60.0,
       "fat_g": 65.0,
@@ -104,6 +120,7 @@
     },
     {
       "id": "at-hofer-organic-feta-200g",
+      "concept_id": "cheese_feta",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -116,6 +133,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 2.79,
+      "regular_price_eur": 2.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 540.0,
       "protein_g": 34.0,
       "fat_g": 44.0,
@@ -129,6 +149,7 @@
     },
     {
       "id": "at-hofer-natural-yogurt-500g",
+      "concept_id": "yogurt_natural",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -141,6 +162,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.94,
+      "regular_price_eur": 0.94,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 330.0,
       "protein_g": 19.0,
       "fat_g": 18.0,
@@ -154,6 +178,7 @@
     },
     {
       "id": "at-hofer-protein-yogurt-500g",
+      "concept_id": "yogurt_high_protein",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -166,6 +191,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.23,
+      "regular_price_eur": 1.23,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 300.0,
       "protein_g": 50.0,
       "fat_g": 1.0,
@@ -179,6 +207,7 @@
     },
     {
       "id": "at-hofer-buttermilk-500ml",
+      "concept_id": "buttermilk",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -191,6 +220,9 @@
       "pack_size": 0.5,
       "portion_unit": "ml",
       "price_eur": 0.79,
+      "regular_price_eur": 0.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 185.0,
       "protein_g": 16.5,
       "fat_g": 2.5,
@@ -204,6 +236,7 @@
     },
     {
       "id": "at-hofer-lactose-free-butter-250g",
+      "concept_id": "butter",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -216,6 +249,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1850.0,
       "protein_g": 1.8,
       "fat_g": 205.0,
@@ -230,6 +266,7 @@
     },
     {
       "id": "at-hofer-cream-cheese-200g",
+      "concept_id": "cream_cheese",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -242,6 +279,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 1.59,
+      "regular_price_eur": 1.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 380.0,
       "protein_g": 18.0,
       "fat_g": 32.0,
@@ -255,6 +295,7 @@
     },
     {
       "id": "at-hofer-whipping-cream-250ml",
+      "concept_id": "cream_whipping",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -267,6 +308,9 @@
       "pack_size": 0.25,
       "portion_unit": "ml",
       "price_eur": 1.49,
+      "regular_price_eur": 1.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 850.0,
       "protein_g": 5.5,
       "fat_g": 90.0,
@@ -280,6 +324,7 @@
     },
     {
       "id": "at-hofer-organic-oat-drink-970ml",
+      "concept_id": "oat_drink",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -292,6 +337,9 @@
       "pack_size": 0.97,
       "portion_unit": "ml",
       "price_eur": 1.79,
+      "regular_price_eur": 1.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 446.2,
       "protein_g": 2.9,
       "fat_g": 14.5,
@@ -306,6 +354,7 @@
     },
     {
       "id": "at-hofer-toast-bread-500g",
+      "concept_id": "bread_toast",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -318,6 +367,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.94,
+      "regular_price_eur": 0.94,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1300.0,
       "protein_g": 40.0,
       "fat_g": 17.5,
@@ -330,6 +382,7 @@
     },
     {
       "id": "at-hofer-organic-rye-bread-500g",
+      "concept_id": "bread_rye_wholemeal",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -342,6 +395,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 2.75,
+      "regular_price_eur": 2.75,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1000.0,
       "protein_g": 30.0,
       "fat_g": 6.0,
@@ -356,6 +412,7 @@
     },
     {
       "id": "at-hofer-crust-bread-750g",
+      "concept_id": "bread_crusty",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -368,6 +425,9 @@
       "pack_size": 0.75,
       "portion_unit": "g",
       "price_eur": 1.8,
+      "regular_price_eur": 1.8,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1725.0,
       "protein_g": 52.5,
       "fat_g": 11.2,
@@ -382,6 +442,7 @@
     },
     {
       "id": "at-hofer-kaiser-rolls-420g",
+      "concept_id": "bread_rolls",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -394,6 +455,9 @@
       "pack_size": 0.42,
       "portion_unit": "g",
       "price_eur": 1.32,
+      "regular_price_eur": 1.32,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1134.0,
       "protein_g": 37.8,
       "fat_g": 8.4,
@@ -408,6 +472,7 @@
     },
     {
       "id": "at-hofer-rye-crispbread-250g",
+      "concept_id": "crispbread_rye",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -420,6 +485,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 1.49,
+      "regular_price_eur": 1.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 850.0,
       "protein_g": 22.5,
       "fat_g": 3.8,
@@ -434,6 +502,7 @@
     },
     {
       "id": "at-hofer-mini-baguettes-300g",
+      "concept_id": "baguette",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -446,6 +515,9 @@
       "pack_size": 0.3,
       "portion_unit": "g",
       "price_eur": 0.84,
+      "regular_price_eur": 0.84,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 750.0,
       "protein_g": 24.0,
       "fat_g": 4.5,
@@ -460,6 +532,7 @@
     },
     {
       "id": "at-hofer-vegan-wholegrain-toast-500g",
+      "concept_id": "bread_toast_wholegrain",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -472,6 +545,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.79,
+      "regular_price_eur": 1.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1200.0,
       "protein_g": 45.0,
       "fat_g": 20.0,
@@ -486,6 +562,7 @@
     },
     {
       "id": "at-hofer-rye-farmhouse-slices-500g",
+      "concept_id": "bread_rye",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -498,6 +575,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.94,
+      "regular_price_eur": 0.94,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1050.0,
       "protein_g": 30.0,
       "fat_g": 6.0,
@@ -512,6 +592,7 @@
     },
     {
       "id": "at-hofer-mixed-mince-500g",
+      "concept_id": "minced_meat",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -524,6 +605,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 4.99,
+      "regular_price_eur": 4.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1250.0,
       "protein_g": 90.0,
       "fat_g": 100.0,
@@ -537,6 +621,7 @@
     },
     {
       "id": "at-hofer-beef-mince-500g",
+      "concept_id": "minced_beef",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -549,6 +634,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 6.49,
+      "regular_price_eur": 6.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1100.0,
       "protein_g": 95.0,
       "fat_g": 80.0,
@@ -562,6 +650,7 @@
     },
     {
       "id": "at-hofer-chicken-wings-500g",
+      "concept_id": "chicken_wings",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -574,6 +663,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 4.49,
+      "regular_price_eur": 4.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1000.0,
       "protein_g": 90.0,
       "fat_g": 70.0,
@@ -587,6 +679,7 @@
     },
     {
       "id": "at-hofer-chicken-strips-400g",
+      "concept_id": "chicken_breast",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -599,6 +692,9 @@
       "pack_size": 0.4,
       "portion_unit": "g",
       "price_eur": 3.49,
+      "regular_price_eur": 3.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 440.0,
       "protein_g": 92.0,
       "fat_g": 8.0,
@@ -612,6 +708,7 @@
     },
     {
       "id": "at-hofer-chicken-thighs-400g",
+      "concept_id": "chicken_thighs",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -624,6 +721,9 @@
       "pack_size": 0.4,
       "portion_unit": "g",
       "price_eur": 4.79,
+      "regular_price_eur": 4.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 720.0,
       "protein_g": 72.0,
       "fat_g": 48.0,
@@ -637,6 +737,7 @@
     },
     {
       "id": "at-hofer-cevapcici-450g",
+      "concept_id": "cevapcici",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -649,6 +750,9 @@
       "pack_size": 0.45,
       "portion_unit": "g",
       "price_eur": 3.59,
+      "regular_price_eur": 3.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1170.0,
       "protein_g": 72.0,
       "fat_g": 94.5,
@@ -661,6 +765,7 @@
     },
     {
       "id": "at-hofer-cooked-ham-125g",
+      "concept_id": "ham_cooked",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -673,6 +778,9 @@
       "pack_size": 0.125,
       "portion_unit": "g",
       "price_eur": 2.99,
+      "regular_price_eur": 2.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 150.0,
       "protein_g": 25.0,
       "fat_g": 5.0,
@@ -686,6 +794,7 @@
     },
     {
       "id": "at-hofer-extrawurst-slices-200g",
+      "concept_id": "extrawurst",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -698,6 +807,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 1.49,
+      "regular_price_eur": 1.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 500.0,
       "protein_g": 24.0,
       "fat_g": 44.0,
@@ -710,6 +822,7 @@
     },
     {
       "id": "at-hofer-salmon-fillet-300g",
+      "concept_id": "salmon_fillet",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -722,6 +835,9 @@
       "pack_size": 0.3,
       "portion_unit": "g",
       "price_eur": 6.59,
+      "regular_price_eur": 6.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 600.0,
       "protein_g": 60.0,
       "fat_g": 39.0,
@@ -735,6 +851,7 @@
     },
     {
       "id": "at-hofer-trout-fillet-125g",
+      "concept_id": "trout_smoked",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -747,6 +864,9 @@
       "pack_size": 0.125,
       "portion_unit": "g",
       "price_eur": 3.29,
+      "regular_price_eur": 3.29,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 187.5,
       "protein_g": 27.5,
       "fat_g": 8.8,
@@ -760,6 +880,7 @@
     },
     {
       "id": "at-hofer-arctic-prawns-100g",
+      "concept_id": "prawns",
       "country": "AT",
       "store": "Hofer",
       "name": {
@@ -772,6 +893,9 @@
       "pack_size": 0.1,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 80.0,
       "protein_g": 18.0,
       "fat_g": 1.0,
@@ -785,6 +909,7 @@
     },
     {
       "id": "at-billa-bananas-1kg",
+      "concept_id": "bananas",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -797,6 +922,9 @@
       "pack_size": 1.0,
       "portion_unit": "g",
       "price_eur": 1.59,
+      "regular_price_eur": 1.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 890.0,
       "protein_g": 11.0,
       "fat_g": 3.0,
@@ -812,6 +940,7 @@
     },
     {
       "id": "at-billa-mandarins-750g",
+      "concept_id": "mandarins",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -824,6 +953,9 @@
       "pack_size": 0.75,
       "portion_unit": "g",
       "price_eur": 2.99,
+      "regular_price_eur": 2.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 375.0,
       "protein_g": 5.2,
       "fat_g": 2.2,
@@ -839,6 +971,7 @@
     },
     {
       "id": "at-billa-grapes-500g",
+      "concept_id": "grapes",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -851,6 +984,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 350.0,
       "protein_g": 3.5,
       "fat_g": 1.0,
@@ -866,6 +1002,7 @@
     },
     {
       "id": "at-billa-onions-1kg",
+      "concept_id": "onions",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -878,6 +1015,9 @@
       "pack_size": 1.0,
       "portion_unit": "g",
       "price_eur": 1.19,
+      "regular_price_eur": 1.19,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 400.0,
       "protein_g": 12.0,
       "fat_g": 1.0,
@@ -893,6 +1033,7 @@
     },
     {
       "id": "at-billa-potatoes-2kg",
+      "concept_id": "potatoes",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -905,6 +1046,9 @@
       "pack_size": 2.0,
       "portion_unit": "g",
       "price_eur": 2.49,
+      "regular_price_eur": 2.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1440.0,
       "protein_g": 40.0,
       "fat_g": 2.0,
@@ -920,6 +1064,7 @@
     },
     {
       "id": "at-billa-cherry-tomatoes-500g",
+      "concept_id": "tomatoes_cherry",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -932,6 +1077,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 2.49,
+      "regular_price_eur": 2.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 100.0,
       "protein_g": 5.0,
       "fat_g": 1.0,
@@ -947,6 +1095,7 @@
     },
     {
       "id": "at-billa-mushrooms-200g",
+      "concept_id": "mushrooms",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -959,6 +1108,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 2.28,
+      "regular_price_eur": 2.28,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 44.0,
       "protein_g": 6.0,
       "fat_g": 0.6,
@@ -974,6 +1126,7 @@
     },
     {
       "id": "at-billa-soup-vegetables-500g",
+      "concept_id": "soup_vegetables",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -986,6 +1139,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 150.0,
       "protein_g": 5.0,
       "fat_g": 1.0,
@@ -1001,6 +1157,7 @@
     },
     {
       "id": "at-billa-frozen-broccoli-750g",
+      "concept_id": "broccoli_frozen",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1013,6 +1170,9 @@
       "pack_size": 0.75,
       "portion_unit": "g",
       "price_eur": 1.89,
+      "regular_price_eur": 1.89,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 225.0,
       "protein_g": 22.5,
       "fat_g": 2.2,
@@ -1028,6 +1188,7 @@
     },
     {
       "id": "at-billa-frozen-peas-750g",
+      "concept_id": "peas_frozen",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1040,6 +1201,9 @@
       "pack_size": 0.75,
       "portion_unit": "g",
       "price_eur": 3.7,
+      "regular_price_eur": 3.7,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 600.0,
       "protein_g": 45.0,
       "fat_g": 3.0,
@@ -1055,6 +1219,7 @@
     },
     {
       "id": "at-billa-fish-fingers-450g",
+      "concept_id": "fish_fingers",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1067,6 +1232,9 @@
       "pack_size": 0.45,
       "portion_unit": "g",
       "price_eur": 2.65,
+      "regular_price_eur": 2.65,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 900.0,
       "protein_g": 58.5,
       "fat_g": 40.5,
@@ -1077,6 +1245,7 @@
     },
     {
       "id": "at-billa-organic-spaghetti-500g",
+      "concept_id": "pasta",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1089,6 +1258,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.85,
+      "regular_price_eur": 0.85,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1775.0,
       "protein_g": 60.0,
       "fat_g": 7.5,
@@ -1103,6 +1275,7 @@
     },
     {
       "id": "at-billa-organic-fusilli-500g",
+      "concept_id": "pasta",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1115,6 +1288,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.85,
+      "regular_price_eur": 0.85,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1775.0,
       "protein_g": 60.0,
       "fat_g": 7.5,
@@ -1129,6 +1305,7 @@
     },
     {
       "id": "at-billa-long-grain-rice-1kg",
+      "concept_id": "rice",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1141,6 +1318,9 @@
       "pack_size": 1.0,
       "portion_unit": "g",
       "price_eur": 1.13,
+      "regular_price_eur": 1.13,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 3500.0,
       "protein_g": 70.0,
       "fat_g": 6.0,
@@ -1156,6 +1336,7 @@
     },
     {
       "id": "at-billa-oats-500g",
+      "concept_id": "oats",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1168,6 +1349,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.79,
+      "regular_price_eur": 0.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1850.0,
       "protein_g": 65.0,
       "fat_g": 35.0,
@@ -1182,6 +1366,7 @@
     },
     {
       "id": "at-billa-couscous-500g",
+      "concept_id": "couscous",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1194,6 +1379,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.49,
+      "regular_price_eur": 1.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1800.0,
       "protein_g": 60.0,
       "fat_g": 7.5,
@@ -1208,6 +1396,7 @@
     },
     {
       "id": "at-billa-polenta-500g",
+      "concept_id": "polenta",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1220,6 +1409,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.99,
+      "regular_price_eur": 0.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1750.0,
       "protein_g": 40.0,
       "fat_g": 7.5,
@@ -1235,6 +1427,7 @@
     },
     {
       "id": "at-billa-dried-lentils-500g",
+      "concept_id": "lentils_dried",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1247,6 +1440,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.19,
+      "regular_price_eur": 1.19,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1650.0,
       "protein_g": 120.0,
       "fat_g": 7.5,
@@ -1262,6 +1458,7 @@
     },
     {
       "id": "at-billa-dried-chickpeas-500g",
+      "concept_id": "chickpeas_dried",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1274,6 +1471,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 1.19,
+      "regular_price_eur": 1.19,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1700.0,
       "protein_g": 95.0,
       "fat_g": 30.0,
@@ -1289,6 +1489,7 @@
     },
     {
       "id": "at-billa-kidney-beans-400g",
+      "concept_id": "beans_kidney_canned",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1301,6 +1502,9 @@
       "pack_size": 0.4,
       "portion_unit": "g",
       "price_eur": 0.65,
+      "regular_price_eur": 0.65,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 360.0,
       "protein_g": 28.0,
       "fat_g": 2.0,
@@ -1316,6 +1520,7 @@
     },
     {
       "id": "at-billa-chopped-tomatoes-400g",
+      "concept_id": "tomatoes_chopped_canned",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1328,6 +1533,9 @@
       "pack_size": 0.4,
       "portion_unit": "g",
       "price_eur": 0.69,
+      "regular_price_eur": 0.69,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 88.0,
       "protein_g": 4.8,
       "fat_g": 0.8,
@@ -1343,6 +1551,7 @@
     },
     {
       "id": "at-billa-passata-500g",
+      "concept_id": "tomato_passata",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1355,6 +1564,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.69,
+      "regular_price_eur": 0.69,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 150.0,
       "protein_g": 6.5,
       "fat_g": 1.0,
@@ -1370,6 +1582,7 @@
     },
     {
       "id": "at-billa-sauerkraut-500g",
+      "concept_id": "sauerkraut",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1382,6 +1595,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.79,
+      "regular_price_eur": 0.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 100.0,
       "protein_g": 7.5,
       "fat_g": 1.5,
@@ -1397,6 +1613,7 @@
     },
     {
       "id": "at-billa-tuna-195g",
+      "concept_id": "tuna_canned",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1409,6 +1626,9 @@
       "pack_size": 0.195,
       "portion_unit": "g",
       "price_eur": 3.49,
+      "regular_price_eur": 3.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 214.5,
       "protein_g": 48.8,
       "fat_g": 1.9,
@@ -1422,6 +1642,7 @@
     },
     {
       "id": "at-billa-eggs-m-10",
+      "concept_id": "eggs",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1434,6 +1655,9 @@
       "pack_size": 10.0,
       "portion_unit": "pcs",
       "price_eur": 2.66,
+      "regular_price_eur": 2.66,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 742.0,
       "protein_g": 66.2,
       "fat_g": 50.4,
@@ -1448,6 +1672,7 @@
     },
     {
       "id": "at-billa-uht-whole-milk-1l",
+      "concept_id": "milk_whole",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1460,6 +1685,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 0.94,
+      "regular_price_eur": 0.94,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 640.0,
       "protein_g": 33.0,
       "fat_g": 35.0,
@@ -1473,6 +1701,7 @@
     },
     {
       "id": "at-billa-lactose-free-milk-1l",
+      "concept_id": "milk_whole",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1485,6 +1714,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 1.8,
+      "regular_price_eur": 1.8,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 640.0,
       "protein_g": 33.0,
       "fat_g": 35.0,
@@ -1499,6 +1731,7 @@
     },
     {
       "id": "at-billa-butter-250g",
+      "concept_id": "butter",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1511,6 +1744,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 1.59,
+      "regular_price_eur": 1.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1850.0,
       "protein_g": 1.8,
       "fat_g": 205.0,
@@ -1524,6 +1760,7 @@
     },
     {
       "id": "at-billa-natural-yogurt-250g",
+      "concept_id": "yogurt_natural",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1536,6 +1773,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 0.52,
+      "regular_price_eur": 0.52,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 165.0,
       "protein_g": 9.5,
       "fat_g": 9.0,
@@ -1549,6 +1789,7 @@
     },
     {
       "id": "at-billa-low-fat-quark-250g",
+      "concept_id": "quark",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1561,6 +1802,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 0.99,
+      "regular_price_eur": 0.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 175.0,
       "protein_g": 30.0,
       "fat_g": 0.8,
@@ -1574,6 +1818,7 @@
     },
     {
       "id": "at-billa-mozzarella-125g",
+      "concept_id": "cheese_mozzarella",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1586,6 +1831,9 @@
       "pack_size": 0.125,
       "portion_unit": "g",
       "price_eur": 0.79,
+      "regular_price_eur": 0.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 312.5,
       "protein_g": 22.5,
       "fat_g": 23.8,
@@ -1599,6 +1847,7 @@
     },
     {
       "id": "at-billa-gouda-slices-400g",
+      "concept_id": "cheese_gouda",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1611,6 +1860,9 @@
       "pack_size": 0.4,
       "portion_unit": "g",
       "price_eur": 4.39,
+      "regular_price_eur": 4.39,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1424.0,
       "protein_g": 100.0,
       "fat_g": 112.0,
@@ -1624,6 +1876,7 @@
     },
     {
       "id": "at-billa-oat-drink-1l",
+      "concept_id": "oat_drink",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1636,6 +1889,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 1.19,
+      "regular_price_eur": 1.19,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 460.0,
       "protein_g": 3.0,
       "fat_g": 15.0,
@@ -1650,6 +1906,7 @@
     },
     {
       "id": "at-billa-soy-drink-1l",
+      "concept_id": "soy_drink",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1662,6 +1919,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 1.79,
+      "regular_price_eur": 1.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 400.0,
       "protein_g": 35.0,
       "fat_g": 20.0,
@@ -1677,6 +1937,7 @@
     },
     {
       "id": "at-billa-hummus-200g",
+      "concept_id": "hummus",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1689,6 +1950,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 1.69,
+      "regular_price_eur": 1.69,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 560.0,
       "protein_g": 14.0,
       "fat_g": 44.0,
@@ -1704,6 +1968,7 @@
     },
     {
       "id": "at-billa-wheat-toast-500g",
+      "concept_id": "bread_toast",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1716,6 +1981,9 @@
       "pack_size": 0.5,
       "portion_unit": "g",
       "price_eur": 0.94,
+      "regular_price_eur": 0.94,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1300.0,
       "protein_g": 40.0,
       "fat_g": 17.5,
@@ -1728,6 +1996,7 @@
     },
     {
       "id": "at-billa-bake-off-rolls-300g",
+      "concept_id": "bread_rolls",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1740,6 +2009,9 @@
       "pack_size": 0.3,
       "portion_unit": "g",
       "price_eur": 0.84,
+      "regular_price_eur": 0.84,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 750.0,
       "protein_g": 24.0,
       "fat_g": 4.5,
@@ -1754,6 +2026,7 @@
     },
     {
       "id": "at-billa-chicken-fillet-700g",
+      "concept_id": "chicken_breast",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1766,6 +2039,9 @@
       "pack_size": 0.7,
       "portion_unit": "g",
       "price_eur": 9.09,
+      "regular_price_eur": 9.09,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 770.0,
       "protein_g": 161.0,
       "fat_g": 10.5,
@@ -1779,6 +2055,7 @@
     },
     {
       "id": "at-billa-mixed-mince-1kg",
+      "concept_id": "minced_meat",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1791,6 +2068,9 @@
       "pack_size": 1.0,
       "portion_unit": "g",
       "price_eur": 8.49,
+      "regular_price_eur": 8.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 2500.0,
       "protein_g": 180.0,
       "fat_g": 200.0,
@@ -1804,6 +2084,7 @@
     },
     {
       "id": "at-billa-frankfurters-480g",
+      "concept_id": "sausages_frankfurter",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1816,6 +2097,9 @@
       "pack_size": 0.48,
       "portion_unit": "g",
       "price_eur": 3.99,
+      "regular_price_eur": 3.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 1296.0,
       "protein_g": 57.6,
       "fat_g": 115.2,
@@ -1828,6 +2112,7 @@
     },
     {
       "id": "at-billa-toast-ham-200g",
+      "concept_id": "ham_cooked",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1840,6 +2125,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 2.49,
+      "regular_price_eur": 2.49,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 220.0,
       "protein_g": 36.0,
       "fat_g": 8.0,
@@ -1852,6 +2140,7 @@
     },
     {
       "id": "at-billa-smoked-salmon-200g",
+      "concept_id": "salmon_smoked",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1864,6 +2153,9 @@
       "pack_size": 0.2,
       "portion_unit": "g",
       "price_eur": 4.99,
+      "regular_price_eur": 4.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 360.0,
       "protein_g": 44.0,
       "fat_g": 20.0,
@@ -1877,6 +2169,7 @@
     },
     {
       "id": "at-billa-salmon-fillet-300g",
+      "concept_id": "salmon_fillet",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1889,6 +2182,9 @@
       "pack_size": 0.3,
       "portion_unit": "g",
       "price_eur": 6.59,
+      "regular_price_eur": 6.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 600.0,
       "protein_g": 60.0,
       "fat_g": 39.0,
@@ -1902,6 +2198,7 @@
     },
     {
       "id": "at-billa-pretzel-sticks-250g",
+      "concept_id": "pretzel_sticks",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1914,6 +2211,9 @@
       "pack_size": 0.25,
       "portion_unit": "g",
       "price_eur": 0.65,
+      "regular_price_eur": 0.65,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 950.0,
       "protein_g": 25.0,
       "fat_g": 10.0,
@@ -1928,6 +2228,7 @@
     },
     {
       "id": "at-billa-cashews-150g",
+      "concept_id": "cashews",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1940,6 +2241,9 @@
       "pack_size": 0.15,
       "portion_unit": "g",
       "price_eur": 1.99,
+      "regular_price_eur": 1.99,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 900.0,
       "protein_g": 30.0,
       "fat_g": 72.0,
@@ -1955,6 +2259,7 @@
     },
     {
       "id": "at-billa-apple-juice-1l",
+      "concept_id": "juice_apple",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1967,6 +2272,9 @@
       "pack_size": 1.0,
       "portion_unit": "ml",
       "price_eur": 0.86,
+      "regular_price_eur": 0.86,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": 450.0,
       "protein_g": 1.0,
       "fat_g": 1.0,
@@ -1982,6 +2290,7 @@
     },
     {
       "id": "at-billa-toilet-paper-10",
+      "concept_id": "toilet_paper_10_rolls",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -1994,6 +2303,9 @@
       "pack_size": 1.0,
       "portion_unit": "pack",
       "price_eur": 3.73,
+      "regular_price_eur": 3.73,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": null,
       "protein_g": null,
       "fat_g": null,
@@ -2004,6 +2316,7 @@
     },
     {
       "id": "at-billa-kitchen-roll-4",
+      "concept_id": "kitchen_roll_4_rolls",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -2016,6 +2329,9 @@
       "pack_size": 1.0,
       "portion_unit": "pack",
       "price_eur": 2.59,
+      "regular_price_eur": 2.59,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": null,
       "protein_g": null,
       "fat_g": null,
@@ -2026,6 +2342,7 @@
     },
     {
       "id": "at-billa-dishwasher-tabs-10",
+      "concept_id": "dishwasher_tablets",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -2038,6 +2355,9 @@
       "pack_size": 10.0,
       "portion_unit": "pcs",
       "price_eur": 0.79,
+      "regular_price_eur": 0.79,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": null,
       "protein_g": null,
       "fat_g": null,
@@ -2048,6 +2368,7 @@
     },
     {
       "id": "at-billa-bin-bags-30l-35",
+      "concept_id": "bin_bags_30l",
       "country": "AT",
       "store": "Billa",
       "name": {
@@ -2060,6 +2381,9 @@
       "pack_size": 35.0,
       "portion_unit": "pcs",
       "price_eur": 1.09,
+      "regular_price_eur": 1.09,
+      "promo_price_eur": null,
+      "promo_valid_until": null,
       "kcal": null,
       "protein_g": null,
       "fat_g": null,

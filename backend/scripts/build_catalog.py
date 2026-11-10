@@ -10,6 +10,16 @@ Nutrition in the CSV is per 100 g or 100 ml; the catalog stores it per pack. Pro
 by kg or l are converted with their pack size (1 ml counted as 1 g). Products sold by pcs or
 pack need `net_weight_g` (contents of one pack in grams) unless they are non-food.
 
+`price_eur` is the regular shelf price. A promotion adds `promo_price_eur` and
+`promo_valid_until` (its last day, YYYY-MM-DD). In catalog.json, `price_eur` is the price
+every plan uses: the promo price if the promotion still runs on the catalog's price_date
+(the latest row date), the regular price otherwise; the CSV price goes to
+`regular_price_eur`.
+
+`concept_id` names the kind of product, without its pack size (`milk_whole`); products a
+shopper would buy in place of each other share it and must have the same unit and category,
+so prices compare per kg, l or piece. Diet tags may differ: diets filter within a concept.
+
 Every row is validated with the app's Pydantic schema; any error stops the build.
 """
 
@@ -17,7 +27,7 @@ import argparse
 import csv
 import json
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, get_args
 
@@ -41,6 +51,7 @@ COUNTRY = "AT"
 
 COLUMNS = [
     "id",
+    "concept_id",
     "store",
     "category",
     "name_en",
@@ -51,6 +62,8 @@ COLUMNS = [
     "net_weight_g",
     "portion_unit",
     "price_eur",
+    "promo_price_eur",
+    "promo_valid_until",
     "kcal_100",
     "protein_100",
     "fat_100",
@@ -60,6 +73,7 @@ COLUMNS = [
     "price_date",
     "verified",
 ]
+MONEY_FIELDS = ("price_eur", "regular_price_eur", "promo_price_eur")
 NUTRIENTS = {
     "kcal": "kcal_100",
     "protein_g": "protein_100",
@@ -106,6 +120,7 @@ def to_product(row: dict[str, str]) -> dict[str, Any]:
         raise BuildError("nutrition must be all set (food) or all empty (non-food)")
     return {
         "id": row["id"],
+        "concept_id": row["concept_id"],
         "country": COUNTRY,
         "store": row["store"],
         "name": {"en": row["name_en"], "uk": row["name_uk"], "de": row["name_de"]},
@@ -113,12 +128,33 @@ def to_product(row: dict[str, str]) -> dict[str, Any]:
         "unit": row["unit"],
         "pack_size": float(row["pack_size"]),
         "portion_unit": row["portion_unit"] or None,
-        "price_eur": row["price_eur"],
+        # As of the row's own price_date, when a promotion runs; build() reprices every
+        # product as of the catalog's price_date.
+        "price_eur": row["promo_price_eur"] or row["price_eur"],
+        "regular_price_eur": row["price_eur"],
+        "promo_price_eur": row["promo_price_eur"] or None,
+        "promo_valid_until": row["promo_valid_until"] or None,
         **nutrition,
         "diet_tags": tags,
         "source_url": row["source_url"],
         "price_date": row["price_date"],
     }
+
+
+def concept_conflict(product: Product, other: Product) -> str | None:
+    """Products sharing a concept_id are compared by price per unit, so they must be sold in
+    the same unit and category. Their diet tags may differ (lactose-free and regular butter)."""
+    differ = [
+        field
+        for field, a, b in (
+            ("unit", product.unit, other.unit),
+            ("category", product.category, other.category),
+        )
+        if a != b
+    ]
+    if not differ:
+        return None
+    return f"concept {product.concept_id} differs from {other.id} in {', '.join(differ)}"
 
 
 def read_rows(source: Path) -> list[dict[str, str]]:
@@ -133,9 +169,14 @@ def build(source: Path) -> tuple[Catalog, list[dict[str, str]]]:
     rows = read_rows(source)
     products = []
     errors = []
+    by_concept: dict[str, Product] = {}
     for line, row in enumerate(rows, start=2):  # line 1 is the header
         try:
-            products.append(Product.model_validate(to_product(row)))
+            product = Product.model_validate(to_product(row))
+            conflict = concept_conflict(product, by_concept.setdefault(product.concept_id, product))
+            if conflict:
+                raise BuildError(conflict)
+            products.append(product)
         except (BuildError, ValidationError, ValueError) as e:
             errors.append(f"{source.name}:{line} ({row.get('id') or '?'}): {e}")
     if errors:
@@ -143,6 +184,7 @@ def build(source: Path) -> tuple[Catalog, list[dict[str, str]]]:
     if not products:
         raise BuildError("no products")
     price_date = max(p.price_date for p in products)
+    products = [p.priced_on(price_date) for p in products]  # ended promotions: regular price
     try:
         catalog = Catalog(
             version=f"at-{price_date.isoformat()}", price_date=price_date, products=products
@@ -166,6 +208,17 @@ def report(catalog: Catalog, rows: list[dict[str, str]]) -> str:
         lines.append(f"  {store}: " + ", ".join(f"{c} {n}" for c, n in sorted(categories.items())))
     diets = {tag: sum(1 for p in food if tag in p.diet_tags) for tag in get_args(DietTag)}
     lines.append("Food per diet tag: " + ", ".join(f"{t} {n}" for t, n in diets.items()))
+    stores_by_concept: defaultdict[str, set[str]] = defaultdict(set)
+    for p in catalog.products:
+        stores_by_concept[p.concept_id].add(p.store)
+    shared = sum(1 for names in stores_by_concept.values() if len(names) > 1)
+    lines.append(f"Concepts: {len(stores_by_concept)}, {shared} in more than one store")
+    promos = [p for p in catalog.products if p.promo_valid_until is not None]
+    ended = [p.id for p in promos if not p.promo_runs_on(catalog.price_date)]
+    lines.append(
+        f"Promotions running on {catalog.price_date}: {len(promos) - len(ended)}"
+        + (f"; ended, regular price used: {', '.join(ended)}" if ended else "")
+    )
     unverified = sum(1 for row in rows if row["verified"] != "yes")
     lines.append(f"Unverified rows: {unverified}")
     return "\n".join(lines)
@@ -174,7 +227,9 @@ def report(catalog: Catalog, rows: list[dict[str, str]]) -> str:
 def render(catalog: Catalog) -> str:
     data = catalog.model_dump(mode="json")
     for product in data["products"]:
-        product["price_eur"] = float(product["price_eur"])  # a number, like the fixture
+        for field in MONEY_FIELDS:  # numbers, like the fixture
+            if product[field] is not None:
+                product[field] = float(product[field])
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 

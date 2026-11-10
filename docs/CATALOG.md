@@ -34,7 +34,7 @@ Prices were read from those stores' category listing pages, which show the produ
 ## Method
 
 - **Selection:** everyday staples per category (dairy, eggs, bread, pasta/rice/grains, legumes, vegetables, fruit, meat, fish, frozen, pantry, snacks, beverages) plus a few household items. Store brands (Billa *Clever*, *Ja! Natürlich*, *BILLA Bio*; Hofer *Milsani*, *Happy Harvest*, *Backbox*, *Sonnhof*, *Fairhof*) were preferred because they are the cheapest and most stable.
-- **Price:** the regular single-item shelf price shown on the page. Temporary promotions (a struck-through former price, "Aktion", multi-buy prices such as "ab 2 Packungen") were skipped where an equivalent regular-priced product existed. Billa's "Immer clever Preis" is a permanent price, not a promotion.
+- **Price:** the regular single-item shelf price shown on the page. Temporary promotions (a struck-through former price, "Aktion", multi-buy prices such as "ab 2 Packungen") were skipped where an equivalent regular-priced product existed. Billa's "Immer clever Preis" is a permanent price, not a promotion. Promotions are now recorded separately, see [Promotions](#promotions).
 - **Deposit (Pfand)** is not included in `price_eur`.
 - **Loose produce** sold by weight (Billa bananas) is listed as a 1 kg pack at the per-kg price; the name says "per kg".
 - **Products without a fixed pack size** (weighed meat, "ab 0,5 kg") were left out.
@@ -55,18 +55,39 @@ Tags are assigned conservatively from the product type:
 - Cheese is tagged `vegetarian`, although some cheeses use animal rennet.
 - Processed meat (sausages, Extrawurst, cevapcici) is not tagged `gluten_free`.
 
+### Concepts
+
+`concept_id` names the kind of product, in snake_case and without the pack size: `milk_whole`, `cheese_gouda`, `minced_meat`. Products a shopper would buy in place of each other share it, in any store (and later country), so a shopping list can be compared across stores by price per kg, l or piece.
+
+- Name: the product first, then what sets it apart: `cheese_gouda`, `yogurt_high_protein`, `bread_toast_wholegrain`.
+- One concept, whatever the pack size, form or brand: fresh and UHT milk (`milk_whole`), Gouda in a block or sliced (`cheese_gouda`), chicken breast fillet or strips (`chicken_breast`), 500 g or 1 kg of mixed mince (`minced_meat`), spaghetti or fusilli (`pasta`), organic or not.
+- Different concepts when the product itself differs: beef or mixed mince (`minced_beef`, `minced_meat`), white or wholegrain toast, dried or canned legumes (their price per kg isn't comparable), smoked or fresh fish.
+- Products sharing a concept must have the same `unit` and `category`, or the build fails. Their diet tags may differ (`butter` holds a lactose-free and a regular butter): diets filter the products within a concept.
+- Products sold by the `pack` compare per pack, so their id says what one pack holds: `toilet_paper_10_rolls`. A size that isn't the pack size stays too: `bin_bags_30l`, sold by the piece.
+
+Billa and Hofer currently share 11 of 68: `milk_whole`, `cheese_gouda`, `yogurt_natural`, `butter`, `oat_drink`, `bread_toast`, `bread_rolls`, `minced_meat`, `chicken_breast`, `ham_cooked`, `salmon_fillet`.
+
+### Promotions
+
+A promotion is recorded next to the regular price: `promo_price_eur` and `promo_valid_until` (its last day). `price_date` is the day it was seen; the promotion counts from then.
+
+In `catalog.json`, `price_eur` is the price every plan uses: the promo price while the promotion runs on the catalog's `price_date`, the regular price otherwise. The CSV `price_eur` becomes `regular_price_eur`. The running app also checks the date: once a promotion has ended, plans use the regular price without a rebuild. The build lists running and ended promotions; clear the columns of ended ones when you next edit the CSV.
+
 ## CSV columns
 
 | Column | Meaning |
 |---|---|
 | `id` | `at-<store>-<product>-<size>`, lowercase slug, unique |
+| `concept_id` | kind of product without pack size, shared by interchangeable products, see [Concepts](#concepts) |
 | `store` | `Billa`, `Hofer` (later also `Spar`, `Lidl`) |
 | `category` | one of the catalog categories (`dairy`, `bread`, `meat`, …, `cleaning`, `hygiene`, `other`) |
 | `name_en`, `name_uk`, `name_de` | product name in each UI language |
 | `unit`, `pack_size` | `kg`/`l` with the pack size in that unit, or `pcs`/`pack` with a whole number |
 | `net_weight_g` | contents of one `pcs`/`pack` food product in grams (empty otherwise) |
 | `portion_unit` | optional: `g`, `ml`, `pcs` or `pack`; empty = derived from `unit` |
-| `price_eur` | price of one pack, 2 decimals, without deposit |
+| `price_eur` | regular price of one pack, 2 decimals, without deposit |
+| `promo_price_eur` | optional: promotional price of one pack, below `price_eur` |
+| `promo_valid_until` | last day of the promotion (`YYYY-MM-DD`), set together with `promo_price_eur`, not before `price_date` |
 | `kcal_100` … `carbs_100` | nutrition per 100 g/ml; empty for non-food |
 | `diet_tags` | `;`-separated: `vegetarian`, `vegan`, `gluten_free`, `lactose_free` |
 | `source_url` | the product page on the store's site |
@@ -88,12 +109,13 @@ All rows start as `verified=no`: they were collected by reading the stores' web 
    pytest -q tests/test_catalog_at.py       # coverage rules
    ```
 
-   The build fails on any invalid row (including a `vegan` row without `vegetarian` and `lactose_free`) and names the CSV line. The coverage tests require:
+   The build fails on any invalid row (including a `vegan` row without `vegetarian` and `lactose_free`, an invalid promotion, or a product whose unit or category differs from another with the same `concept_id`) and names the CSV line. The coverage tests require:
    - at least 25 food products per store;
    - at least 12 food candidates for every pair of stores, with no diet and with each diet tag;
    - at most 100 candidates for any pair of stores (the LLM schema's enum limit);
    - unique ids;
    - a `source_url` on the store's own domain for every row;
+   - a `concept_id` without the pack size, and exactly the known set of concepts shared between stores (update `SHARED_CONCEPTS` when it grows);
    - a `catalog.json` that matches the CSV.
 3. Commit the CSV and the generated JSON together.
 

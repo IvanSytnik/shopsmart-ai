@@ -2,9 +2,13 @@
 
 import csv
 import json
+import re
 import subprocess
 import sys
+from collections import defaultdict
 from collections.abc import Callable
+from datetime import date
+from decimal import Decimal
 from itertools import combinations
 from pathlib import Path
 from typing import get_args
@@ -15,7 +19,15 @@ from fastapi.testclient import TestClient
 
 from app.schemas.catalog import NON_FOOD_CATEGORIES, DietTag
 from app.services.catalog import load_catalog
-from scripts.build_catalog import BACKEND, DEFAULT_SOURCE, BuildError, build, main
+from scripts.build_catalog import (
+    BACKEND,
+    DEFAULT_SOURCE,
+    BuildError,
+    build,
+    main,
+    render,
+    report,
+)
 from tests.conftest import FakeOpenAI
 from tests.test_catalog import PRODUCTION_CATALOG
 
@@ -122,6 +134,55 @@ def test_catalog_json_is_built_from_the_csv() -> None:
     assert catalog.products == CATALOG.catalog.products
 
 
+# Concepts sold by more than one store: the products a shopping list can be compared on.
+# Update this when the catalog grows.
+SHARED_CONCEPTS = {
+    "milk_whole",
+    "cheese_gouda",
+    "yogurt_natural",
+    "butter",
+    "oat_drink",
+    "bread_toast",
+    "bread_rolls",
+    "minced_meat",
+    "chicken_breast",
+    "ham_cooked",
+    "salmon_fillet",
+}
+
+
+def test_billa_and_hofer_share_the_known_concepts() -> None:
+    stores: defaultdict[str, set[str]] = defaultdict(set)
+    for product in CATALOG.catalog.products:
+        stores[product.concept_id].add(product.store)
+
+    assert {concept for concept, names in stores.items() if len(names) > 1} == SHARED_CONCEPTS
+
+
+# A size in the product's own unit at the end of the id is its pack size, which would split
+# equivalents; it belongs in pack_size. Other sizes describe the product (bin_bags_30l).
+PACK_SIZE_SUFFIX = {"kg": r"_\d+k?g$", "l": r"_\d+m?l$", "pcs": r"_\d+(pk|pcs)$"}
+
+
+def test_concept_ids_leave_out_the_pack_size() -> None:
+    for product in CATALOG.catalog.products:
+        if product.unit == "pack":  # compared per pack, so the id says what one holds
+            assert re.search(r"_\d+_[a-z]+$", product.concept_id), product.id
+        else:
+            assert not re.search(PACK_SIZE_SUFFIX[product.unit], product.concept_id), product.id
+
+
+def test_diets_filter_within_a_concept() -> None:
+    lactose_free = CATALOG.candidates("AT", AT_STORES, ["lactose_free"])
+
+    assert {p.id for p in lactose_free if p.concept_id == "butter"} == {
+        "at-hofer-lactose-free-butter-250g"  # not at-billa-butter-250g
+    }
+    assert {p.id for p in lactose_free if p.concept_id == "milk_whole"} == {
+        "at-billa-lactose-free-milk-1l"
+    }
+
+
 def test_nutrition_is_converted_to_per_pack() -> None:
     milk = CATALOG.get("at-hofer-whole-milk-1l")  # 64 kcal / 100 ml, 1 l
     eggs = CATALOG.get("at-billa-eggs-m-10")  # 140 kcal / 100 g, 530 g net
@@ -175,6 +236,14 @@ def write_csv(path: Path, rows: list[dict[str, str]]) -> Path:
         ({"kcal_100": ""}, "all set (food) or all empty"),
         ({"verified": "maybe"}, "verified must be yes or no"),
         ({"portion_unit": "pcs"}, "portion_unit 'pcs' doesn't fit unit 'kg'"),  # Gouda
+        ({"concept_id": ""}, "concept_id"),
+        ({"concept_id": "Gouda 450g"}, "concept_id"),
+        ({"promo_price_eur": "2.99"}, "must be set together"),  # Gouda: €3.99, 2026-10-15
+        ({"promo_valid_until": "2026-10-21"}, "must be set together"),
+        ({"promo_price_eur": "3.99", "promo_valid_until": "2026-10-21"}, "below regular_price"),
+        ({"promo_price_eur": "2.999", "promo_valid_until": "2026-10-21"}, "decimal places"),
+        ({"promo_price_eur": "2.99", "promo_valid_until": "21.10.2026"}, "promo_valid_until"),
+        ({"promo_price_eur": "2.99", "promo_valid_until": "2026-10-14"}, "before price_date"),
     ],
 )
 def test_build_fails_on_a_bad_row(tmp_path: Path, change: dict[str, str], message: str) -> None:
@@ -223,6 +292,76 @@ def test_build_fails_on_the_untagged_vegan_rows_in_check_mode(
     errors = capsys.readouterr().err
     assert "Catalog build failed" in errors
     assert all(product_id in errors for product_id in VEGAN_BREADS)
+
+
+@pytest.mark.parametrize(
+    ("first", "second", "change", "differ"),
+    [
+        ("at-hofer-whole-milk-1l", "at-billa-eggs-m-10", {"concept_id": "milk_whole"}, "unit"),
+        ("at-hofer-gouda-450g", "at-billa-hummus-200g", {"concept_id": "cheese_gouda"}, "category"),
+        (
+            "at-hofer-whole-milk-1l",
+            "at-billa-bananas-1kg",
+            {"concept_id": "milk_whole"},
+            "unit, category",
+        ),
+    ],
+)
+def test_build_fails_on_equivalent_products_that_differ(
+    tmp_path: Path, first: str, second: str, change: dict[str, str], differ: str
+) -> None:
+    by_id = {row["id"]: row for row in csv_rows()}
+    rows = [by_id[first], {**by_id[second], **change}]
+    source = write_csv(tmp_path / "concepts.csv", rows)
+
+    with pytest.raises(BuildError) as info:
+        build(source)
+    concept = rows[0]["concept_id"]
+    assert f"concepts.csv:3 ({second}): concept {concept} differs from {first} in {differ}" in str(
+        info.value
+    )
+
+
+BUTTER = "at-billa-butter-250g"  # €1.59, seen 2026-10-15 like most rows
+PRICES = ("price_eur", "regular_price_eur", "promo_price_eur", "promo_valid_until")
+
+
+def with_butter_promo(**changes: str) -> list[dict[str, str]]:
+    promo = {"promo_price_eur": "1.29", **changes}
+    return [{**row, **promo} if row["id"] == BUTTER else row for row in csv_rows()]
+
+
+def test_build_prices_a_running_promotion(tmp_path: Path) -> None:
+    rows = with_butter_promo(promo_valid_until="2026-10-21")
+    catalog, built_rows = build(write_csv(tmp_path / "promo.csv", rows))
+
+    butter = next(p for p in catalog.products if p.id == BUTTER)
+    assert tuple(getattr(butter, field) for field in PRICES) == (
+        Decimal("1.29"),
+        Decimal("1.59"),
+        Decimal("1.29"),
+        date(2026, 10, 21),
+    )
+    on_disk = next(p for p in json.loads(render(catalog))["products"] if p["id"] == BUTTER)
+    assert [on_disk[field] for field in PRICES] == [1.29, 1.59, 1.29, "2026-10-21"]
+    assert "Promotions running on 2026-10-15: 1\n" in report(catalog, built_rows)
+
+
+def test_build_uses_the_regular_price_once_a_promotion_has_ended(tmp_path: Path) -> None:
+    # Seen on 2026-10-10, ended before the catalog's price_date (2026-10-15, the other rows).
+    rows = with_butter_promo(promo_valid_until="2026-10-14", price_date="2026-10-10")
+    catalog, built_rows = build(write_csv(tmp_path / "promo.csv", rows))
+
+    butter = next(p for p in catalog.products if p.id == BUTTER)
+    assert tuple(getattr(butter, field) for field in PRICES) == (
+        Decimal("1.59"),
+        Decimal("1.59"),
+        Decimal("1.29"),
+        date(2026, 10, 14),
+    )
+    assert f"Promotions running on 2026-10-15: 0; ended, regular price used: {BUTTER}" in report(
+        catalog, built_rows
+    )
 
 
 def test_build_requires_net_weight_for_food_sold_by_pieces(tmp_path: Path) -> None:

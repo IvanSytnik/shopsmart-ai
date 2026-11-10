@@ -4,11 +4,12 @@
   "products": [
     {
       "id": "at-lidl-milk-1l",
+      "concept_id": "milk_whole",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Whole milk 3.5%",
-        "uk": "Молоко 3,5%",
+        "uk": "\u041c\u043e\u043b\u043e\u043a\u043e 3,5%",
         "de": "Vollmilch 3,5%"
       },
       "category": "dairy",
@@ -28,11 +29,12 @@
     },
     {
       "id": "at-lidl-oat-drink-1l",
+      "concept_id": "oat_drink",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Oat drink",
-        "uk": "Вівсяний напій",
+        "uk": "\u0412\u0456\u0432\u0441\u044f\u043d\u0438\u0439 \u043d\u0430\u043f\u0456\u0439",
         "de": "Haferdrink"
       },
       "category": "beverages",
@@ -53,12 +55,13 @@
     },
     {
       "id": "at-lidl-chicken-breast-500g",
+      "concept_id": "chicken_breast",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Chicken breast",
-        "uk": "Куряче філе",
-        "de": "Hähnchenbrust"
+        "uk": "\u041a\u0443\u0440\u044f\u0447\u0435 \u0444\u0456\u043b\u0435",
+        "de": "H\u00e4hnchenbrust"
       },
       "category": "meat",
       "unit": "kg",
@@ -77,11 +80,12 @@
     },
     {
       "id": "at-lidl-rye-bread-750g",
+      "concept_id": "bread_rye",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Rye bread",
-        "uk": "Житній хліб",
+        "uk": "\u0416\u0438\u0442\u043d\u0456\u0439 \u0445\u043b\u0456\u0431",
         "de": "Roggenbrot"
       },
       "category": "bread",
@@ -102,12 +106,13 @@
     },
     {
       "id": "at-lidl-apples-1kg",
+      "concept_id": "apples",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Apples",
-        "uk": "Яблука",
-        "de": "Äpfel"
+        "uk": "\u042f\u0431\u043b\u0443\u043a\u0430",
+        "de": "\u00c4pfel"
       },
       "category": "fruits",
       "unit": "kg",
@@ -128,11 +133,12 @@
     },
     {
       "id": "at-lidl-carrots-1kg",
+      "concept_id": "carrots",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Carrots",
-        "uk": "Морква",
+        "uk": "\u041c\u043e\u0440\u043a\u0432\u0430",
         "de": "Karotten"
       },
       "category": "vegetables",
@@ -154,11 +160,12 @@
     },
     {
       "id": "at-lidl-potato-chips-175g",
+      "concept_id": "potato_chips",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Potato chips",
-        "uk": "Картопляні чипси",
+        "uk": "\u041a\u0430\u0440\u0442\u043e\u043f\u043b\u044f\u043d\u0456 \u0447\u0438\u043f\u0441\u0438",
         "de": "Kartoffelchips"
       },
       "category": "snacks",
@@ -180,12 +187,13 @@
     },
     {
       "id": "at-lidl-dish-soap-500ml",
+      "concept_id": "dish_soap",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Dish soap",
-        "uk": "Засіб для миття посуду",
-        "de": "Spülmittel"
+        "uk": "\u0417\u0430\u0441\u0456\u0431 \u0434\u043b\u044f \u043c\u0438\u0442\u0442\u044f \u043f\u043e\u0441\u0443\u0434\u0443",
+        "de": "Sp\u00fclmittel"
       },
       "category": "cleaning",
       "unit": "l",
@@ -201,11 +209,12 @@
     },
     {
       "id": "at-penny-cheese-gouda-400g",
+      "concept_id": "cheese_gouda",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Gouda cheese",
-        "uk": "Сир гауда",
+        "uk": "\u0421\u0438\u0440 \u0433\u0430\u0443\u0434\u0430",
         "de": "Gouda"
       },
       "category": "dairy",
@@ -225,11 +234,12 @@
     },
     {
       "id": "at-penny-rice-1kg",
+      "concept_id": "rice",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Long-grain rice",
-        "uk": "Довгозерний рис",
+        "uk": "\u0414\u043e\u0432\u0433\u043e\u0437\u0435\u0440\u043d\u0438\u0439 \u0440\u0438\u0441",
         "de": "Langkornreis"
       },
       "category": "pantry",
@@ -251,11 +261,12 @@
     },
     {
       "id": "at-penny-pasta-500g",
+      "concept_id": "pasta",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Spaghetti",
-        "uk": "Спагеті",
+        "uk": "\u0421\u043f\u0430\u0433\u0435\u0442\u0456",
         "de": "Spaghetti"
       },
       "category": "pantry",
@@ -276,11 +287,12 @@
     },
     {
       "id": "at-penny-cola-1-5l",
+      "concept_id": "cola",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Cola",
-        "uk": "Кола",
+        "uk": "\u041a\u043e\u043b\u0430",
         "de": "Cola"
       },
       "category": "beverages",
@@ -302,11 +314,12 @@
     },
     {
       "id": "at-penny-frozen-pizza-350g",
+      "concept_id": "pizza_frozen",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Frozen pizza margherita",
-        "uk": "Заморожена піца маргарита",
+        "uk": "\u0417\u0430\u043c\u043e\u0440\u043e\u0436\u0435\u043d\u0430 \u043f\u0456\u0446\u0430 \u043c\u0430\u0440\u0433\u0430\u0440\u0438\u0442\u0430",
         "de": "TK-Pizza Margherita"
       },
       "category": "frozen",
@@ -326,11 +339,12 @@
     },
     {
       "id": "at-penny-toothpaste-75ml",
+      "concept_id": "toothpaste",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Toothpaste",
-        "uk": "Зубна паста",
+        "uk": "\u0417\u0443\u0431\u043d\u0430 \u043f\u0430\u0441\u0442\u0430",
         "de": "Zahnpasta"
       },
       "category": "hygiene",
@@ -347,11 +361,12 @@
     },
     {
       "id": "de-lidl-milk-1l",
+      "concept_id": "milk_whole",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Whole milk 3.5%",
-        "uk": "Молоко 3,5%",
+        "uk": "\u041c\u043e\u043b\u043e\u043a\u043e 3,5%",
         "de": "Vollmilch 3,5%"
       },
       "category": "dairy",
@@ -371,11 +386,12 @@
     },
     {
       "id": "de-lidl-salmon-250g",
+      "concept_id": "salmon_fillet",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Salmon fillet",
-        "uk": "Філе лосося",
+        "uk": "\u0424\u0456\u043b\u0435 \u043b\u043e\u0441\u043e\u0441\u044f",
         "de": "Lachsfilet"
       },
       "category": "fish",
@@ -395,11 +411,12 @@
     },
     {
       "id": "de-lidl-eggs-10",
+      "concept_id": "eggs",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Free-range eggs",
-        "uk": "Яйця вільного вигулу",
+        "uk": "\u042f\u0439\u0446\u044f \u0432\u0456\u043b\u044c\u043d\u043e\u0433\u043e \u0432\u0438\u0433\u0443\u043b\u0443",
         "de": "Freilandeier"
       },
       "category": "dairy",
@@ -420,11 +437,12 @@
     },
     {
       "id": "de-lidl-tofu-400g",
+      "concept_id": "tofu",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Tofu",
-        "uk": "Тофу",
+        "uk": "\u0422\u043e\u0444\u0443",
         "de": "Tofu"
       },
       "category": "other",
@@ -446,11 +464,12 @@
     },
     {
       "id": "de-lidl-bananas-1kg",
+      "concept_id": "bananas",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Bananas",
-        "uk": "Банани",
+        "uk": "\u0411\u0430\u043d\u0430\u043d\u0438",
         "de": "Bananen"
       },
       "category": "fruits",
@@ -472,11 +491,12 @@
     },
     {
       "id": "de-lidl-dark-chocolate-100g",
+      "concept_id": "chocolate_dark",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Dark chocolate 70%",
-        "uk": "Чорний шоколад 70%",
+        "uk": "\u0427\u043e\u0440\u043d\u0438\u0439 \u0448\u043e\u043a\u043e\u043b\u0430\u0434 70%",
         "de": "Zartbitterschokolade 70%"
       },
       "category": "snacks",
@@ -498,11 +518,12 @@
     },
     {
       "id": "de-lidl-shower-gel-250ml",
+      "concept_id": "shower_gel",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Shower gel",
-        "uk": "Гель для душу",
+        "uk": "\u0413\u0435\u043b\u044c \u0434\u043b\u044f \u0434\u0443\u0448\u0443",
         "de": "Duschgel"
       },
       "category": "hygiene",
@@ -519,11 +540,12 @@
     },
     {
       "id": "de-penny-minced-beef-500g",
+      "concept_id": "minced_beef",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Minced beef",
-        "uk": "Яловичий фарш",
+        "uk": "\u042f\u043b\u043e\u0432\u0438\u0447\u0438\u0439 \u0444\u0430\u0440\u0448",
         "de": "Rinderhackfleisch"
       },
       "category": "meat",
@@ -543,11 +565,12 @@
     },
     {
       "id": "de-penny-tomatoes-500g",
+      "concept_id": "tomatoes",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Tomatoes",
-        "uk": "Помідори",
+        "uk": "\u041f\u043e\u043c\u0456\u0434\u043e\u0440\u0438",
         "de": "Tomaten"
       },
       "category": "vegetables",
@@ -569,11 +592,12 @@
     },
     {
       "id": "de-penny-orange-juice-1l",
+      "concept_id": "juice_orange",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Orange juice",
-        "uk": "Апельсиновий сік",
+        "uk": "\u0410\u043f\u0435\u043b\u044c\u0441\u0438\u043d\u043e\u0432\u0438\u0439 \u0441\u0456\u043a",
         "de": "Orangensaft"
       },
       "category": "beverages",
@@ -595,11 +619,12 @@
     },
     {
       "id": "de-penny-yogurt-500g",
+      "concept_id": "yogurt_natural",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Natural yogurt",
-        "uk": "Натуральний йогурт",
+        "uk": "\u041d\u0430\u0442\u0443\u0440\u0430\u043b\u044c\u043d\u0438\u0439 \u0439\u043e\u0433\u0443\u0440\u0442",
         "de": "Naturjoghurt"
       },
       "category": "dairy",
@@ -619,11 +644,12 @@
     },
     {
       "id": "de-penny-frozen-spinach-450g",
+      "concept_id": "spinach_frozen",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Frozen spinach",
-        "uk": "Заморожений шпинат",
+        "uk": "\u0417\u0430\u043c\u043e\u0440\u043e\u0436\u0435\u043d\u0438\u0439 \u0448\u043f\u0438\u043d\u0430\u0442",
         "de": "TK-Spinat"
       },
       "category": "frozen",
@@ -645,11 +671,12 @@
     },
     {
       "id": "at-lidl-red-lentils-500g",
+      "concept_id": "lentils_red",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Red lentils",
-        "uk": "Червона сочевиця",
+        "uk": "\u0427\u0435\u0440\u0432\u043e\u043d\u0430 \u0441\u043e\u0447\u0435\u0432\u0438\u0446\u044f",
         "de": "Rote Linsen"
       },
       "category": "pantry",
@@ -671,11 +698,12 @@
     },
     {
       "id": "at-lidl-peanut-butter-350g",
+      "concept_id": "peanut_butter",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Peanut butter",
-        "uk": "Арахісова паста",
+        "uk": "\u0410\u0440\u0430\u0445\u0456\u0441\u043e\u0432\u0430 \u043f\u0430\u0441\u0442\u0430",
         "de": "Erdnussbutter"
       },
       "category": "pantry",
@@ -697,11 +725,12 @@
     },
     {
       "id": "at-lidl-oat-flakes-500g",
+      "concept_id": "oats",
       "country": "AT",
       "store": "Lidl",
       "name": {
         "en": "Oat flakes",
-        "uk": "Вівсяні пластівці",
+        "uk": "\u0412\u0456\u0432\u0441\u044f\u043d\u0456 \u043f\u043b\u0430\u0441\u0442\u0456\u0432\u0446\u0456",
         "de": "Haferflocken"
       },
       "category": "pantry",
@@ -722,11 +751,12 @@
     },
     {
       "id": "at-penny-chickpeas-400g",
+      "concept_id": "chickpeas_canned",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Chickpeas, canned",
-        "uk": "Нут консервований",
+        "uk": "\u041d\u0443\u0442 \u043a\u043e\u043d\u0441\u0435\u0440\u0432\u043e\u0432\u0430\u043d\u0438\u0439",
         "de": "Kichererbsen"
       },
       "category": "pantry",
@@ -748,11 +778,12 @@
     },
     {
       "id": "at-penny-onions-1kg",
+      "concept_id": "onions",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Onions",
-        "uk": "Цибуля",
+        "uk": "\u0426\u0438\u0431\u0443\u043b\u044f",
         "de": "Zwiebeln"
       },
       "category": "vegetables",
@@ -774,11 +805,12 @@
     },
     {
       "id": "at-penny-bananas-1kg",
+      "concept_id": "bananas",
       "country": "AT",
       "store": "Penny",
       "name": {
         "en": "Bananas",
-        "uk": "Банани",
+        "uk": "\u0411\u0430\u043d\u0430\u043d\u0438",
         "de": "Bananen"
       },
       "category": "fruits",
@@ -800,11 +832,12 @@
     },
     {
       "id": "de-lidl-rice-1kg",
+      "concept_id": "rice",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Long-grain rice",
-        "uk": "Довгозерний рис",
+        "uk": "\u0414\u043e\u0432\u0433\u043e\u0437\u0435\u0440\u043d\u0438\u0439 \u0440\u0438\u0441",
         "de": "Langkornreis"
       },
       "category": "pantry",
@@ -826,11 +859,12 @@
     },
     {
       "id": "de-lidl-potatoes-2kg",
+      "concept_id": "potatoes",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Potatoes",
-        "uk": "Картопля",
+        "uk": "\u041a\u0430\u0440\u0442\u043e\u043f\u043b\u044f",
         "de": "Kartoffeln"
       },
       "category": "vegetables",
@@ -852,11 +886,12 @@
     },
     {
       "id": "de-lidl-wholegrain-bread-500g",
+      "concept_id": "bread_wholegrain",
       "country": "DE",
       "store": "Lidl",
       "name": {
         "en": "Wholegrain bread",
-        "uk": "Цільнозерновий хліб",
+        "uk": "\u0426\u0456\u043b\u044c\u043d\u043e\u0437\u0435\u0440\u043d\u043e\u0432\u0438\u0439 \u0445\u043b\u0456\u0431",
         "de": "Vollkornbrot"
       },
       "category": "bread",
@@ -877,11 +912,12 @@
     },
     {
       "id": "de-penny-pasta-500g",
+      "concept_id": "pasta",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Spaghetti",
-        "uk": "Спагеті",
+        "uk": "\u0421\u043f\u0430\u0433\u0435\u0442\u0456",
         "de": "Spaghetti"
       },
       "category": "pantry",
@@ -902,11 +938,12 @@
     },
     {
       "id": "de-penny-red-lentils-500g",
+      "concept_id": "lentils_red",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Red lentils",
-        "uk": "Червона сочевиця",
+        "uk": "\u0427\u0435\u0440\u0432\u043e\u043d\u0430 \u0441\u043e\u0447\u0435\u0432\u0438\u0446\u044f",
         "de": "Rote Linsen"
       },
       "category": "pantry",
@@ -928,11 +965,12 @@
     },
     {
       "id": "de-penny-oat-flakes-500g",
+      "concept_id": "oats",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Oat flakes",
-        "uk": "Вівсяні пластівці",
+        "uk": "\u0412\u0456\u0432\u0441\u044f\u043d\u0456 \u043f\u043b\u0430\u0441\u0442\u0456\u0432\u0446\u0456",
         "de": "Haferflocken"
       },
       "category": "pantry",
@@ -953,12 +991,13 @@
     },
     {
       "id": "de-penny-apples-1kg",
+      "concept_id": "apples",
       "country": "DE",
       "store": "Penny",
       "name": {
         "en": "Apples",
-        "uk": "Яблука",
-        "de": "Äpfel"
+        "uk": "\u042f\u0431\u043b\u0443\u043a\u0430",
+        "de": "\u00c4pfel"
       },
       "category": "fruits",
       "unit": "kg",
