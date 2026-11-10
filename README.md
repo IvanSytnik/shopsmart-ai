@@ -130,7 +130,7 @@ Frontend at http://localhost, API at http://localhost:8000.
 ```bash
 # backend
 cd backend
-python -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 cp .env.example .env               # set OPENAI_API_KEY
 uvicorn app.main:app --reload --port 8000

@@ -1,6 +1,6 @@
 {
-  "version": "at-2026-10-15",
-  "price_date": "2026-10-15",
+  "version": "at-2026-11-10",
+  "price_date": "2026-11-10",
   "products": [
     {
       "id": "at-hofer-whole-milk-1l",
@@ -29,7 +29,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-vollmilch-laenger-frisch-000000000000106876",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-gouda-450g",
@@ -58,7 +58,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-hollaendischer-gouda-000000000000106896",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-emmentaler-slices-250g",
@@ -87,7 +87,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-emmentaler-scheiben-000000000000106972",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-pizza-cheese-250g",
@@ -116,7 +116,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-pizzakaese-000000000000108256",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-organic-feta-200g",
@@ -145,7 +145,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/bio-natura-bio-feta-000000000000309165",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-natural-yogurt-500g",
@@ -174,7 +174,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-naturjoghurt-3-6-fett-000000000112360002",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-protein-yogurt-500g",
@@ -203,7 +203,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-high-protein-naturjoghurt-000000000000517851",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-buttermilk-500ml",
@@ -232,7 +232,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-buttermilch-standard-000000000110591001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-lactose-free-butter-250g",
@@ -262,7 +262,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-butter-laktosefrei-000000000000107104",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-cream-cheese-200g",
@@ -291,7 +291,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milfina-frischkaesefass-natur-20-fett-000000000113411002",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-whipping-cream-250ml",
@@ -320,7 +320,7 @@
         "gluten_free"
       ],
       "source_url": "https://www.hofer.at/produkt/milsani-schlagobers-000000000000107020",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-organic-oat-drink-970ml",
@@ -350,7 +350,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-bio-haferdrink-000000000000513472",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-toast-bread-500g",
@@ -378,7 +378,7 @@
         "vegetarian"
       ],
       "source_url": "https://www.hofer.at/produkt/happy-harvest-toastbrot-000000000000100778",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-organic-rye-bread-500g",
@@ -408,7 +408,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-bio-roggenvollkornbrot-000000000000100765",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-crust-bread-750g",
@@ -438,7 +438,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/backbox-krustenbrot-000000000000100955",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-kaiser-rolls-420g",
@@ -468,7 +468,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/happy-harvest-kaisersemmel-000000000000175444",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-rye-crispbread-250g",
@@ -498,7 +498,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/happy-harvest-knaeckebrot-roggen-000000000101968001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-mini-baguettes-300g",
@@ -528,7 +528,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/happy-harvest-mini-baguette-6er-packung-000000000570926002",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-vegan-wholegrain-toast-500g",
@@ -558,7 +558,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/zurueck-zum-ursprung-toast-vegan-vollkorn-000000000537331001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-rye-farmhouse-slices-500g",
@@ -588,7 +588,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/goldaehren-bauernschnitten-roggen-000000000187142001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-mixed-mince-500g",
@@ -617,7 +617,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/sonnhof-faschiertes-gemischt-000000000000106958",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-beef-mince-500g",
@@ -646,7 +646,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/sonnhof-rinderfaschiertes-000000000000108494",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-chicken-wings-500g",
@@ -675,7 +675,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/fairhof-chicken-wings-000000000000174857",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-chicken-strips-400g",
@@ -704,7 +704,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/sonnhof-maishendl-geschnetzeltes-000000000000696879",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-chicken-thighs-400g",
@@ -733,7 +733,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/fairhof-maishendl-oberkeulen-000000000000594221",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-cevapcici-450g",
@@ -761,7 +761,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/sonnhof-bbq-cevapcici-000000000000527998",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-cooked-ham-125g",
@@ -790,7 +790,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/fairhof-beinschinken-000000000169124001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-extrawurst-slices-200g",
@@ -818,7 +818,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/genuss-100-aus-oesterreich-extra-aufschnitt-extra-000000000111270004",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-salmon-fillet-300g",
@@ -847,7 +847,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/golden-seafood-norwegisches-lachsfilet-000000000000276454",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-trout-fillet-125g",
@@ -876,7 +876,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/almare-seafood-regenbogen-forellenfilet-natur-000000000113828003",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-hofer-arctic-prawns-100g",
@@ -905,7 +905,7 @@
         "lactose_free"
       ],
       "source_url": "https://www.hofer.at/produkt/almare-seafood-garnelen-sortiment-eismeergarnelen-000000000580827001",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-bananas-1kg",
@@ -921,8 +921,8 @@
       "unit": "kg",
       "pack_size": 1.0,
       "portion_unit": "g",
-      "price_eur": 1.59,
-      "regular_price_eur": 1.59,
+      "price_eur": 1.69,
+      "regular_price_eur": 1.69,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 890.0,
@@ -936,7 +936,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-bananen-00258074",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-mandarins-750g",
@@ -967,7 +967,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/sanlucar-mandarinen-0089012",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-grapes-500g",
@@ -998,7 +998,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/trauben-weiss-kernlos-0089414",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-onions-1kg",
@@ -1029,7 +1029,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/da-komm-ich-her-zwiebel-gelb-00429100",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-potatoes-2kg",
@@ -1060,7 +1060,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/da-komm-ich-her-erdaepfel-festkochend-0089546",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-cherry-tomatoes-500g",
@@ -1076,8 +1076,8 @@
       "unit": "kg",
       "pack_size": 0.5,
       "portion_unit": "g",
-      "price_eur": 2.49,
-      "regular_price_eur": 2.49,
+      "price_eur": 2.29,
+      "regular_price_eur": 2.29,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 100.0,
@@ -1091,7 +1091,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-cherrytomaten-00410026",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-mushrooms-200g",
@@ -1122,7 +1122,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-champignon-00410116",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-soup-vegetables-500g",
@@ -1153,7 +1153,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-suppentasse-0089614",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-frozen-broccoli-750g",
@@ -1169,8 +1169,8 @@
       "unit": "kg",
       "pack_size": 0.75,
       "portion_unit": "g",
-      "price_eur": 1.89,
-      "regular_price_eur": 1.89,
+      "price_eur": 1.39,
+      "regular_price_eur": 1.39,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 225.0,
@@ -1184,7 +1184,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-brokkoli-00504077",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-frozen-peas-750g",
@@ -1200,8 +1200,8 @@
       "unit": "kg",
       "pack_size": 0.75,
       "portion_unit": "g",
-      "price_eur": 3.7,
-      "regular_price_eur": 3.7,
+      "price_eur": 3.49,
+      "regular_price_eur": 3.49,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 600.0,
@@ -1215,7 +1215,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-junge-erbsen-00572211",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-fish-fingers-450g",
@@ -1241,7 +1241,7 @@
       "carbs_g": 76.5,
       "diet_tags": [],
       "source_url": "https://shop.billa.at/produkte/clever-fischstaebchen-00714185",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-organic-spaghetti-500g",
@@ -1271,7 +1271,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-bio-spaghetti-00443042",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-organic-fusilli-500g",
@@ -1301,7 +1301,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-bio-fusilli-00443100",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-long-grain-rice-1kg",
@@ -1332,7 +1332,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-langkornreis-00309662",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-oats-500g",
@@ -1362,7 +1362,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-haferflocken-zart-00249591",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-couscous-500g",
@@ -1392,7 +1392,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-couscous-00933707",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-polenta-500g",
@@ -1423,7 +1423,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-polenta-00701933",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-dried-lentils-500g",
@@ -1454,7 +1454,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-getrocknete-linsen-00750434",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-dried-chickpeas-500g",
@@ -1485,7 +1485,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-getrocknete-kichererbsen-00750435",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-kidney-beans-400g",
@@ -1516,7 +1516,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-rote-kidney-bohnen-00374436",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-chopped-tomatoes-400g",
@@ -1547,7 +1547,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-gehackte-tomaten-00374991",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-passata-500g",
@@ -1578,7 +1578,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-passierte-tomaten-00558624",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-sauerkraut-500g",
@@ -1609,7 +1609,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-sauerkraut-00405996",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-tuna-195g",
@@ -1638,7 +1638,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/vier-diamanten-thunfisch-naturell-00415575",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-eggs-m-10",
@@ -1668,7 +1668,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-eier-aus-bodenhaltung-m-00312703",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-uht-whole-milk-1l",
@@ -1697,7 +1697,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-haltbarvollmilch-35-00746506",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-lactose-free-milk-1l",
@@ -1727,7 +1727,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-laktosefreie-vollmilch-35-00802950",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-butter-250g",
@@ -1756,7 +1756,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-oesterreichische-teebutter-00425413",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-natural-yogurt-250g",
@@ -1785,7 +1785,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-joghurt-natur-36-00668140",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-low-fat-quark-250g",
@@ -1814,7 +1814,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-magertopfen-00746455",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-mozzarella-125g",
@@ -1830,8 +1830,8 @@
       "unit": "kg",
       "pack_size": 0.125,
       "portion_unit": "g",
-      "price_eur": 0.79,
-      "regular_price_eur": 0.79,
+      "price_eur": 0.75,
+      "regular_price_eur": 0.75,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 312.5,
@@ -1843,7 +1843,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-mozzarella-00282168",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-gouda-slices-400g",
@@ -1872,7 +1872,7 @@
         "gluten_free"
       ],
       "source_url": "https://shop.billa.at/produkte/billa-gouda-scheiben-00693846",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-oat-drink-1l",
@@ -1902,7 +1902,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-hafer-drink-00891643",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-soy-drink-1l",
@@ -1933,7 +1933,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/ja-natuerlich-sojadrink-pur-00741531",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-hummus-200g",
@@ -1949,8 +1949,8 @@
       "unit": "kg",
       "pack_size": 0.2,
       "portion_unit": "g",
-      "price_eur": 1.69,
-      "regular_price_eur": 1.69,
+      "price_eur": 1.49,
+      "regular_price_eur": 1.49,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": 560.0,
@@ -1964,7 +1964,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-hummus-00719717",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-wheat-toast-500g",
@@ -1992,7 +1992,7 @@
         "vegetarian"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-weizentoast-00425504",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-bake-off-rolls-300g",
@@ -2022,7 +2022,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-broetchen-zum-fertigbacken-00288154",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-chicken-fillet-700g",
@@ -2051,7 +2051,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-hendlfilet-00342167",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-mixed-mince-1kg",
@@ -2080,7 +2080,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-faschiertes-gemischt-00740974",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-frankfurters-480g",
@@ -2108,7 +2108,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-frankfurter-00968433",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-toast-ham-200g",
@@ -2136,7 +2136,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-toastschinken-00425215",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-smoked-salmon-200g",
@@ -2165,7 +2165,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-raeucherlachs-00715222",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-salmon-fillet-300g",
@@ -2194,7 +2194,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-lachsfilet-mit-haut-00487616",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-pretzel-sticks-250g",
@@ -2224,7 +2224,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-salzstangerl-00565867",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-cashews-150g",
@@ -2255,7 +2255,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-cashews-geroestet-und-gesalzen-00278746",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-apple-juice-1l",
@@ -2286,7 +2286,7 @@
         "lactose_free"
       ],
       "source_url": "https://shop.billa.at/produkte/clever-apfelsaft-00861714",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-toilet-paper-10",
@@ -2302,8 +2302,8 @@
       "unit": "pack",
       "pack_size": 1.0,
       "portion_unit": "pack",
-      "price_eur": 3.73,
-      "regular_price_eur": 3.73,
+      "price_eur": 3.65,
+      "regular_price_eur": 3.65,
       "promo_price_eur": null,
       "promo_valid_until": null,
       "kcal": null,
@@ -2312,7 +2312,7 @@
       "carbs_g": null,
       "diet_tags": [],
       "source_url": "https://shop.billa.at/produkte/clever-toilettenpapier-00735498",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-kitchen-roll-4",
@@ -2338,7 +2338,7 @@
       "carbs_g": null,
       "diet_tags": [],
       "source_url": "https://shop.billa.at/produkte/clever-kuechenrolle-00736948",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-dishwasher-tabs-10",
@@ -2364,7 +2364,7 @@
       "carbs_g": null,
       "diet_tags": [],
       "source_url": "https://shop.billa.at/produkte/clever-geschirrreiniger-00720664",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     },
     {
       "id": "at-billa-bin-bags-30l-35",
@@ -2390,7 +2390,7 @@
       "carbs_g": null,
       "diet_tags": [],
       "source_url": "https://shop.billa.at/produkte/clever-muellsaecke-mit-zugband-30l-00360948",
-      "price_date": "2026-10-15"
+      "price_date": "2026-11-10"
     }
   ],
   "concepts": [
