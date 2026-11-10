@@ -128,7 +128,9 @@ Collect politely: a few dozen page views per store, by hand or with a rate-limit
 `backend/scripts/price_scanner` reads current prices and promotions off the stores' pages and flyers (Flugblätter) and writes them into `catalog_at.csv`. It runs on your computer only: it uses a browser profile with your cookie consent and PLZ, and its dependencies (`backend/requirements-scraper.txt`: Playwright, pypdfium2, Pillow) are neither in `requirements.txt` nor in the Docker image (`.dockerignore` leaves the scanner out, and nothing in `app/` imports it).
 
 1. **Pages.** For each store, the scanner opens the `source_url` of every product in the CSV, then the store's offers page (Billa `shop.billa.at/aktionen`, Hofer `www.hofer.at/de/angebote.html`). It reads in one tab, one page after another, with 3–7 s pauses and some scrolling so lazy-loaded prices appear. That is about 50 pages for Billa and 30 for Hofer, roughly 10 minutes a week. Instead of the browser it can read flyer files you saved (`--from-files`).
-2. **Reading.** An OpenAI model (`gpt-4o-mini`, Structured Outputs) reads each page's text, or each flyer page's image. It lists the offers it sees: regular price, promo price and dates, a confidence, and the matching product id. The id can only be one of that store's ids or `null`. The model reads prices; it never computes them.
+2. **Reading.** An OpenAI model (`gpt-4o-mini`, Structured Outputs) reads each page's text, or each flyer page's image: regular price, promo price and dates, a confidence, and the matching product id. The model reads prices; it never computes them. Pages are read in one of two ways:
+   - **A product's own page** (a row's `source_url`). The model gets only that product (id, German name, pack size) and reads only the page's main product, ignoring "Ähnliche Produkte" carousels, recommendations and the footer. Its reply holds at most one offer, and the id can only be that product's or `null` (the page shows another product or pack size).
+   - **Offers pages and flyers** (and `--from-files`). The model gets the store's product list and returns every offer it finds, at most 30. Each id can only be one of that store's ids or `null`.
 3. **Checking.** An offer changes the CSV only if it names one of the store's products, its confidence is at least `--min-confidence` (0.85) and its prices pass these checks:
    - the regular price moved by at most 50 % (a bigger jump usually means another pack size);
    - prices are above 0;
@@ -136,11 +138,16 @@ Collect politely: a few dozen page views per store, by hand or with a rate-limit
    - the promotion has a last day, has started and hasn't ended;
    - the row wasn't checked after the scan.
 
+   When several offers name one product, the one from its own page wins over offers pages and flyers, even when it is less confident; among equals, the most confident one wins. If it shows no promotion, a promotion seen on an offers page or flyer at the same regular price (or with none shown) is added to it, without a conflict. A product page counts for its own product only: other products read there (carousels in scans made before product pages were read this way) are ignored and counted ("Ignored: … carousels").
+
    Everything else goes to `backend/data_src/scanner_review.json` (git-ignored) with the reason:
    - promotions of products not in the catalog;
+   - a product page showing another product or pack size (the row's data or link may be out of date);
    - offers below the confidence threshold;
    - offers that failed a check;
    - a second offer for a product that disagrees with the one applied.
+
+   Product pages that answer HTTP 404 or 410 are listed in the scan's output and under `dead_product_url` in the review file, with the product id and status: their `source_url` needs a new link.
 4. **Writing** (`--apply`). The changed rows are built with `build_catalog.py`'s validation first; only if that passes are `catalog_at.csv` and `app/data/catalog.json` written. A failing build writes neither.
 
 What a changed row says is what the shelf showed on the scan day:
@@ -187,9 +194,11 @@ Hofer  at-hofer-whole-milk-1l  1.32 -> 1.39  -                           0.96   
 Hofer  at-hofer-gouda-450g     3.99          - -> 3.49 until 2026-11-14  0.93   promo
 Unchanged prices confirmed: 61 (price_date -> 2026-11-10)
 For review: 9 offers in data_src/scanner_review.json (not in the catalog 7, low confidence 2)
+Dead product URLs (HTTP 404/410): 1; update their source_url in catalog_at.csv:
+  at-hofer-protein-yogurt-500g  HTTP 410  https://www.hofer.at/produkt/milsani-high-protein-naturjoghurt-000000000000517851
 ```
 
-`--last-run` reuses the offers saved by the previous scan (`backend/.scanner/last_offers.json`), so applying needs no second scan and no OpenAI calls, and writes what you saw. Page screenshots of the last 8 runs are in `backend/.scanner/<date-time>/`; review items name theirs.
+`--last-run` reuses the offers and failed pages saved by the previous scan (`backend/.scanner/last_offers.json`), so applying needs no second scan and no OpenAI calls, and writes what you saw. Page screenshots of the last 8 runs are in `backend/.scanner/<date-time>/`; review items name theirs.
 
 After applying, check `git diff data_src/catalog_at.csv` and go through `scanner_review.json`. Add rows for new products worth keeping by hand (with a `concepts_at.csv` name for a new concept), then commit the CSVs and `catalog.json` together, as with any catalog change.
 

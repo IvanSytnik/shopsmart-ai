@@ -18,6 +18,14 @@ class ScannerError(Exception):
     """A problem the scanner reports to the user and stops or skips on (no traceback)."""
 
 
+class HttpStatusError(ScannerError):
+    """A page answered with an HTTP error status."""
+
+    def __init__(self, status: int) -> None:
+        super().__init__(f"HTTP {status}")
+        self.status = status
+
+
 class ScannerSettings(BaseSettings):
     """OpenAI settings for the scanner, from the environment or backend/.env.
 

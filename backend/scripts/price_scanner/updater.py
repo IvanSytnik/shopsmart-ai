@@ -3,8 +3,16 @@
 An offer changes a row only if it names one of the store's products, the model is at least
 `min_confidence` sure and its prices pass `problems`. Every other offer goes to
 data_src/scanner_review.json with the reason: low confidence, products not in the catalog
-(new promotions worth adding), implausible prices, or a second offer for a product that
-disagrees with the one applied.
+(new promotions worth adding), a product page showing another product or pack size,
+implausible prices, or a second offer for a product that disagrees with the one applied.
+The review file also lists products whose `source_url` is gone (HTTP 404 or 410).
+
+A product's own page (`source_url`) counts for that product only: other products read
+there (an "Ähnliche Produkte" carousel, in scans from before the extractor read product
+pages for their own product alone) are ignored. Of several offers for one product, the one
+from its own page wins over offers pages and flyers; among equals, the most confident. If
+it shows no promotion, a promotion seen elsewhere at the same regular price is added to
+it, without a conflict.
 
 A changed row describes the shelf on the scan day: the regular price seen (or the old one
 if only a promo price was shown), the promotion seen, or none (an older promotion is
@@ -16,22 +24,27 @@ import csv
 import json
 import tempfile
 from collections.abc import Iterable, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from typing import Any, Literal
 
 from scripts.build_catalog import COLUMNS, DEFAULT_CONCEPTS, build, render, report
-from scripts.price_scanner.schemas import ExtractedOffer, ScannedOffer, StoreProduct
+from scripts.price_scanner.schemas import ExtractedOffer, Failure, ScannedOffer, StoreProduct
 
 CENT = Decimal("0.01")
 # A regular price moving more than this is more likely another pack size or product.
 MAX_REGULAR_CHANGE = Decimal("0.5")
+# A product page answering these is gone: the row's source_url needs a new link.
+DEAD_STATUSES = frozenset({404, 410})
 
-ReviewKind = Literal["not_in_catalog", "unknown_product", "low_confidence", "rejected", "conflict"]
+ReviewKind = Literal[
+    "not_in_catalog", "page_mismatch", "unknown_product", "low_confidence", "rejected", "conflict"
+]
 REVIEW_LABELS: dict[ReviewKind, str] = {
     "not_in_catalog": "not in the catalog",
+    "page_mismatch": "product page shows another product",
     "unknown_product": "unknown product id",
     "low_confidence": "low confidence",
     "rejected": "failed checks",
@@ -80,6 +93,7 @@ class RowUpdate:
     source: str
     old: PriceState
     new: PriceState
+    promo_source: str | None = None  # where the promotion was seen, if not on `source`
 
     @property
     def change(self) -> str:
@@ -118,6 +132,29 @@ class ReviewItem:
 class UpdatePlan:
     updates: list[RowUpdate]  # in CSV order
     review: list[ReviewItem]
+    # Offers for other products read on a product's own page (carousels): only offers
+    # read before product pages were read for their own product alone have them.
+    ignored: int = 0
+
+
+@dataclass(frozen=True)
+class DeadUrl:
+    """A product whose `source_url` is gone: update the link in catalog_at.csv."""
+
+    product_id: str
+    store: str
+    http_status: int
+    source_url: str
+
+
+def dead_product_urls(rows: Iterable[dict[str, str]], failures: Iterable[Failure]) -> list[DeadUrl]:
+    """The products whose page answered 404 or 410, in CSV order."""
+    gone = {f.source: f.http_status for f in failures if f.http_status in DEAD_STATUSES}
+    return [
+        DeadUrl(row["id"], row["store"], status, row["source_url"])
+        for row in rows
+        if (status := gone.get(row["source_url"])) is not None
+    ]
 
 
 def problems(offer: ExtractedOffer, row: dict[str, str], today: date) -> list[str]:
@@ -167,6 +204,70 @@ def new_state(offer: ExtractedOffer, row: dict[str, str], today: date) -> PriceS
     )
 
 
+def agrees(offer: ExtractedOffer, state: PriceState) -> bool:
+    """`offer` shows nothing against `state`: the same regular price (or none) and the same
+    promotion, or no promotion where `state` has none."""
+    regular = offer.regular_price_eur
+    if regular is not None and money(regular) != state.price_eur:
+        return False
+    if offer.promo_price_eur is None or offer.promo_valid_until is None:
+        return not state.promo_price_eur
+    return (money(offer.promo_price_eur), offer.promo_valid_until.isoformat()) == (
+        state.promo_price_eur,
+        state.promo_valid_until,
+    )
+
+
+def with_promo(state: PriceState, offer: ExtractedOffer) -> PriceState | None:
+    """`state` with the promotion `offer` shows, if `state` has none and `offer` shows the
+    same regular price (or none); else None."""
+    promo, until, regular = offer.promo_price_eur, offer.promo_valid_until, offer.regular_price_eur
+    if promo is None or until is None or state.promo_price_eur:
+        return None
+    if regular is not None and money(regular) != state.price_eur:
+        return None
+    if promo.quantize(CENT, rounding=ROUND_HALF_UP) >= Decimal(state.price_eur):
+        return None
+    return replace(state, promo_price_eur=money(promo), promo_valid_until=until.isoformat())
+
+
+def _confidence(scanned: ScannedOffer) -> float:
+    return scanned.offer.confidence
+
+
+def merge(
+    row: dict[str, str], group: Sequence[ScannedOffer], today: date
+) -> tuple[RowUpdate, list[ReviewItem]]:
+    """One row's update from its accepted offers, and the offers that disagree with it."""
+    own = [s for s in group if s.source == row["source_url"]]
+    best = max(own or group, key=_confidence)  # the first one on a tie
+    new = new_state(best.offer, row, today)
+    # A promotion `best` doesn't show, seen at the same regular price on another page.
+    promos = [(s, merged) for s in group if s is not best and (merged := with_promo(new, s.offer))]
+    promo: ScannedOffer | None = None
+    if promos:
+        promo, new = max(promos, key=lambda found: found[0].offer.confidence)
+    old = PriceState.of(row)
+    update = RowUpdate(
+        row["id"],
+        row["store"],
+        best.offer.confidence,
+        best.source,
+        old,
+        new,
+        promo_source=promo.source if promo else None,
+    )
+    applied = f"{best.source} ({best.offer.confidence:.2f})"
+    if promo is not None:
+        applied += f", promotion from {promo.source} ({promo.offer.confidence:.2f})"
+    conflicts = [
+        ReviewItem("conflict", f"another offer was applied: {applied}", other, old)
+        for other in group
+        if other is not best and other is not promo and not agrees(other.offer, new)
+    ]
+    return update, conflicts
+
+
 def plan_updates(
     rows: Sequence[dict[str, str]],
     offers: Iterable[ScannedOffer],
@@ -174,14 +275,32 @@ def plan_updates(
     min_confidence: float,
     today: date,
 ) -> UpdatePlan:
+    offers = list(offers)
     by_id = {row["id"]: row for row in rows}
+    by_page = {row["source_url"]: row for row in rows}  # each product's own page
+    # Product pages that showed their own product: anything else read there is a carousel.
+    found_own = {
+        s.source
+        for s in offers
+        if (page := by_page.get(s.source)) is not None and s.offer.product_id == page["id"]
+    }
     review: list[ReviewItem] = []
     accepted: dict[str, list[ScannedOffer]] = {}
+    ignored = 0
     for scanned in offers:
         offer = scanned.offer
         row = by_id.get(offer.product_id) if offer.product_id else None
+        page = by_page.get(scanned.source)
         kind: ReviewKind
-        if offer.product_id is None:
+        if page is not None and offer.product_id != page["id"]:
+            if offer.product_id is not None or scanned.source in found_own:
+                # Another product on this product's page ("Ähnliche Produkte"), often
+                # without its pack size or promotion: not trusted, not reviewed.
+                ignored += 1
+                continue
+            kind, row = "page_mismatch", page
+            reason = f"the page of {page['id']} shows another product or pack size"
+        elif offer.product_id is None:
             kind, reason = "not_in_catalog", "no matching product in the catalog"
         elif row is None or row["store"] != scanned.store:
             kind, reason, row = "unknown_product", f"no {scanned.store} product with this id", None
@@ -196,20 +315,11 @@ def plan_updates(
 
     updates = []
     for row in rows:
-        group = accepted.get(row["id"])
-        if not group:
-            continue
-        best = max(group, key=lambda s: s.offer.confidence)  # the first one on a tie
-        new = new_state(best.offer, row, today)
-        old = PriceState.of(row)
-        updates.append(
-            RowUpdate(row["id"], row["store"], best.offer.confidence, best.source, old, new)
-        )
-        for other in group:
-            if other is not best and new_state(other.offer, row, today) != new:
-                reason = f"another offer was applied: {best.source} ({best.offer.confidence:.2f})"
-                review.append(ReviewItem("conflict", reason, other, old))
-    return UpdatePlan(updates, review)
+        if group := accepted.get(row["id"]):
+            update, conflicts = merge(row, group, today)
+            updates.append(update)
+            review += conflicts
+    return UpdatePlan(updates, review, ignored)
 
 
 def apply_updates(
@@ -248,11 +358,17 @@ def save_catalog(
 
 
 def write_review(
-    path: Path, review: Sequence[ReviewItem], *, scanned_on: date, min_confidence: float
+    path: Path,
+    review: Sequence[ReviewItem],
+    *,
+    scanned_on: date,
+    min_confidence: float,
+    dead_urls: Sequence[DeadUrl] = (),
 ) -> None:
     data = {
         "scanned_on": scanned_on.isoformat(),
         "min_confidence": min_confidence,
+        "dead_product_url": [asdict(dead) for dead in dead_urls],
         "items": [item.as_json() for item in review],
     }
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

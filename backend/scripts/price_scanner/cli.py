@@ -11,7 +11,9 @@
     --min-confidence 0.85        offers below it go to data_src/scanner_review.json
 
 Typical week: scan (dry run), read the table and the review file, then
-`--last-run --apply` writes exactly what was shown, without scanning again.
+`--last-run --apply` writes exactly what was shown, without scanning again. Product pages
+that answer HTTP 404 or 410 are listed as dead URLs (also in the review file): their
+`source_url` in catalog_at.csv needs a new link.
 """
 
 import argparse
@@ -43,6 +45,7 @@ from scripts.price_scanner.schemas import Failure, ScanLog
 from scripts.price_scanner.updater import (
     REVIEW_LABELS,
     apply_updates,
+    dead_product_urls,
     format_updates,
     plan_updates,
     save_catalog,
@@ -209,15 +212,17 @@ def unread_products(
     log: ScanLog,
     failures: Sequence[Failure],
 ) -> list[str]:
-    """Products whose page was read but brought no offer for them: a captcha, a changed page
-    or a product no longer sold."""
-    named = {o.offer.product_id for o in log.offers}
+    """Products whose own page was read but brought no offer for them: a captcha, a changed
+    page or a product no longer sold. (Offers from other pages don't count.)"""
+    named = {(o.source, o.offer.product_id) for o in log.offers}
     failed = {f.source for f in failures}
     unread = []
     for adapter in adapters:
         products = store_products(rows, adapter.store)
         read = set(adapter.product_pages(products)) - failed
-        unread += [p.id for p in products if p.source_url in read and p.id not in named]
+        unread += [
+            p.id for p in products if p.source_url in read and (p.source_url, p.id) not in named
+        ]
     return unread
 
 
@@ -235,19 +240,20 @@ def run(
         return 0
 
     rows = read_rows(args.source)
-    failures: list[Failure] = []
+    stores = {adapter.store for adapter in adapters}
     last_offers = args.runs_dir / LAST_OFFERS
     if args.last_run:
         if not last_offers.is_file():
             raise ScannerError(f"no previous scan in {last_offers}")
         log = ScanLog.model_validate_json(last_offers.read_text(encoding="utf-8"))
-        stores = {adapter.store for adapter in adapters}
         log.offers = [o for o in log.offers if o.store in stores]
+        failures = log.failures
         print(f"Offers of the scan on {log.scanned_on}: {len(log.offers)}")
     else:
         log, failures = asyncio.run(
             scan(adapters, rows, args, client=client, settings=settings, today=today)
         )
+        log.failures = failures
         args.runs_dir.mkdir(exist_ok=True)
         last_offers.write_text(log.model_dump_json(indent=2) + "\n", encoding="utf-8")
         prune_runs(args.runs_dir)
@@ -263,11 +269,13 @@ def run(
         print("No price changes.")
     if confirmed := len(plan.updates) - len(changed):
         print(f"Unchanged prices confirmed: {confirmed} (price_date -> {log.scanned_on})")
+    dead = dead_product_urls((row for row in rows if row["store"] in stores), failures)
     write_review(
         args.review_file,
         plan.review,
         scanned_on=log.scanned_on,
         min_confidence=args.min_confidence,
+        dead_urls=dead,
     )
     if plan.review:
         counts: dict[str, int] = {}
@@ -275,6 +283,16 @@ def run(
             counts[REVIEW_LABELS[item.kind]] = counts.get(REVIEW_LABELS[item.kind], 0) + 1
         summary = ", ".join(f"{label} {n}" for label, n in counts.items())
         print(f"For review: {len(plan.review)} offers in {args.review_file} ({summary})")
+    if plan.ignored:
+        print(f"Ignored: {plan.ignored} offers for other products on product pages (carousels)")
+    if dead:
+        print(
+            f"Dead product URLs (HTTP 404/410): {len(dead)}; update their source_url in "
+            f"{args.source.name}:"
+        )
+        width = max(len(d.product_id) for d in dead)
+        for d in dead:
+            print(f"  {d.product_id.ljust(width)}  HTTP {d.http_status}  {d.source_url}")
     if not args.last_run and not args.from_files:
         if unread := unread_products(adapters, rows, log, failures):
             print(

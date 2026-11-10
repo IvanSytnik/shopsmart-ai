@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 from scripts.price_scanner.browser import BrowserSession
 from scripts.price_scanner.capture import Capture, load_files
-from scripts.price_scanner.config import ScannerError
+from scripts.price_scanner.config import HttpStatusError, ScannerError
 from scripts.price_scanner.schemas import Failure, StoreProduct
 
 logger = logging.getLogger(__name__)
@@ -52,7 +52,8 @@ class StoreAdapter:
                 captures.append(await session.capture(url))
             except ScannerError as e:
                 logger.warning("  skipped: %s", e)
-                failures.append(Failure(source=url, problem=str(e)))
+                status = e.status if isinstance(e, HttpStatusError) else None
+                failures.append(Failure(source=url, problem=str(e), http_status=status))
         return captures, failures
 
     def read_files(self, paths: Sequence[Path]) -> list[Capture]:

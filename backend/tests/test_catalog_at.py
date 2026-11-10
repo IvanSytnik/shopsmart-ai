@@ -30,7 +30,7 @@ from scripts.build_catalog import (
     render,
     report,
 )
-from tests.conftest import FakeOpenAI
+from tests.conftest import FROZEN_CATALOG_AT, FakeOpenAI
 from tests.test_catalog import PRODUCTION_CATALOG
 
 CATALOG = load_catalog(PRODUCTION_CATALOG)
@@ -402,8 +402,11 @@ PRICES = ("price_eur", "regular_price_eur", "promo_price_eur", "promo_valid_unti
 
 
 def with_butter_promo(**changes: str) -> list[dict[str, str]]:
+    """The frozen CSV (every row seen on 2026-10-15) with a butter promotion."""
+    with FROZEN_CATALOG_AT.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
     promo = {"promo_price_eur": "1.29", **changes}
-    return [{**row, **promo} if row["id"] == BUTTER else row for row in csv_rows()]
+    return [{**row, **promo} if row["id"] == BUTTER else row for row in rows]
 
 
 def test_build_prices_a_running_promotion(tmp_path: Path) -> None:

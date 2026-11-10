@@ -18,7 +18,7 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any
 
 from scripts.price_scanner.capture import Capture, PageImage, clean_text
-from scripts.price_scanner.config import PROFILE_DIR, ScannerError
+from scripts.price_scanner.config import PROFILE_DIR, HttpStatusError, ScannerError
 
 if TYPE_CHECKING:
     from playwright.async_api import BrowserContext, Page, Playwright
@@ -151,7 +151,7 @@ class BrowserSession:
                 url, wait_until="domcontentloaded", timeout=NAVIGATION_TIMEOUT_MS
             )
             if response is not None and response.status >= 400:
-                raise ScannerError(f"HTTP {response.status}")
+                raise HttpStatusError(response.status)
             await _settle(page)
             await _scroll_through(page)
             text = clean_text(await _main_text(page))

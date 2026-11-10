@@ -18,15 +18,18 @@ import pytest
 
 from scripts.build_catalog import BACKEND, DEFAULT_SOURCE, BuildError, read_rows
 from scripts.price_scanner import cli
+from scripts.price_scanner.adapters import HoferAdapter
 from scripts.price_scanner.browser import BrowserSession
 from scripts.price_scanner.capture import Capture, PageImage, clean_text, load_files
-from scripts.price_scanner.config import ScannerError, ScannerSettings
+from scripts.price_scanner.config import HttpStatusError, ScannerError, ScannerSettings
 from scripts.price_scanner.extractors.llm_extractor import LLMExtractor
-from scripts.price_scanner.schemas import ExtractedOffer, ScannedOffer
+from scripts.price_scanner.schemas import ExtractedOffer, Failure, ScanLog, ScannedOffer
 from scripts.price_scanner.updater import (
+    DeadUrl,
     PriceState,
     UpdatePlan,
     apply_updates,
+    dead_product_urls,
     format_updates,
     money,
     plan_updates,
@@ -35,14 +38,17 @@ from scripts.price_scanner.updater import (
     write_review,
     write_rows,
 )
-from tests.conftest import FakeOpenAI
+from tests.conftest import FROZEN_CATALOG_AT, FakeOpenAI
 
 TODAY = date(2026, 11, 10)
-ROWS = read_rows(DEFAULT_SOURCE)  # every row has price_date 2026-10-15, no promotion
+ROWS = read_rows(FROZEN_CATALOG_AT)  # every row has price_date 2026-10-15, no promotion
 MILK = "at-hofer-whole-milk-1l"  # Hofer, €1.32
 GOUDA = "at-hofer-gouda-450g"  # Hofer, €3.99
 BANANAS = "at-billa-bananas-1kg"  # Billa
 MILK_PAGE = "https://www.hofer.at/produkt/milsani-vollmilch-laenger-frisch-000000000000106876"
+OFFERS_PAGE = "https://www.hofer.at/de/angebote.html"  # offers of many products
+PROTEIN = "at-hofer-protein-yogurt-500g"
+PROTEIN_PAGE = next(row["source_url"] for row in ROWS if row["id"] == PROTEIN)
 HOFER = store_products(ROWS, "Hofer")
 
 
@@ -68,8 +74,13 @@ def offer(
     )
 
 
-def seen(o: ExtractedOffer, store: str = "Hofer", source: str = MILK_PAGE) -> ScannedOffer:
-    return ScannedOffer(store=store, source=source, offer=o)
+PAGES = {row["id"]: row["source_url"] for row in ROWS}
+
+
+def seen(o: ExtractedOffer, store: str = "Hofer", source: str | None = None) -> ScannedOffer:
+    """`o` as read on `source`: by default its product's own page, else the offers page."""
+    page = source or PAGES.get(o.product_id or "", OFFERS_PAGE)
+    return ScannedOffer(store=store, source=page, offer=o)
 
 
 def plan(
@@ -160,9 +171,22 @@ def test_offers_below_the_minimum_confidence_go_to_review(
 def test_offers_without_a_product_go_to_review() -> None:
     new = offer(None, regular="4.99", promo="3.49", until=date(2026, 11, 14), confidence=0.99)
 
-    [item] = plan(new).review
+    [item] = plan_updates(
+        ROWS, [seen(new, source=OFFERS_PAGE)], min_confidence=0.85, today=TODAY
+    ).review
 
     assert (item.kind, item.catalog, item.scanned.offer) == ("not_in_catalog", None, new)
+
+
+def test_a_product_page_showing_another_product_goes_to_review_with_its_row() -> None:
+    other = offer(None, regular="1.49", confidence=0.95)  # e.g. now sold as 0.75 l
+
+    result = plan_updates(ROWS, [seen(other, source=MILK_PAGE)], min_confidence=0.85, today=TODAY)
+
+    assert result.updates == []
+    [item] = result.review
+    assert (item.kind, item.catalog) == ("page_mismatch", PriceState("1.32", "", "", "2026-10-15"))
+    assert item.reason == f"the page of {MILK} shows another product or pack size"
 
 
 @pytest.mark.parametrize("product_id", [BANANAS, "at-hofer-no-such-product"])
@@ -227,6 +251,85 @@ def test_the_most_confident_offer_wins_and_a_differing_one_goes_to_review() -> N
     assert MILK_PAGE in item.reason
 
 
+def test_other_products_read_on_a_product_page_are_ignored() -> None:
+    on_milk_page = [
+        offer(regular="1.32"),
+        offer(GOUDA, regular="3.49", promo="2.99", until=date(2026, 11, 14)),
+        offer(None, regular="2.29"),  # not ours, next to the page's own product
+    ]
+
+    result = plan_updates(
+        ROWS, [seen(o, source=MILK_PAGE) for o in on_milk_page], min_confidence=0.85, today=TODAY
+    )
+
+    assert [u.product_id for u in result.updates] == [MILK]
+    assert (result.review, result.ignored) == ([], 2)
+
+
+def test_the_own_product_page_wins_over_a_more_confident_offers_page() -> None:
+    page = seen(offer(regular="1.32", confidence=0.86))
+    listing = seen(offer(regular="1.39", confidence=0.99), source=OFFERS_PAGE)
+
+    result = plan_updates(ROWS, [listing, page], min_confidence=0.85, today=TODAY)
+
+    [update] = result.updates
+    assert (update.new.price_eur, update.source, update.change) == ("1.32", MILK_PAGE, "confirmed")
+    [item] = result.review
+    assert (item.kind, item.scanned) == ("conflict", listing)
+    assert item.reason == f"another offer was applied: {MILK_PAGE} (0.86)"
+
+
+def test_an_offers_page_adds_its_promotion_to_the_product_page_without_a_conflict() -> None:
+    until = date(2026, 11, 14)
+    page = seen(offer(regular="1.32", confidence=0.97))
+    listing = seen(
+        offer(regular="1.32", promo="0.99", until=until, confidence=0.9), source=OFFERS_PAGE
+    )
+    flyer = seen(offer(promo="0.99", until=until, confidence=0.88), source="flyer.pdf#page=1")
+
+    result = plan_updates(ROWS, [page, listing, flyer], min_confidence=0.85, today=TODAY)
+
+    [update] = result.updates
+    assert update.new == PriceState("1.32", "0.99", "2026-11-14", "2026-11-10")
+    assert (update.source, update.promo_source, update.change) == (MILK_PAGE, OFFERS_PAGE, "promo")
+    assert result.review == []  # the flyer shows no regular price: nothing against it
+
+
+def test_a_promotion_at_another_regular_price_is_not_added() -> None:
+    page = seen(offer(regular="1.32", confidence=0.97))
+    listing = seen(
+        offer(regular="1.39", promo="0.99", until=date(2026, 11, 14), confidence=0.99),
+        source=OFFERS_PAGE,
+    )
+
+    result = plan_updates(ROWS, [page, listing], min_confidence=0.85, today=TODAY)
+
+    [update] = result.updates
+    assert (update.new, update.promo_source) == (PriceState("1.32", "", "", "2026-11-10"), None)
+    assert [(i.kind, i.scanned) for i in result.review] == [("conflict", listing)]
+
+
+def test_without_its_product_page_the_most_confident_offer_wins() -> None:
+    flyer = seen(offer(regular="1.35", confidence=0.9), source="flyer.pdf#page=2")
+    listing = seen(offer(regular="1.39", confidence=0.97), source=OFFERS_PAGE)
+
+    result = plan_updates(ROWS, [flyer, listing], min_confidence=0.85, today=TODAY)
+
+    assert [(u.new.price_eur, u.source) for u in result.updates] == [("1.39", OFFERS_PAGE)]
+    assert [(i.kind, i.scanned) for i in result.review] == [("conflict", flyer)]
+
+
+def test_dead_product_urls_are_the_product_pages_gone_with_404_or_410() -> None:
+    failures = [
+        Failure(source=PROTEIN_PAGE, problem="HTTP 410", http_status=410),
+        Failure(source=MILK_PAGE, problem="HTTP 503", http_status=503),  # may come back
+        Failure(source=OFFERS_PAGE, problem="HTTP 404", http_status=404),  # not a product
+        Failure(source=f"{MILK_PAGE}?x", problem="Timeout 45000ms exceeded"),
+    ]
+
+    assert dead_product_urls(ROWS, failures) == [DeadUrl(PROTEIN, "Hofer", 410, PROTEIN_PAGE)]
+
+
 def test_updates_follow_the_csv_order() -> None:
     result = plan(offer(GOUDA, regular="4.19"), offer(MILK, regular="1.39"))
 
@@ -236,16 +339,23 @@ def test_updates_follow_the_csv_order() -> None:
 def test_the_review_file_lists_each_offer_with_its_reason_and_the_catalog_row(
     tmp_path: Path,
 ) -> None:
-    result = plan(
-        offer(regular="1.39", confidence=0.6),
-        offer(None, regular="2.99", promo="1.99", until=date(2026, 11, 14), confidence=0.9),
+    new_product = offer(None, regular="2.99", promo="1.99", until=date(2026, 11, 14))
+    result = plan_updates(
+        ROWS,
+        [seen(offer(regular="1.39", confidence=0.6)), seen(new_product, source=OFFERS_PAGE)],
+        min_confidence=0.85,
+        today=TODAY,
     )
     path = tmp_path / "scanner_review.json"
+    dead = [DeadUrl(PROTEIN, "Hofer", 410, PROTEIN_PAGE)]
 
-    write_review(path, result.review, scanned_on=TODAY, min_confidence=0.85)
+    write_review(path, result.review, scanned_on=TODAY, min_confidence=0.85, dead_urls=dead)
 
     data = json.loads(path.read_text(encoding="utf-8"))
     assert (data["scanned_on"], data["min_confidence"]) == ("2026-11-10", 0.85)
+    assert data["dead_product_url"] == [
+        {"product_id": PROTEIN, "store": "Hofer", "http_status": 410, "source_url": PROTEIN_PAGE}
+    ]
     low, new = data["items"]
     assert low["kind"] == "low_confidence"
     assert low["reason"] == "confidence 0.60 < 0.85"
@@ -290,18 +400,19 @@ def test_the_table_shows_old_and_new_prices() -> None:
 # --- updater: writing the CSV and catalog.json ---------------------------------------------
 
 
-def test_unchanged_rows_are_written_back_byte_for_byte(tmp_path: Path) -> None:
+@pytest.mark.parametrize("source", [FROZEN_CATALOG_AT, DEFAULT_SOURCE])
+def test_unchanged_rows_are_written_back_byte_for_byte(tmp_path: Path, source: Path) -> None:
     path = tmp_path / "catalog_at.csv"
 
-    write_rows(path, ROWS)
+    write_rows(path, read_rows(source))
 
-    assert path.read_bytes() == DEFAULT_SOURCE.read_bytes()
+    assert path.read_bytes() == source.read_bytes()
 
 
 def test_applying_rewrites_only_the_changed_rows_and_rebuilds_the_catalog(
     tmp_path: Path,
 ) -> None:
-    source = shutil.copy(DEFAULT_SOURCE, tmp_path / "catalog_at.csv")
+    source = shutil.copy(FROZEN_CATALOG_AT, tmp_path / "catalog_at.csv")
     output = tmp_path / "catalog.json"
     result = plan(
         offer(regular="1.32", promo="0.99", until=date(2026, 11, 14)),
@@ -310,7 +421,7 @@ def test_applying_rewrites_only_the_changed_rows_and_rebuilds_the_catalog(
 
     build_report = save_catalog(apply_updates(ROWS, result.updates), source, output)
 
-    before = DEFAULT_SOURCE.read_bytes().split(b"\r\n")
+    before = FROZEN_CATALOG_AT.read_bytes().split(b"\r\n")
     after = source.read_bytes().split(b"\r\n")
     changed = [new.decode() for old, new in zip(before, after, strict=True) if old != new]
     assert [line.split(",")[0] for line in changed] == [MILK, GOUDA]
@@ -330,14 +441,14 @@ def test_applying_rewrites_only_the_changed_rows_and_rebuilds_the_catalog(
 
 
 def test_a_failing_build_writes_nothing(tmp_path: Path) -> None:
-    source = shutil.copy(DEFAULT_SOURCE, tmp_path / "catalog_at.csv")
+    source = shutil.copy(FROZEN_CATALOG_AT, tmp_path / "catalog_at.csv")
     output = tmp_path / "catalog.json"
     broken = with_row(MILK, promo_price_eur="0.99")  # no promo_valid_until
 
     with pytest.raises(BuildError, match=r"catalog_at\.csv:2 \(at-hofer-whole-milk-1l\)"):
         save_catalog(broken, source, output)
 
-    assert source.read_bytes() == DEFAULT_SOURCE.read_bytes()
+    assert source.read_bytes() == FROZEN_CATALOG_AT.read_bytes()
     assert not output.exists()
 
 
@@ -387,10 +498,10 @@ def test_the_extractor_parses_offers_into_decimals_and_dates(fake_llm: FakeOpenA
         reply_offer(product_id=None, raw_name_de="Bergkäse", regular_price_eur=12.9),
     )
 
-    offers, failures = extract(fake_llm, [Capture(source=MILK_PAGE, text="Vollmilch € 1,32")])
+    offers, failures = extract(fake_llm, [Capture(source=OFFERS_PAGE, text="Vollmilch € 1,32")])
 
     assert failures == []
-    assert [(o.store, o.source) for o in offers] == [("Hofer", MILK_PAGE)] * 2
+    assert [(o.store, o.source) for o in offers] == [("Hofer", OFFERS_PAGE)] * 2
     milk, cheese = (o.offer for o in offers)
     assert (milk.product_id, milk.regular_price_eur, milk.promo_price_eur) == (
         MILK,
@@ -404,7 +515,7 @@ def test_the_extractor_parses_offers_into_decimals_and_dates(fake_llm: FakeOpenA
 def test_the_extractor_sends_a_strict_schema_with_the_store_ids(fake_llm: FakeOpenAI) -> None:
     queue_offers(fake_llm)
 
-    extract(fake_llm, [Capture(source=MILK_PAGE, text="Vollmilch € 1,32")])
+    extract(fake_llm, [Capture(source=OFFERS_PAGE, text="Vollmilch € 1,32")])
 
     request = fake_llm.requests[0]
     assert (request["model"], request["temperature"]) == ("test-model", 0.0)
@@ -415,13 +526,71 @@ def test_the_extractor_sends_a_strict_schema_with_the_store_ids(fake_llm: FakeOp
     assert product_id["anyOf"][1] == {"type": "null"}
     system, user = request["messages"]
     assert "Austrian supermarket Hofer" in system["content"]
+    assert "Return every product from our list" in system["content"]
     assert "Today is 2026-11-10" in system["content"]
     assert system["content"].endswith("Hofer hint.")
     products, page = (part["text"] for part in user["content"])
     assert f"{MILK} | Vollmilch 3,5% länger frisch | milk_whole | 1 l | 1.32" in products
     assert BANANAS not in products
-    assert page.startswith(f"Page: {MILK_PAGE}\nThe product page of our {MILK}")
-    assert page.endswith("Vollmilch € 1,32")
+    assert page == f"Page: {OFFERS_PAGE}\n\nVollmilch € 1,32"
+
+
+def queue_product_page(fake_llm: FakeOpenAI, found: dict[str, Any] | None) -> None:
+    fake_llm.queue_raw(json.dumps({"offer": found}))
+
+
+def test_a_product_page_is_read_for_its_own_product_only(fake_llm: FakeOpenAI) -> None:
+    queue_product_page(fake_llm, reply_offer(promo_price_eur=0.99, promo_valid_until="2026-11-14"))
+    queue_offers(fake_llm, reply_offer(product_id=GOUDA, regular_price_eur=3.99))
+    page_text = "Milsani Vollmilch 1 l € 1,32\nÄhnliche Produkte\nHolländischer Gouda € 3,99"
+
+    offers, failures = extract(
+        fake_llm,
+        [Capture(source=MILK_PAGE, text=page_text), Capture(source=OFFERS_PAGE, text="Gouda")],
+    )
+
+    assert failures == []
+    assert [(o.source, o.offer.product_id) for o in offers] == [
+        (MILK_PAGE, MILK),
+        (OFFERS_PAGE, GOUDA),
+    ]
+    assert offers[0].offer.promo_price_eur == Decimal("0.99")
+    product_page, offers_page = fake_llm.requests
+    # One offer, and only for this product: carousel products can't be returned.
+    schema = product_page["response_format"]["json_schema"]["schema"]
+    assert schema["required"] == ["offer"]
+    assert schema["properties"]["offer"]["anyOf"][1] == {"type": "null"}
+    product_id = schema["$defs"]["ExtractedOffer"]["properties"]["product_id"]
+    assert product_id["anyOf"] == [{"type": "string", "enum": [MILK]}, {"type": "null"}]
+    system, user = product_page["messages"]
+    assert "Read only the page's main product" in system["content"]
+    assert "Ähnliche Produkte" in system["content"]
+    assert system["content"].endswith("Hofer hint.")
+    ours, page = (part["text"] for part in user["content"])
+    # The product's id, name and pack size, but not our price: the page's price is read.
+    assert ours == f"Our product:\n{MILK} | Vollmilch 3,5% länger frisch | 1 l"
+    assert page == f"Page: {MILK_PAGE}\n\n{page_text}"
+    listing = offers_page["response_format"]["json_schema"]["schema"]
+    assert listing["required"] == ["offers"]
+
+
+def test_a_product_page_without_its_product_gives_no_offer(fake_llm: FakeOpenAI) -> None:
+    queue_product_page(fake_llm, None)
+
+    offers, failures = extract(fake_llm, [Capture(source=MILK_PAGE, text="Captcha")])
+
+    assert (offers, failures) == ([], [])
+
+
+def test_a_product_page_reply_naming_another_product_is_refused(fake_llm: FakeOpenAI) -> None:
+    queue_product_page(fake_llm, reply_offer(product_id=GOUDA))
+
+    offers, failures = extract(fake_llm, [Capture(source=MILK_PAGE, text="Gouda € 3,99")])
+
+    assert offers == []
+    assert [(f.source, f.problem) for f in failures] == [
+        (MILK_PAGE, "reply didn't match the schema")
+    ]
 
 
 def test_flyer_images_are_sent_as_data_urls(fake_llm: FakeOpenAI) -> None:
@@ -479,6 +648,51 @@ def test_a_rejected_key_or_model_stops_the_scan(
         extract(fake_llm, [Capture(source="page", text="Milch")] * 3)
 
     assert fake_llm.calls == 1  # the other pages were not sent
+
+
+# --- browser pages (session mocked) ---------------------------------------------------------
+
+
+class FakeSession:
+    """Answers 410 for the protein yogurt's page, the page's URL as text otherwise."""
+
+    def __init__(self) -> None:
+        self.urls: list[str] = []
+
+    async def capture(self, url: str) -> Capture:
+        self.urls.append(url)
+        if url == PROTEIN_PAGE:
+            raise HttpStatusError(410)
+        return Capture(source=url, text=url)
+
+
+def test_a_store_scan_reads_every_product_page_then_the_offers_page() -> None:
+    session = FakeSession()
+
+    captures, failures = asyncio.run(HoferAdapter().scan(session, HOFER))  # type: ignore[arg-type]
+
+    assert session.urls == [*(p.source_url for p in HOFER), OFFERS_PAGE]
+    assert len(captures) == len(HOFER)  # all but the gone page
+    assert failures == [Failure(source=PROTEIN_PAGE, problem="HTTP 410", http_status=410)]
+
+
+def test_a_product_counts_as_read_only_with_an_offer_from_its_own_page() -> None:
+    log = ScanLog(
+        scanned_on=TODAY,
+        offers=[
+            seen(offer(GOUDA, regular="3.99"), source=HOFER[1].source_url),
+            seen(offer(MILK, promo="0.99", until=date(2026, 11, 14)), source=OFFERS_PAGE),
+        ],
+    )
+    failures = [Failure(source=PROTEIN_PAGE, problem="HTTP 410", http_status=410)]
+
+    unread = cli.unread_products([HoferAdapter()], ROWS, log, failures)
+
+    assert HOFER[1].id == GOUDA
+    assert MILK in unread  # named on the offers page only
+    assert GOUDA not in unread
+    assert PROTEIN not in unread  # reported as a dead URL instead
+    assert len(unread) == len(HOFER) - 2
 
 
 # --- local files (--from-files) -------------------------------------------------------------
@@ -549,7 +763,7 @@ def paths(tmp_path: Path) -> dict[str, Path]:
     page.write_text("Milsani Vollmilch 1 l € 1,39", encoding="utf-8")
     return {
         "page": page,
-        "source": Path(shutil.copy(DEFAULT_SOURCE, tmp_path / "catalog_at.csv")),
+        "source": Path(shutil.copy(FROZEN_CATALOG_AT, tmp_path / "catalog_at.csv")),
         "output": tmp_path / "catalog.json",
         "review": tmp_path / "scanner_review.json",
         "runs": tmp_path / "runs",
@@ -586,7 +800,7 @@ def test_a_dry_run_prints_the_changes_and_writes_only_the_review(
     assert "1.32 -> 1.39" in out
     assert "For review: 1 offers" in out
     assert "Dry run: catalog unchanged" in out
-    assert paths["source"].read_bytes() == DEFAULT_SOURCE.read_bytes()
+    assert paths["source"].read_bytes() == FROZEN_CATALOG_AT.read_bytes()
     assert not paths["output"].exists()
     review = json.loads(paths["review"].read_text(encoding="utf-8"))
     assert [item["offer"]["raw_name_de"] for item in review["items"]] == ["Bergkäse"]
@@ -609,6 +823,41 @@ def test_last_run_apply_writes_what_the_dry_run_showed_without_calling_openai(
     catalog = json.loads(paths["output"].read_text(encoding="utf-8"))
     assert catalog["version"] == "at-2026-11-10"
     assert "Updated 1 row(s)" in capsys.readouterr().out
+
+
+def test_dead_product_urls_are_printed_and_kept_in_the_review_after_last_run(
+    paths: dict[str, Path], capsys: pytest.CaptureFixture[str]
+) -> None:
+    paths["runs"].mkdir()
+    log = ScanLog(
+        scanned_on=TODAY,
+        offers=[seen(offer(regular="1.32"))],
+        failures=[Failure(source=PROTEIN_PAGE, problem="HTTP 410", http_status=410)],
+    )
+    (paths["runs"] / "last_offers.json").write_text(log.model_dump_json(), encoding="utf-8")
+
+    code = cli.main(["--last-run", *path_args(paths)])
+
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "Dead product URLs (HTTP 404/410): 1; update their source_url in catalog_at.csv:" in out
+    assert f"  {PROTEIN}  HTTP 410  {PROTEIN_PAGE}" in out
+    review = json.loads(paths["review"].read_text(encoding="utf-8"))
+    assert [d["product_id"] for d in review["dead_product_url"]] == [PROTEIN]
+
+
+def test_a_scan_keeps_its_failed_pages_for_last_run(
+    fake_llm: FakeOpenAI, paths: dict[str, Path]
+) -> None:
+    fake_llm.queue_raw(None, refusal="No.")
+    argv = ["--store", "hofer", "--from-files", str(paths["page"]), *path_args(paths)]
+
+    cli.main(argv, client=fake_llm.client, settings=scanner_settings(), today=TODAY)
+
+    log = ScanLog.model_validate_json((paths["runs"] / "last_offers.json").read_text())
+    assert [(f.source, f.problem) for f in log.failures] == [
+        (str(paths["page"]), "model refused: No.")
+    ]
 
 
 def test_last_run_without_a_previous_scan_fails(

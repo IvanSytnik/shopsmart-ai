@@ -1,10 +1,15 @@
 """What the scanner reads off a page, and the shape the model must return it in.
 
 The model returns `ExtractedOffer`s through Structured Outputs (strict mode, so every field
-is required and optional values are `null`). `build_extraction_model` narrows
-`product_id` to an enum of one store's product ids, so the model can only name products
-the catalog has. Prices are only read, never computed, by the model; the updater checks
-them before they reach the CSV.
+is required and optional values are `null`). Two reply models narrow `product_id` to an
+enum, so the model can only name products the catalog has:
+- `build_extraction_model` for offer pages and flyers: a list of offers, ids of the store;
+- `build_product_page_model` for one product's own page (its `source_url`): at most one
+  offer, for that product only, so other products on the page ("Ähnliche Produkte"
+  carousels) can't be returned.
+
+Prices are only read, never computed, by the model; the updater checks them before they
+reach the CSV.
 """
 
 from collections.abc import Sequence
@@ -76,13 +81,6 @@ class ScannedOffer(BaseModel):
     offer: ExtractedOffer
 
 
-class ScanLog(BaseModel):
-    """All offers of one run (.scanner/last_offers.json), for `--last-run`."""
-
-    scanned_on: date
-    offers: list[ScannedOffer]
-
-
 class Failure(BaseModel):
     """A page that couldn't be loaded or read; the run goes on without it."""
 
@@ -90,19 +88,20 @@ class Failure(BaseModel):
 
     source: str
     problem: str
+    http_status: int | None = None  # the page answered with this error status
 
 
-def build_extraction_model(product_ids: Sequence[str]) -> type[BaseModel]:
-    """The reply model for one store: `{"offers": [ExtractedOffer, ...]}` with
-    `product_id` limited to `product_ids` (or null)."""
-    id_type: Any
-    if not product_ids:
-        id_type = None
-    elif len(product_ids) <= MAX_ENUM_IDS:
-        id_type = Literal[tuple(product_ids)] | None
-    else:
-        id_type = str | None
-    offer = create_model(
+class ScanLog(BaseModel):
+    """All offers of one run (.scanner/last_offers.json), for `--last-run`."""
+
+    scanned_on: date
+    offers: list[ScannedOffer]
+    # Pages that failed, so `--last-run` still reports dead product URLs.
+    failures: list[Failure] = []
+
+
+def _offer_model(id_type: Any) -> type[ExtractedOffer]:
+    return create_model(
         "ExtractedOffer",
         __base__=ExtractedOffer,
         product_id=(
@@ -110,4 +109,37 @@ def build_extraction_model(product_ids: Sequence[str]) -> type[BaseModel]:
             Field(description=ExtractedOffer.model_fields["product_id"].description),
         ),
     )
-    return create_model("Extraction", offers=(list[offer], ...))
+
+
+def _id_enum(product_ids: Sequence[str]) -> Any:
+    """`product_ids` or null, as `{"enum": [...]}` in the schema (also for a single id,
+    which Pydantic would write as `const`)."""
+    ids = tuple(product_ids)
+    return Annotated[Literal[ids], WithJsonSchema({"type": "string", "enum": list(ids)})] | None
+
+
+def build_extraction_model(product_ids: Sequence[str]) -> type[BaseModel]:
+    """The reply model for an offer page or flyer page: `{"offers": [ExtractedOffer, ...]}`
+    with `product_id` limited to one store's `product_ids` (or null)."""
+    id_type: Any
+    if not product_ids:
+        id_type = None
+    elif len(product_ids) <= MAX_ENUM_IDS:
+        id_type = _id_enum(product_ids)
+    else:
+        id_type = str | None
+    return create_model("Extraction", offers=(list[_offer_model(id_type)], ...))
+
+
+def build_product_page_model(product_id: str) -> type[BaseModel]:
+    """The reply model for the own page of `product_id`: `{"offer": ExtractedOffer | null}`,
+    the page's main product only, with `product_id` limited to that id (or null when the
+    page shows another product or pack size)."""
+    offer = _offer_model(_id_enum([product_id]))
+    return create_model(
+        "ProductPage",
+        offer=(
+            offer | None,
+            Field(description="The page's main product with its price; null if not shown."),
+        ),
+    )

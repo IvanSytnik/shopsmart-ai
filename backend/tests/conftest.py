@@ -23,6 +23,9 @@ from app.services.limits import limiter  # noqa: E402
 ALLOWED_ORIGIN = "http://localhost:3000"
 FIXTURE_CATALOG = Path(__file__).parent / "fixtures" / "catalog_small.json"
 FAKE_BASE_URL = "https://openai.test/v1"
+# catalog_at.csv as first collected: every row seen on 2026-10-15, no promotion. Tests of
+# prices and dates use this copy; data_src/catalog_at.csv changes with every price scan.
+FROZEN_CATALOG_AT = Path(__file__).parent / "fixtures" / "catalog_at.csv"
 
 # A valid request against the fixture catalog: AT, 18 food candidates.
 BODY: dict[str, Any] = {"supermarkets": ["Lidl", "Penny"], "budget": 50}
