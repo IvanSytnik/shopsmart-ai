@@ -2,6 +2,36 @@
 
 All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-11-10
+
+v2.1 adds list comparison across stores, promotions and a weekly price scanner. As in v2, every number is computed from the catalog; the compare mode makes no LLM call at all. Details: [docs/API.md](docs/API.md), [docs/CATALOG.md](docs/CATALOG.md).
+
+### Added
+- **Compare mode** (frontend): a third tab next to the shopping list and menu modes.
+  - Build a list of products with autocomplete over concept and product names in any UI language, with a category filter.
+  - Set quantities in reference packs (`2 × 250 g (500 g)`), stores, diets and the split threshold.
+  - Results show the recommendation and savings, items no store sells, and each store's total with prices per kg, l or piece and running promotions.
+  - The cheapest split comes as a checklist per store.
+  - The list is kept in localStorage and can be shared as a `#/list/` link that opens with current prices.
+- **`POST /compare`**: prices a list of concepts at each chosen store (fewest whole packs that hold the requested amount, lowest line total) and finds the cheapest split across stores.
+  - Stores rank by missing items, then total.
+  - The split is recommended only when it saves at least `min_split_savings_eur` (default €3.00).
+  - Computed from the catalog only: no OpenAI call, so no rate limit or daily cap.
+- **`GET /api/catalog/concepts`**: the concepts sold in a country, with their display name, products' names (for search), stores and reference pack size.
+- **Concepts**: every product has a `concept_id`, shared by interchangeable products across stores (same unit and category); 11 of 68 concepts are sold by both Billa and Hofer.
+- **`backend/data_src/concepts_at.csv`**: a neutral, brand-free name for every concept in en, uk and de (`Butter`, not `Clever Teebutter`). The build fails on a concept without a name; tests reject names with a store brand.
+- **Promotions**: `promo_price_eur` and `promo_valid_until` next to the regular price. In `catalog.json`, `price_eur` is the effective price on the catalog's `price_date` and `regular_price_eur` the shelf price. The running app re-prices by today's date, so an ended promotion falls back to the regular price without a rebuild.
+- **Weekly price and promotion scanner** (`python -m scripts.price_scanner.cli`, local only):
+  - Reads the stores' product and offer pages with Playwright on a browser profile saved once with `--login` (cookies, captcha, PLZ), or flyer PDFs and screenshots with `--from-files`.
+  - An OpenAI model reads the offers via Structured Outputs, matched to the store's product ids.
+  - Confident, plausible offers update `catalog_at.csv`; the rest go to `data_src/scanner_review.json` with the reason.
+  - Dry run by default; `--last-run --apply` writes what the dry run showed and rebuilds `catalog.json`.
+  - Its dependencies are in `backend/requirements-scraper.txt`, not in the app or its Docker image.
+
+### Changed
+- Shopping lists and menus are priced with the promo price while a promotion runs.
+- The catalog build validates concepts (unit and category per concept, a name for each) and promotions (promo below the regular price, end date not before `price_date`).
+
 ## [2.0.1] - 2026-10-19
 
 ### Added

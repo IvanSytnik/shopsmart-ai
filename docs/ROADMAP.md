@@ -71,11 +71,21 @@ A user opens a live link, picks stores (AT or DE), budget, family size, diet and
 - ✅ 5.2 README rewrite: problem → demo link + GIF → architecture diagram → "LLM chooses, server computes" → eval results → run locally.
 - ✅ 5.3 Tag `v2.0.0` release.
 
+## v2.1 — Compare and fresh prices (2026-11-10)
+- ✅ 6.1 Catalog concepts: `concept_id` shared by interchangeable products across stores, brand-free names in `data_src/concepts_at.csv`.
+- ✅ 6.2 Promotions in the catalog (`promo_price_eur`, `promo_valid_until`), effective price by date at build and at runtime.
+- ✅ 6.3 Compare mode: `GET /api/catalog/concepts`, `POST /compare` (cheapest store and split, no LLM), frontend tab with share link.
+- ✅ 6.4 Price updates with freshness checks (from Later): weekly local scanner (`scripts/price_scanner`, Playwright + OpenAI Structured Outputs). Its checks:
+  - confirmed prices move `price_date`;
+  - promotions are dated, and the app ends them by date;
+  - implausible or low-confidence offers go to a review file;
+  - product pages without a readable price are reported.
+
 ## Later (not MVP)
 - Budget rebalancing before top-up: prototyped (branch `experiment/budget-rebalancing`), +0.3–3 % kcal at most; not merged. The Hofer lactose-free miss was a catalog tagging bug, fixed in v2.0.1.
 - Stricter candidate pre-filter for very tight budgets (< €3/person/day, e.g. drop food above the median €/1000 kcal): tight-shop-en-both-1p-15 misses the kcal floor in ~1 of 5 runs.
 - Catalog: Spar and Lidl AT (their sites gave no machine-readable prices for v1), German chains.
-- Price updates from public sources/scraper with freshness checks.
+- Flag stale rows (`price_date` older than a few weeks) in the build report and the UI.
 - Accounts + saved plans server-side.
 - Streaming partial results.
 - Recipe steps per meal.
