@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Smoke test of a deployed stack. Makes one real /generate call (one OpenAI request,
-# counts against RATE_LIMIT and DAILY_GENERATE_CAP).
+# counts against RATE_LIMIT and DAILY_GENERATE_CAP); /compare is computed from the catalog
+# and uses neither.
 #
 #   ./deploy/smoke.sh https://shopsmart-api-xxxx.europe-west1.run.app https://shopsmart.sytnik-studio.com
 #
@@ -52,6 +53,44 @@ else
   fail "/api/catalog/meta has Billa and Hofer"
 fi
 
+# Concepts sold by both Billa and Hofer (SHARED_CONCEPTS in backend/tests/test_catalog_at.py).
+compare_concepts='"milk_whole", "butter", "cheese_gouda"'
+
+if body="$(curl -fsS --max-time 30 "$api/api/catalog/concepts?country=AT")" &&
+  printf '%s' "$body" | json_check "
+assert data['country'] == 'AT', data['country']
+concepts = {c['concept_id']: c for c in data['concepts']}
+assert concepts, 'no concepts'
+for concept_id in ($compare_concepts):
+    stores = concepts[concept_id]['stores']
+    assert {'Billa', 'Hofer'} <= set(stores), (concept_id, stores)
+print('  %d concepts' % len(concepts))"; then
+  pass "/api/catalog/concepts?country=AT"
+else
+  fail "/api/catalog/concepts?country=AT"
+fi
+
+request='{"country":"AT","stores":["Billa","Hofer"],"items":[{"concept_id":"milk_whole","quantity":2},{"concept_id":"butter","quantity":1},{"concept_id":"cheese_gouda","quantity":1}]}'
+if body="$(curl -fsS --max-time 30 -H 'Content-Type: application/json' -H "Origin: $origin" \
+  -d "$request" "$api/compare")" &&
+  printf '%s' "$body" | json_check "
+rankings = data['single_store_rankings']
+assert sorted(s['store'] for s in rankings) == ['Billa', 'Hofer'], rankings
+split = data['split_basket']
+assert split['missing_concepts'] == [], split['missing_concepts']
+# The split takes every item where it is cheapest: never above a store that has them all.
+complete = [s['total_eur'] for s in rankings if not s['missing_concepts']]
+assert 0 < split['total_eur'] <= min(complete, default=split['total_eur']), (split, complete)
+strategy, store = data['recommended_strategy'], data['recommended_store']
+assert strategy in ('single_store', 'split_basket'), strategy
+assert (store == rankings[0]['store']) if strategy == 'single_store' else store is None, store
+print('  %s %s, split EUR %.2f, best store EUR %.2f' % (
+    strategy, store or '', split['total_eur'], rankings[0]['total_eur']))"; then
+  pass "POST /compare (3 concepts, Billa+Hofer)"
+else
+  fail "POST /compare (3 concepts, Billa+Hofer)"
+fi
+
 request='{"country":"AT","supermarkets":["Billa","Hofer"],"budget":40,"family_size":2,"language":"en","mode":"shopping"}'
 if body="$(curl -fsS --max-time 75 -H 'Content-Type: application/json' -H "Origin: $origin" \
   -d "$request" "$api/generate")" &&
@@ -80,7 +119,7 @@ fi
 echo "Frontend $frontend"
 
 # The fragment is never sent to the server; this checks the same page is served for it.
-for path in "/" "/#/plan/x"; do
+for path in "/" "/#/plan/x" "/#/list/x"; do
   code=""
   if code="$(curl -sS --max-time 30 -o /dev/null -w '%{http_code}' "$frontend$path")" &&
     [[ "$code" == 200 ]]; then

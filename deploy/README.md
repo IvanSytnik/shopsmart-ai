@@ -161,7 +161,7 @@ API_URL="$(gcloud run services describe "$SERVICE" --region "$REGION" --format '
 ./deploy/smoke.sh "$API_URL" https://shopsmart.sytnik-studio.com
 ```
 
-Checks `/health` (status and `catalog_version`), `/api/catalog/meta` lists Billa and Hofer, one real shopping-list `/generate` (Billa + Hofer, €40, 2 people) stays within budget, the CORS preflight from the frontend origin is allowed, `/` and `/#/plan/x` return 200, and the frontend sends `X-Content-Type-Options: nosniff`. Exits non-zero if anything fails. Each run uses one OpenAI call and one unit of the daily cap.
+Checks `/health` (status and `catalog_version`), `/api/catalog/meta` lists Billa and Hofer, `/api/catalog/concepts?country=AT` has concepts and sells `milk_whole`, `butter` and `cheese_gouda` at both stores, `POST /compare` for those three at Billa + Hofer returns both stores ranked, a split basket with nothing missing and no dearer than a store that has every item, and a consistent `recommended_strategy`, one real shopping-list `/generate` (Billa + Hofer, €40, 2 people) stays within budget, the CORS preflight from the frontend origin is allowed, `/`, `/#/plan/x` and `/#/list/x` return 200, and the frontend sends `X-Content-Type-Options: nosniff`. Exits non-zero if anything fails. Each run uses one OpenAI call and one unit of the daily cap; `/compare` uses neither.
 
 ## 12. Logs
 
