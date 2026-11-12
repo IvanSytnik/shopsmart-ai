@@ -105,6 +105,8 @@ The remaining misses are honest ones. The shopping miss is the deliberately tigh
 
 Reports: [backend/evals/report.md](backend/evals/report.md) (the full run above, per-case table) and [backend/evals/results/](backend/evals/results/) (raw JSON for every run).
 
+To reproduce: `cd backend && .venv/bin/python -m evals.run` ([backend/evals/run.py](backend/evals/run.py), scenarios in [backend/evals/cases.yaml](backend/evals/cases.yaml)). It needs `OPENAI_API_KEY`, writes `backend/evals/results/<timestamp>.json` and overwrites `backend/evals/report.md`. A new run uses the current catalog, not the `at-2026-10-15` one these numbers were measured on, and the model's picks vary between runs, so expect close but not identical numbers. Options and cost: [Evals](#evals).
+
 The price comparison makes no model call, so there is nothing to eval: its rules (pack sizes, product choice, ranking, split, threshold, promotions by date) are covered by the 44 tests in [backend/tests/test_compare.py](backend/tests/test_compare.py).
 
 ## Features
