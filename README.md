@@ -1,12 +1,19 @@
 # ShopSmart AI
 
-Budget-safe shopping lists and meal plans for Austrian supermarkets, and a price comparison of your own list across stores. For plans, an LLM picks the products, the server prices them from a dated catalog and guarantees the total fits your budget. The comparison makes no LLM call: the server prices your list at each store from the same catalog.
+[![CI](https://img.shields.io/github/actions/workflow/status/IvanSytnik/shopsmart-ai/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](backend/requirements.txt)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](frontend/package.json)
+
+Budget-safe shopping lists and meal plans for Austrian supermarkets, and a price comparison of your own list across stores.
 
 **[Live demo → shopsmart.sytnik-studio.com](https://shopsmart.sytnik-studio.com)**
 
-[![CI](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
+**Contents:** [The problem with v1](#the-problem-with-v1) · [How it works](#how-it-works) · [Measured quality](#measured-quality) · [Features](#features) · [Tech stack](#tech-stack) · [Folder overview](#folder-overview) · [Run locally](#run-locally) · [Tests](#tests) · [Evals](#evals) · [Deployment](#deployment) · [Security](#security) · [Limitations](#limitations) · [Screenshots](#screenshots) · [Roadmap / Later](#roadmap--later) · [Academic note](#academic-note) · [License](#license)
 
 <p align="center"><img src="docs/demo.gif" width="300" alt="ShopSmart AI demo: filling in the form, generating a shopping list, sharing it, switching language and theme"></p>
+
+For plans, an LLM picks the products, the server prices them from a dated catalog and guarantees the total fits your budget. The comparison makes no LLM call: the server prices your list at each store from the same catalog.
 
 ## The problem with v1
 
