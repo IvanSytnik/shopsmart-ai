@@ -351,6 +351,8 @@ Step-by-step setup (OpenAI and GCP limits, secrets, Pages, custom domain, CORS, 
 - **Generic error responses** (`{"detail", "code"}`); the real exception is only logged server-side.
 - Input validation with Pydantic (enums, bounds, length limits); user preferences are passed to the model as quoted data; CORS restricted to `CORS_ORIGINS`; `/docs` disabled in production.
 
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
 ## Limitations
 
 - **Reference prices as of 2026-11-10** (catalog `at-2026-11-10`), for **Billa and Hofer only** (Austria): 81 products (Billa 46 food and 4 non-food, Hofer 31 food) in 68 concepts, 11 of them sold by both. The scan that day changed 7 Billa prices and confirmed the other 74; the catalog records no promotion as of that date. Real shelf prices differ by region and day, and the catalog only moves when someone runs the scanner and commits the result.
