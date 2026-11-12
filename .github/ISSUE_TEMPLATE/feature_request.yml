@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest a new feature, store or improvement.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Planned work is listed in [docs/ROADMAP.md](https://github.com/IvanSytnik/shopsmart-ai/blob/main/docs/ROADMAP.md); please check it first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How it could work. For a new store, a link to where its prices are published online helps.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Shopping list / meal plan
+        - Compare
+        - Catalog (stores, products, prices)
+        - Frontend (UI, languages, sharing)
+        - API
+        - Other
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -1,0 +1,64 @@
+name: Bug report
+description: Something in the app or the API doesn't work as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Security issues: please don't open an issue, see [SECURITY.md](https://github.com/IvanSytnik/shopsmart-ai/blob/main/SECURITY.md).
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Mode
+      options:
+        - Shopping list
+        - Meal plan (menu)
+        - Compare
+        - Share link / history
+        - Price scanner or catalog build (local)
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - Live demo (shopsmart.sytnik-studio.com)
+        - Local (Docker Compose)
+        - Local (manual setup)
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Stores, budget, family size, diets, days and UI language, or the request body for API calls.
+      placeholder: |
+        1. Billa + Hofer, €50, 2 people, vegetarian, English
+        2. Click "Generate Shopping List"
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual
+      description: What you expected, and what happened instead. Error message and `code` from the response if there was one.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Release (e.g. v2.1.0) or commit hash, and the catalog version from `GET /health` if you have it.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: e.g. Safari 18, iPhone 15
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Don't paste API keys or the contents of `.env`.

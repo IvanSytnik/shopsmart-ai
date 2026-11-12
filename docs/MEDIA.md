@@ -7,6 +7,9 @@
 | mobile-result.png | Shopping list result, light | 600 px |
 | mobile-dark.png | Shopping list result, dark | 600 px |
 | desktop-menu.png | Menu mode result, desktop, dark | 1200 px |
+| screenshots/01-form-budget-diet.png | Form: Billa + Hofer, €60/week, 2 people, vegetarian (light) | 600 px |
+| screenshots/02-result-budget.png | Shopping list result: total vs budget, kcal, price date (light) | 600 px |
+| screenshots/03-result-list.png | Shopping list result: rest of the list and actions (light) | 600 px |
 
 README snippet:
 

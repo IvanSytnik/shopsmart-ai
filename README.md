@@ -1,12 +1,19 @@
 # ShopSmart AI
 
-Budget-safe shopping lists and meal plans for Austrian supermarkets, and a price comparison of your own list across stores. For plans, an LLM picks the products, the server prices them from a dated catalog and guarantees the total fits your budget. The comparison makes no LLM call: the server prices your list at each store from the same catalog.
+[![CI](https://img.shields.io/github/actions/workflow/status/IvanSytnik/shopsmart-ai/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](backend/requirements.txt)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](frontend/package.json)
+
+Budget-safe shopping lists and meal plans for Austrian supermarkets, and a price comparison of your own list across stores.
 
 **[Live demo → shopsmart.sytnik-studio.com](https://shopsmart.sytnik-studio.com)**
 
-[![CI](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/IvanSytnik/shopsmart-ai/actions/workflows/ci.yml)
+**Contents:** [The problem with v1](#the-problem-with-v1) · [How it works](#how-it-works) · [Measured quality](#measured-quality) · [Features](#features) · [Tech stack](#tech-stack) · [Folder overview](#folder-overview) · [Run locally](#run-locally) · [Tests](#tests) · [Evals](#evals) · [Deployment](#deployment) · [Security](#security) · [Limitations](#limitations) · [Screenshots](#screenshots) · [Roadmap / Later](#roadmap--later) · [Academic note](#academic-note) · [License](#license)
 
 <p align="center"><img src="docs/demo.gif" width="300" alt="ShopSmart AI demo: filling in the form, generating a shopping list, sharing it, switching language and theme"></p>
+
+For plans, an LLM picks the products, the server prices them from a dated catalog and guarantees the total fits your budget. The comparison makes no LLM call: the server prices your list at each store from the same catalog.
 
 ## The problem with v1
 
@@ -74,6 +81,16 @@ You build the list; the server prices it. Same list, same catalog, same day: sam
 
 Rules, fields and an example: [docs/API.md](docs/API.md#compare-a-shopping-list).
 
+### From budget and diet to a list
+
+Billa and Hofer, €60 a week, 2 people, vegetarian → a priced list: €18.43 of €60, about 1723 kcal per person and day after the kcal top-up, every price from the catalog dated 2026-11-10. The model kept to Billa products this time, although both stores were selected.
+
+<table><tr>
+<td><img src="docs/screenshots/01-form-budget-diet.png" width="250" alt="Form: Billa and Hofer selected, weekly budget 60 euros, 2 people, vegetarian"></td>
+<td><img src="docs/screenshots/02-result-budget.png" width="250" alt="Result: total 18.43 euros of a 60 euro budget, budget bar, kcal per person and day, reference price date, kcal top-up notice"></td>
+<td><img src="docs/screenshots/03-result-list.png" width="250" alt="Result: the rest of the Billa list with pack sizes and prices, then copy, print, share and new list buttons"></td>
+</tr></table>
+
 ## Measured quality
 
 20 fixed scenarios (shopping and menu mode, 1–7 days, 1–5 people, €15–150, every diet, en/de/uk, two deliberately tight budgets), real OpenAI calls, real catalog. Baseline = first run of the v2 pipeline; final = the release.
@@ -97,6 +114,8 @@ The Hofer lactose-free miss of v2.0.0 (`shop-en-hofer-2p-40-lactose-free`, 1200 
 The remaining misses are honest ones. The shopping miss is the deliberately tight `tight-shop-en-both-1p-15` (1 person, €15/week): 1427 kcal per person and day in the full run, where the LLM spent a third of the budget on mince, so the API returns `low_kcal` rather than going over budget; on repeat 4 of 5 runs are in range ([`20261018T221951Z`](backend/evals/results/20261018T221951Z.json)). The menu miss is the deliberately tight `tight-menu-en-both-5p-3d-40` (5 people, 3 days, €40): 1468 kcal, `low_kcal` + `budget_trimmed`.
 
 Reports: [backend/evals/report.md](backend/evals/report.md) (the full run above, per-case table) and [backend/evals/results/](backend/evals/results/) (raw JSON for every run).
+
+To reproduce: `cd backend && .venv/bin/python -m evals.run` ([backend/evals/run.py](backend/evals/run.py), scenarios in [backend/evals/cases.yaml](backend/evals/cases.yaml)). It needs `OPENAI_API_KEY`, writes `backend/evals/results/<timestamp>.json` and overwrites `backend/evals/report.md`. A new run uses the current catalog, not the `at-2026-10-15` one these numbers were measured on, and the model's picks vary between runs, so expect close but not identical numbers. Options and cost: [Evals](#evals).
 
 The price comparison makes no model call, so there is nothing to eval: its rules (pack sizes, product choice, ranking, split, threshold, promotions by date) are covered by the 44 tests in [backend/tests/test_compare.py](backend/tests/test_compare.py).
 
@@ -296,6 +315,8 @@ Prices and dates are tested against `tests/fixtures/catalog_at.csv`, a frozen co
 
 CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs all of these on every push and pull request to `main`; it needs no secrets.
 
+[CLAUDE.md](CLAUDE.md) holds the repository's rules for AI coding agents such as Claude Code (layout, code and catalog rules, the checks to pass before a change is done); it is also a short contributor guide.
+
 ## Evals
 
 Offline, real OpenAI calls, not part of CI:
@@ -329,6 +350,8 @@ Step-by-step setup (OpenAI and GCP limits, secrets, Pages, custom domain, CORS, 
 - **OpenAI key in Secret Manager**, never in the image or the repo; a **separate OpenAI project** with its own spend limit.
 - **Generic error responses** (`{"detail", "code"}`); the real exception is only logged server-side.
 - Input validation with Pydantic (enums, bounds, length limits); user preferences are passed to the model as quoted data; CORS restricted to `CORS_ORIGINS`; `/docs` disabled in production.
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ## Limitations
 
