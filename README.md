@@ -305,6 +305,8 @@ Prices and dates are tested against `tests/fixtures/catalog_at.csv`, a frozen co
 
 CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs all of these on every push and pull request to `main`; it needs no secrets.
 
+[CLAUDE.md](CLAUDE.md) holds the repository's rules for AI coding agents such as Claude Code (layout, code and catalog rules, the checks to pass before a change is done); it is also a short contributor guide.
+
 ## Evals
 
 Offline, real OpenAI calls, not part of CI:
