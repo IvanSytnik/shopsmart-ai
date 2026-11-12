@@ -81,6 +81,16 @@ You build the list; the server prices it. Same list, same catalog, same day: sam
 
 Rules, fields and an example: [docs/API.md](docs/API.md#compare-a-shopping-list).
 
+### From budget and diet to a list
+
+Billa and Hofer, €60 a week, 2 people, vegetarian → a priced list: €18.43 of €60, about 1723 kcal per person and day after the kcal top-up, every price from the catalog dated 2026-11-10. The model kept to Billa products this time, although both stores were selected.
+
+<table><tr>
+<td><img src="docs/screenshots/01-form-budget-diet.png" width="250" alt="Form: Billa and Hofer selected, weekly budget 60 euros, 2 people, vegetarian"></td>
+<td><img src="docs/screenshots/02-result-budget.png" width="250" alt="Result: total 18.43 euros of a 60 euro budget, budget bar, kcal per person and day, reference price date, kcal top-up notice"></td>
+<td><img src="docs/screenshots/03-result-list.png" width="250" alt="Result: the rest of the Billa list with pack sizes and prices, then copy, print, share and new list buttons"></td>
+</tr></table>
+
 ## Measured quality
 
 20 fixed scenarios (shopping and menu mode, 1–7 days, 1–5 people, €15–150, every diet, en/de/uk, two deliberately tight budgets), real OpenAI calls, real catalog. Baseline = first run of the v2 pipeline; final = the release.
